@@ -23,7 +23,7 @@ use Jenssegers\Agent\Agent;
 use Laritor\LaravelClient\Helpers\FileHelper;
 use Laritor\LaravelClient\Laritor;
 
-class Recorder
+class Recorder implements RecorderInterface
 {
     /**
      * @var Laritor
@@ -36,5 +36,18 @@ class Recorder
     public function __construct(Laritor $laritor)
     {
         $this->laritor = $laritor;
+    }
+
+    /**
+     * @param $event
+     * @return void
+     */
+    public function handle($event)
+    {
+        try{
+            $this->trackEvent($event);
+        } catch (\Throwable $exception) {
+
+        }
     }
 }

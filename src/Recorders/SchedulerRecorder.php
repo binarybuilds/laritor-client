@@ -8,6 +8,19 @@ use Illuminate\Console\Events\CommandStarting;
 class SchedulerRecorder extends Recorder
 {
     /**
+     * @param $event
+     * @return void
+     */
+    public function trackEvent($event)
+    {
+        if ($event instanceof CommandStarting::class ) {
+            $this->start($event);
+        } elseif ($event instanceof CommandFinished::class ) {
+            $this->finish($event);
+        }
+    }
+    
+    /**
      * Handle the event.
      *
      * @param  object  $event

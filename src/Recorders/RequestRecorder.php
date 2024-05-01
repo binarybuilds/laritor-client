@@ -13,7 +13,7 @@ class RequestRecorder extends Recorder
      * @param  object  $event
      * @return void
      */
-    public function handle(RequestHandled $event)
+    public function trackEvent(RequestHandled $event)
     {
         $request = $event->request;
 
@@ -54,7 +54,7 @@ class RequestRecorder extends Recorder
             ],
         ];
 
-        if ($event->response->status() < 400 ) {
+        if ($event->response->status() >= 400 ) {
             $this->laritor->setRequestFailed();
         }
 

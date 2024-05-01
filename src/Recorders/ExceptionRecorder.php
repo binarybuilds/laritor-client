@@ -13,7 +13,7 @@ class ExceptionRecorder extends Recorder
      * @param  object  $event
      * @return void
      */
-    public function handle(MessageLogged $event)
+    public function trackEvent(MessageLogged $event)
     {
         $data = [
             'type' => 'exception',

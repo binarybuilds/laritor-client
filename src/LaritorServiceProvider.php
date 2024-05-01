@@ -2,10 +2,6 @@
 
 namespace Laritor\LaravelClient;
 
-use Illuminate\Cache\Events\CacheHit;
-use Illuminate\Cache\Events\CacheMissed;
-use Illuminate\Cache\Events\KeyForgotten;
-use Illuminate\Cache\Events\KeyWritten;
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Console\Events\ScheduledTaskFinished;
@@ -50,37 +46,25 @@ class LaritorServiceProvider extends ServiceProvider
         $this->registerRecorders();
     }
 
+    /**
+     * @return void
+     */
     public function registerRecorders()
     {
         Event::listen( MessageLogged::class, [ExceptionRecorder::class, 'handle'] );
         Event::listen( RequestHandled::class, [RequestRecorder::class, 'handle'] );
         Event::listen( QueryExecuted::class, [QueryRecorder::class, 'handle'] );
-        Event::listen( CommandStarting::class, [SchedulerRecorder::class, 'start'] );
-        Event::listen( CommandFinished::class, [SchedulerRecorder::class, 'finish'] );
-        Event::listen( ScheduledTaskStarting::class, [ScheduledCommandRecorder::class, 'start'] );
-        Event::listen( ScheduledTaskFinished::class, [ScheduledCommandRecorder::class, 'finish'] );
-        Event::listen( JobQueued::class, [QueuedJobRecorder::class, 'queued'] );
-        Event::listen( JobProcessing::class, [QueuedJobRecorder::class, 'started'] );
-        Event::listen( JobProcessed::class, [QueuedJobRecorder::class, 'processed'] );
-        Event::listen( JobFailed::class, [QueuedJobRecorder::class, 'failed'] );
-
-
-//        Event::listen( CacheMissed::class, [QueryRecorder::class, 'handle'] );
-//        Event::listen( KeyWritten::class, [QueryRecorder::class, 'handle'] );
-//        Event::listen( KeyForgotten::class, [QueryRecorder::class, 'handle'] );
+        Event::listen( CommandStarting::class, [SchedulerRecorder::class, 'handle'] );
+        Event::listen( CommandFinished::class, [SchedulerRecorder::class, 'handle'] );
+        Event::listen( ScheduledTaskStarting::class, [ScheduledCommandRecorder::class, 'handle'] );
+        Event::listen( ScheduledTaskFinished::class, [ScheduledCommandRecorder::class, 'handle'] );
+        Event::listen( JobQueued::class, [QueuedJobRecorder::class, 'handle'] );
+        Event::listen( JobProcessing::class, [QueuedJobRecorder::class, 'handle'] );
+        Event::listen( JobProcessed::class, [QueuedJobRecorder::class, 'handle'] );
+        Event::listen( JobFailed::class, [QueuedJobRecorder::class, 'handle'] );
 
         $this->app->terminating(function (){
             app(Laritor::class)->sendEvents();
         });
-    }
-
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        //
     }
 }

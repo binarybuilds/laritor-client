@@ -11,6 +11,23 @@ use Illuminate\Console\Scheduling\CallbackEvent;
 class ScheduledCommandRecorder extends Recorder
 {
     /**
+     * @param $event
+     * @return void
+     */
+    public function trackEvent($event)
+    {
+        if ($event instanceof ScheduledTaskStarting::class ) {
+            $this->start($event);
+        } elseif ($event instanceof ScheduledTaskFinished::class ) {
+            $this->finish($event);
+        } elseif ($event instanceof ScheduledTaskSkipped::class ) {
+            $this->skip($event);
+        } elseif ($event instanceof ScheduledTaskFailed::class ) {
+            $this->fail($event);
+        }
+    }
+
+    /**
      * Handle the event.
      *
      * @param  object  $event

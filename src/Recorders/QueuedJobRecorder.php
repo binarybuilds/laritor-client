@@ -7,8 +7,26 @@ use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Queue\Events\JobQueued;
 
+
 class QueuedJobRecorder extends Recorder
 {
+    /**
+     * @param $event
+     * @return void
+     */
+    public function trackEvent($event)
+    {
+        if ($event instanceof JobQueued::class ) {
+            $this->queued($event);
+        } elseif ($event instanceof JobProcessing::class ) {
+            $this->started($event);
+        } elseif ($event instanceof JobProcessed::class ) {
+            $this->processed($event);
+        } elseif ($event instanceof JobFailed::class ) {
+            $this->failed($event);
+        }
+    }
+
     /**
      * @param JobQueued $event
      * @return void

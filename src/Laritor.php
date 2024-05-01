@@ -34,23 +34,6 @@ class Laritor
         $this->exceptionOccurred = true;
     }
 
-
-    public function getEvents()
-    {
-        return $this->events;
-    }
-
-    /**
-     * @param array $events
-     * @return $this
-     */
-    public function setEvents( array $events )
-    {
-        $this->events = $events;
-        return $this;
-    }
-
-
     /**
      * @param array $event
      * @return $this
@@ -78,8 +61,7 @@ class Laritor
     public function toArray()
     {
         $app = app();
-
-
+        
         if ($app->runningInConsole()) {
             $this->addConsoleEvent();
         }
@@ -139,32 +121,42 @@ class Laritor
 
     private function updateQueryEvents()
     {
-        $queries = collect($this->queries);
+        if ($this->shouldReportQueries()) {
+            $queries = collect($this->queries);
 
-        $duplicates = $queries->whereIn('query_bindings', $queries->duplicates('query_bindings')->values())
-            ->map(function ($query){
-                $query['issue'] = 'duplicate';
-                return $query;
-        })->unique(function ($query) {
-            return $query['query_bindings'] . $query['file']. $query['line'];
-        })->values()->toArray();
+            $duplicates = $queries->whereIn('query_bindings', $queries->duplicates('query_bindings')->values())
+                ->map(function ($query){
+                    $query['issue'] = 'duplicate';
+                    return $query;
+                })->unique(function ($query) {
+                    return $query['query_bindings'] . $query['file']. $query['line'];
+                })->values()->toArray();
 
-        $nplusone = $queries->whereIn('query', $queries->duplicates('query')->values())
-            ->map(function ($query){
-                $query['issue'] = 'n-plus-1';
-                return $query;
-            })->unique('query')->values()->toArray();
+            $nplusone = $queries->whereIn('query', $queries->duplicates('query')->values())
+                ->map(function ($query){
+                    $query['issue'] = 'n-plus-1';
+                    return $query;
+                })->unique('query')->values()->toArray();
 
-        $slow = $queries->where('time', '>=', config('laritor.query.slow') )
-            ->map(function ($query){
-                $query['issue'] = 'slow';
-                return $query;
-            })->unique()->values()->toArray();
+            $slow = $queries->where('time', '>=', config('laritor.query.slow') )
+                ->map(function ($query){
+                    $query['issue'] = 'slow';
+                    return $query;
+                })->unique()->values()->toArray();
 
-        $this->events = array_merge($this->events, $duplicates, $nplusone, $slow );
+            $this->events = array_merge($this->events, $duplicates, $nplusone, $slow );
+        }
 
         unset($this->queries);
 
+    }
+
+    /**
+     * @return bool
+     */
+    private function shouldReportQueries()
+    {
+        return ! app()->runningInConsole();
     }
 
     /**
