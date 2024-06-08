@@ -7,13 +7,14 @@ use Laritor\LaravelClient\Helpers\FileHelper;
 
 class ExceptionRecorder extends Recorder
 {
+
     /**
      * Handle the event.
      *
-     * @param  object  $event
+     * @param  MessageLogged  $event
      * @return void
      */
-    public function trackEvent(MessageLogged $event)
+    public function trackEvent($event)
     {
         $data = [
             'type' => 'exception',

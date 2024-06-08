@@ -13,9 +13,9 @@ class SchedulerRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if ($event instanceof CommandStarting::class ) {
+        if ($event instanceof CommandStarting ) {
             $this->start($event);
-        } elseif ($event instanceof CommandFinished::class ) {
+        } elseif ($event instanceof CommandFinished ) {
             $this->finish($event);
         }
     }

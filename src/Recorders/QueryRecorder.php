@@ -8,13 +8,12 @@ class QueryRecorder extends Recorder
 {
     use FetchesStackTrace;
 
+
     /**
-     * Handle the event.
-     *
-     * @param  object  $event
+     * @param QueryExecuted $event
      * @return void
      */
-    public function trackEvent(QueryExecuted $event)
+    public function trackEvent($event)
     {
         if ($caller = $this->getCallerFromStackTrace()) {
             $time = $event->time;

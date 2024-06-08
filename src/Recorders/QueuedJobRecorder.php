@@ -16,13 +16,13 @@ class QueuedJobRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if ($event instanceof JobQueued::class ) {
+        if ($event instanceof JobQueued ) {
             $this->queued($event);
-        } elseif ($event instanceof JobProcessing::class ) {
+        } elseif ($event instanceof JobProcessing ) {
             $this->started($event);
-        } elseif ($event instanceof JobProcessed::class ) {
+        } elseif ($event instanceof JobProcessed ) {
             $this->processed($event);
-        } elseif ($event instanceof JobFailed::class ) {
+        } elseif ($event instanceof JobFailed ) {
             $this->failed($event);
         }
     }

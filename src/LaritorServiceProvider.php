@@ -63,6 +63,16 @@ class LaritorServiceProvider extends ServiceProvider
         Event::listen( JobProcessed::class, [QueuedJobRecorder::class, 'handle'] );
         Event::listen( JobFailed::class, [QueuedJobRecorder::class, 'handle'] );
 
+        if (class_exists(\Laravel\Octane\Events\RequestReceived::class)) {
+            Event::listen( [
+                \Laravel\Octane\Events\RequestReceived::class,
+                \Laravel\Octane\Events\TaskReceived::class,
+                \Laravel\Octane\Events\TickReceived::class
+            ], function (){
+                app(Laritor::class)->sendEvents();
+            } );
+        }
+
         $this->app->terminating(function (){
             app(Laritor::class)->sendEvents();
         });

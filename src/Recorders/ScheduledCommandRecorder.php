@@ -16,13 +16,13 @@ class ScheduledCommandRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if ($event instanceof ScheduledTaskStarting::class ) {
+        if ($event instanceof ScheduledTaskStarting ) {
             $this->start($event);
-        } elseif ($event instanceof ScheduledTaskFinished::class ) {
+        } elseif ($event instanceof ScheduledTaskFinished ) {
             $this->finish($event);
-        } elseif ($event instanceof ScheduledTaskSkipped::class ) {
+        } elseif ($event instanceof ScheduledTaskSkipped ) {
             $this->skip($event);
-        } elseif ($event instanceof ScheduledTaskFailed::class ) {
+        } elseif ($event instanceof ScheduledTaskFailed ) {
             $this->fail($event);
         }
     }

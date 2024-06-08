@@ -10,10 +10,10 @@ class RequestRecorder extends Recorder
     /**
      * Handle the event.
      *
-     * @param  object  $event
+     * @param  RequestHandled $event
      * @return void
      */
-    public function trackEvent(RequestHandled $event)
+    public function trackEvent($event)
     {
         $request = $event->request;
 
@@ -59,6 +59,5 @@ class RequestRecorder extends Recorder
         }
 
         $this->laritor->addEvent($data);
-        $this->laritor->sendEvents();
     }
 }

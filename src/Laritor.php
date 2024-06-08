@@ -99,8 +99,8 @@ class Laritor
      */
     public function reset()
     {
-        unset($this->events);
-        unset($this->queries);
+        $this->events = [];
+        $this->queries = [];
         $this->exceptionOccurred = false;
         $this->requestFailed = false;
     }
@@ -164,7 +164,8 @@ class Laritor
      */
     public function callApi()
     {
-        dd($this->toArray());
+        file_put_contents(app_path('/events.json'), $this->toJson() );
+        dd(0);
     }
     
     private function addConsoleEvent()
