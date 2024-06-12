@@ -15,6 +15,7 @@ use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Queue\Events\JobQueued;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Laritor\LaravelClient\Recorders\CommandRecorder;
 use Laritor\LaravelClient\Recorders\ExceptionRecorder;
@@ -44,6 +45,20 @@ class LaritorServiceProvider extends ServiceProvider
         }
 
         $this->registerRecorders();
+
+        $this->app->booted(function () {
+            $this->routes();
+        });
+    }
+
+    protected function routes()
+    {
+        if ($this->app->routesAreCached()) {
+            return;
+        }
+
+        Route::prefix('laritor')
+            ->group(__DIR__.'/../routes/laritor.php');
     }
 
     /**
