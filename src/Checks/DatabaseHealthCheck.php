@@ -11,7 +11,7 @@ class DatabaseHealthCheck extends BaseHealthCheck
      */
     public function check()
     {
-        DB::connection()->getDatabaseName();
+        DB::select('SELECT 1');
 
         return true;
     }

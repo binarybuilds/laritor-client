@@ -1,0 +1,32 @@
+<?php
+
+namespace {{ namespace }};
+
+use Laritor\LaravelClient\Checks\BaseHealthCheck;
+
+class {{ class }} extends BaseHealthCheck
+{
+    /**
+     * @return bool
+     */
+    public function check()
+    {
+        return true;
+    }
+
+    /**
+     * @return string
+     */
+    public function successMessage()
+    {
+        return 'heath check successful';
+    }
+
+    /**
+     * @return string
+     */
+    public function failureMessage()
+    {
+        return 'health check failed';
+    }
+}

@@ -17,6 +17,8 @@ use Illuminate\Queue\Events\JobQueued;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Laritor\LaravelClient\Commands\DiscoverCommand;
+use Laritor\LaravelClient\Commands\HealthCheckMakeCommand;
 use Laritor\LaravelClient\Recorders\CommandRecorder;
 use Laritor\LaravelClient\Recorders\ExceptionRecorder;
 use Laritor\LaravelClient\Recorders\QueryRecorder;
@@ -46,6 +48,11 @@ class LaritorServiceProvider extends ServiceProvider
 
         $this->registerRecorders();
 
+        $this->commands([
+            HealthCheckMakeCommand::class,
+            DiscoverCommand::class
+        ]);
+
         $this->app->booted(function () {
             $this->routes();
         });
@@ -58,7 +65,7 @@ class LaritorServiceProvider extends ServiceProvider
         }
 
         Route::prefix('laritor')
-            ->group(__DIR__.'/../routes/laritor.php');
+            ->group( __DIR__ . '/Routes/laritor.php' );
     }
 
     /**

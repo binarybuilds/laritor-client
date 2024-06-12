@@ -10,7 +10,7 @@ class BaseHealthCheck
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    private function run(Request $request)
+    public function run(Request $request)
     {
         if (config('laritor.keys.backend') && $request->input('token') === config('laritor.keys.backend')) {
             try{
@@ -40,11 +40,17 @@ class BaseHealthCheck
         return false;
     }
 
+    /**
+     * @return string
+     */
     public function successMessage()
     {
         return 'health check passed';
     }
 
+    /**
+     * @return string
+     */
     public function failureMessage()
     {
         return 'health check not configured properly';

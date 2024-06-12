@@ -26,7 +26,16 @@ class HealthCheckController
             case 'mail' : $health_check = app( MailHealthCheck::class );break;
             case 'session' : $health_check = app( SessionHealthCheck::class );break;
             case 'storage' : $health_check = app( StorageHealthCheck::class );break;
-            default: $health_check = app( BaseHealthCheck::class );break;
+            default: {
+
+                $health_check_class = app()->getNamespace()."Laritor\\$check_type";
+
+                if (class_exists($health_check_class)) {
+                    $health_check = app( $health_check_class );
+                } else {
+                    $health_check = app( BaseHealthCheck::class );
+                }
+            }break;
         }
 
         return $health_check->run($request);
