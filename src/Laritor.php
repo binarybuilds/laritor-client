@@ -4,6 +4,8 @@ namespace Laritor\LaravelClient;
 
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Console\Scheduling\Event;
+use Illuminate\Http\Client\Events\ConnectionFailed;
+use Illuminate\Http\Client\Events\ResponseReceived;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Support\Str;
@@ -232,6 +234,25 @@ class Laritor
         }
 
         $this->sendEvents();
+    }
+
+    public function completeOutboundRequest($outboundRequestEvent)
+    {
+        foreach ( $this->events as &$event ) {
+
+            if (
+                $event['type'] === 'outbound_request' &&
+                $event['status'] === 'sent' &&
+                $event['url'] === $outboundRequestEvent->request->url()
+            ) {
+                $event['code'] = $outboundRequestEvent instanceof ResponseReceived ? $outboundRequestEvent->response->status() : 0;
+                $event['duration'] = now()->diffInMilliseconds($event['started_at']);
+                $event['completed_at'] = now()->toDateTimeString();
+                $event['started_at'] = $event['started_at']->toDateTimeString();
+                $event['status'] = 'completed';
+                break;
+            }
+        }
     }
 
     public function completeScheduler()

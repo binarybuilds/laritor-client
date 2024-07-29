@@ -60,7 +60,7 @@ class FileHelper
     {
         $helper = new self();
         if (file_exists($fileName)) {
-            $helper->file = new \SplFileObject($fileName);;
+            $helper->file = new \SplFileObject($fileName);
         }
 
         return $helper;
@@ -72,7 +72,6 @@ class FileHelper
 
         return $this->file->key() + 1;
     }
-
 
     public function getContents()
     {

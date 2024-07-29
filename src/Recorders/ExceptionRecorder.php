@@ -3,6 +3,7 @@
 namespace Laritor\LaravelClient\Recorders;
 
 use Illuminate\Log\Events\MessageLogged;
+use Illuminate\Support\Str;
 use Laritor\LaravelClient\Helpers\FileHelper;
 
 class ExceptionRecorder extends Recorder
@@ -25,18 +26,13 @@ class ExceptionRecorder extends Recorder
         ];
 
         foreach ($event->context['exception']->getTrace() as $trace) {
-
-            array_push($data['stacktrace'], [
+            $data['stacktrace'][] = [
                 'file' => $trace['file'] ?? '',
                 'line' => $trace['line'] ?? '',
                 'function' => $trace['function'] ?? '',
                 'class' => $trace['class'] ?? '',
-                'file_contents' => isset($trace['file']) ? FileHelper::createFromPath($trace['file'])
-                ->offset($trace['line'])
-                ->before(25)
-                ->after(25)
-                ->getContents() : ''
-            ]);
+                'file_contents' => isset($trace['file']) ? $this->getFileContents($trace['file'], $trace['line']) : ''
+            ];
         }
 
         $this->laritor->setExceptionOccurred();
@@ -44,10 +40,16 @@ class ExceptionRecorder extends Recorder
         $this->laritor->addEvent($data);
     }
 
-    public function numberOfLines()
+    private function getFileContents(string $filePath, int $line, int $before = 15, int $after = 10 )
     {
-        $this->file->seek(PHP_INT_MAX);
+        if (Str::contains($filePath, 'vendor/')) {
+            return [];
+        }
 
-        return $this->file->key() + 1;
+        return FileHelper::createFromPath($filePath)
+            ->offset($line)
+            ->before($before)
+            ->after($after)
+            ->getContents();
     }
 }
