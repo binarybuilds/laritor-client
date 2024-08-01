@@ -13,25 +13,22 @@ class SchedulerRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if ($event instanceof CommandStarting ) {
-            $this->start($event);
-        } elseif ($event instanceof CommandFinished ) {
-            $this->finish($event);
-        }
-    }
-    
-    /**
-     * Handle the event.
-     *
-     * @param  object  $event
-     * @return void
-     */
-    public function start(CommandStarting $event)
-    {
-        if ( $event->command !== 'schedule:run' && $event->command !== 'schedule:finish') {
+        if (!$this->isSchedulerCommand($event)) {
             return;
         }
 
+        if ($event instanceof CommandStarting ) {
+            $this->start();
+        } elseif ($event instanceof CommandFinished ) {
+            $this->finish();
+        }
+    }
+
+    /**
+     * @return void
+     */
+    public function start()
+    {
         $data = [
             'type' => 'scheduler',
             'started_at' => now(),
@@ -42,17 +39,19 @@ class SchedulerRecorder extends Recorder
     }
 
     /**
-     * Handle the event.
-     *
-     * @param  object  $event
      * @return void
      */
-    public function finish(CommandFinished $event)
+    public function finish()
     {
-        if ( $event->command !== 'schedule:run' && $event->command !== 'schedule:finish') {
-            return;
-        }
-
         $this->laritor->completeScheduler();
+    }
+
+    /**
+     * @param $event
+     * @return bool
+     */
+    private function isSchedulerCommand($event)
+    {
+        return $event->command === 'schedule:run' || $event->command === 'schedule:finish';
     }
 }

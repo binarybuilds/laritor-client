@@ -41,6 +41,10 @@ class LaritorServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        if ( ! config('laritor.enabled') ) {
+            return;
+        }
+
         $this->mergeConfigFrom( __DIR__ . '/../config/laritor.php', 'laritor' );
 
         if (method_exists($this->app, 'scoped')) {
@@ -78,7 +82,7 @@ class LaritorServiceProvider extends ServiceProvider
      */
     public function registerRecorders()
     {
-        $listeners = [
+        $recorders = [
             MessageLogged::class => ExceptionRecorder::class,
             RequestHandled::class => RequestRecorder::class, 
             QueryExecuted::class => QueryRecorder::class,
@@ -86,9 +90,9 @@ class LaritorServiceProvider extends ServiceProvider
             CommandFinished::class => SchedulerRecorder::class,
             ScheduledTaskStarting::class => ScheduledCommandRecorder::class,
             ScheduledTaskFinished::class => ScheduledCommandRecorder::class,
-            JobQueued::class => QueuedJobRecorder::class,
-            JobProcessing::class => QueuedJobRecorder::class,
-            JobProcessed::class => QueuedJobRecorder::class,
+//            JobQueued::class => QueuedJobRecorder::class,
+//            JobProcessing::class => QueuedJobRecorder::class,
+//            JobProcessed::class => QueuedJobRecorder::class,
             JobFailed::class => QueuedJobRecorder::class,
             CacheHit::class => CacheRecorder::class,
             CacheMissed::class => CacheRecorder::class,
@@ -97,8 +101,10 @@ class LaritorServiceProvider extends ServiceProvider
             ResponseReceived::class => OutboundRequestRecorder::class,
         ];
 
-        foreach ($listeners as $event => $listener ) {
-            Event::listen( $event, [$listener, 'handle'] );
+        foreach ($recorders as $event => $recorder ) {
+            if (in_array($recorder, (array)config('laritor.recorders'))) {
+                Event::listen( $event, [$recorder, 'handle'] );
+            }
         }
 
 

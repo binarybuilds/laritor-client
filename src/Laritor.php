@@ -2,39 +2,26 @@
 
 namespace Laritor\LaravelClient;
 
-use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Console\Scheduling\Event;
-use Illuminate\Http\Client\Events\ConnectionFailed;
-use Illuminate\Http\Client\Events\ResponseReceived;
-use Illuminate\Queue\Events\JobFailed;
-use Illuminate\Queue\Events\JobProcessed;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 
 class Laritor
 {
-    private $requestFailed = false;
-
-    private $exceptionOccurred = false;
-
+    /**
+     * @var array
+     */
     private $events = [];
 
+    /**
+     * @var array
+     */
     private $queries = [];
 
     /**
-     * @return void
+     * @var array
      */
-    public function setRequestFailed()
-    {
-        $this->requestFailed = true;
-    }
-
-    /**
-     * @return void
-     */
-    public function setExceptionOccurred()
-    {
-        $this->exceptionOccurred = true;
-    }
+    public $outboundRequests = [];
 
     /**
      * @param array $event
@@ -43,6 +30,16 @@ class Laritor
     public function addEvent(array $event)
     {
         array_push($this->events, $event);
+        return $this;
+    }
+
+    /**
+     * @param array $request
+     * @return $this
+     */
+    public function addOutboundRequest(array $request)
+    {
+        array_push($this->outboundRequests, $request);
         return $this;
     }
 
@@ -103,8 +100,7 @@ class Laritor
     {
         $this->events = [];
         $this->queries = [];
-        $this->exceptionOccurred = false;
-        $this->requestFailed = false;
+        $this->outboundRequests = [];
     }
 
     /**
@@ -158,7 +154,7 @@ class Laritor
      */
     private function shouldReportQueries()
     {
-        return ! app()->runningInConsole();
+        return true;
     }
 
     /**
@@ -187,7 +183,22 @@ class Laritor
      */
     public function shouldSendEvents()
     {
-        return !empty($this->events) || $this->requestFailed || $this->exceptionOccurred;
+        if (app()->runningInConsole() || ! $this->isRateLimiterEnabled() ) {
+            return !empty($this->events);
+        }
+
+        $key = 'laritor-'.Str::slug(request()->path());
+        if (! RateLimiter::tooManyAttempts($key, config('laritor.rate_limiter_attempts') ) ) {
+            RateLimiter::hit($key);
+            return !empty($this->events);
+        }
+
+        return !empty($this->events);
+    }
+
+    public function isRateLimiterEnabled()
+    {
+        return config('laritor.use_rate_limiter');
     }
 
     /**
@@ -207,49 +218,6 @@ class Laritor
                 $event['duration'] = now()->diffInMilliseconds($event['started_at']);
                 $event['completed_at'] = now()->toDateTimeString();
                 $event['started_at'] = $event['started_at']->toDateTimeString();
-                break;
-            }
-        }
-    }
-
-
-    /**
-     * @param $jobEvent
-     * @return void
-     */
-    public function completeJob($jobEvent)
-    {
-        foreach ( $this->events as &$event ) {
-
-            if (
-                $event['type'] === 'job' &&
-                $event['status'] === 'started'
-            ) {
-                $event['status'] = $jobEvent instanceof JobProcessed ? 'completed' : 'failed';
-                $event['duration'] = now()->diffInMilliseconds($event['started_at']);
-                $event['completed_at'] = now()->toDateTimeString();
-                $event['started_at'] = $event['started_at']->toDateTimeString();
-                break;
-            }
-        }
-
-        $this->sendEvents();
-    }
-
-    public function completeOutboundRequest($outboundRequestEvent)
-    {
-        foreach ( $this->events as &$event ) {
-
-            if (
-                $event['type'] === 'outbound_request' &&
-                $event['status'] === 'sent' &&
-                $event['url'] === $outboundRequestEvent->request->url()
-            ) {
-                $event['code'] = $outboundRequestEvent instanceof ResponseReceived ? $outboundRequestEvent->response->status() : 0;
-                $event['duration'] = now()->diffInMilliseconds($event['started_at']);
-                $event['completed_at'] = now()->toDateTimeString();
-                $event['started_at'] = $event['started_at']->toDateTimeString();
-                $event['status'] = 'completed';
                 break;
             }
         }

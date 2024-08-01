@@ -5,6 +5,7 @@ namespace Laritor\LaravelClient\Recorders;
 use Illuminate\Http\Client\Events\ConnectionFailed;
 use Illuminate\Http\Client\Events\RequestSending;
 use Illuminate\Http\Client\Events\ResponseReceived;
+use Illuminate\Support\Str;
 
 
 class OutboundRequestRecorder extends Recorder
@@ -38,7 +39,7 @@ class OutboundRequestRecorder extends Recorder
             'status' => 'sent'
         ];
 
-        $this->laritor->addEvent($data);
+        $this->laritor->addOutboundRequest($data);
     }
 
     /**
@@ -47,7 +48,7 @@ class OutboundRequestRecorder extends Recorder
      */
     public function completed(ResponseReceived $event)
     {
-        $this->laritor->completeOutboundRequest($event);
+        $this->completeOutboundRequest($event);
     }
 
     /**
@@ -56,6 +57,54 @@ class OutboundRequestRecorder extends Recorder
      */
     public function failed(ConnectionFailed $event)
     {
-        $this->laritor->completeOutboundRequest($event);
+        $this->completeOutboundRequest($event);
+    }
+
+    public function completeOutboundRequest($outboundRequestEvent)
+    {
+        foreach ( $this->laritor->outboundRequests as &$request ) {
+
+            if (
+                $request['status'] === 'sent' &&
+                $request['url'] === $outboundRequestEvent->request->url()
+            ) {
+                $duration = now()->diffInMilliseconds($request['started_at']);
+
+                if ($this->recordOutboundRequest($outboundRequestEvent->request->url(), $duration)) {
+                    $request['status'] = 'completed';
+
+                    $this->laritor->addEvent([
+                        'type' => 'outbound_request',
+                        'started_at' => $request['started_at']->toDateTimeString(),
+                        'completed_at' => now()->toDateTimeString(),
+                        'duration' => $duration,
+                        'code' => $outboundRequestEvent instanceof ResponseReceived ? $outboundRequestEvent->response->status() : 0,
+                        'url' => $outboundRequestEvent->request->url(),
+                        'method' => $outboundRequestEvent->request->method(),
+                        'status' => 'completed'
+                    ]);
+                    break;
+                }
+            }
+        }
+    }
+
+    public function recordOutboundRequest($request, $duration)
+    {
+        if (app()->runningInConsole() &&  config('laritor.outbound_requests.ignore_console_requests') ) {
+            return false;
+        }
+
+        if ( $duration < config('laritor.outbound_requests.slow')) {
+            return false;
+        }
+
+        foreach ((array)config('laritor.outbound_requests.ignore') as $ignore) {
+            if (Str::startsWith(rtrim($request, "/*"), $ignore) ) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

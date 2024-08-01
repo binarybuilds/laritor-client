@@ -3,6 +3,7 @@
 namespace Laritor\LaravelClient\Recorders;
 
 use Illuminate\Database\Events\QueryExecuted;
+use Illuminate\Support\Str;
 
 class QueryRecorder extends Recorder
 {
@@ -15,21 +16,41 @@ class QueryRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if ($caller = $this->getCallerFromStackTrace()) {
-            $time = $event->time;
+        if ( $this->recordReadQueries($event->sql) || $this->recordWriteQueries($event->sql)) {
 
-            $query = [
-                'type' => 'query',
-                'connection' => $event->connectionName,
-                'query' => $event->sql,
-                'query_bindings' => $this->replaceBindings($event),
-                'time' => $time,
-                'file' => $caller['file'],
-                'line' => $caller['line'],
-            ];
+            if (app()->runningInConsole() && ! config('laritor.query.monitor_console_queries') ) {
+                return;
+            }
 
-            $this->laritor->addQuery($query);
+            if($caller = $this->getCallerFromStackTrace()) {
+                $time = $event->time;
+
+                $query = [
+                    'type' => 'query',
+                    'connection' => $event->connectionName,
+                    'query' => $event->sql,
+//                'query_bindings' => $this->replaceBindings($event),
+                    'time' => $time,
+                    'file' => $caller['file'] ? Str::replaceFirst(base_path().'/', '', $caller['file']) : '',
+                    'line' => $caller['line'],
+                ];
+
+                $this->laritor->addQuery($query);
+            }
         }
+    }
+
+    public function recordReadQueries($query) {
+        return config('laritor.query.read') && $this->isReadQuery($query);
+    }
+
+    public function recordWriteQueries($query) {
+        return config('laritor.query.write') && ! $this->isReadQuery($query);
+    }
+
+    public function isReadQuery($query)
+    {
+        return Str::startsWith(strtoupper(trim($query)), ['SELECT', 'SHOW', 'DESCRIBE', 'EXPLAIN'] );
     }
 
     /**

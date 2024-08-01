@@ -17,6 +17,10 @@ class ExceptionRecorder extends Recorder
      */
     public function trackEvent($event)
     {
+        if (!$this->shouldReportException($event->context['exception'])) {
+            return;
+        }
+
         $data = [
             'type' => 'exception',
             'message' => $event->message,
@@ -27,7 +31,7 @@ class ExceptionRecorder extends Recorder
 
         foreach ($event->context['exception']->getTrace() as $trace) {
             $data['stacktrace'][] = [
-                'file' => $trace['file'] ?? '',
+                'file' => $trace['file'] ? Str::replaceFirst(base_path().'/', '', $trace['file']) : '',
                 'line' => $trace['line'] ?? '',
                 'function' => $trace['function'] ?? '',
                 'class' => $trace['class'] ?? '',
@@ -35,9 +39,19 @@ class ExceptionRecorder extends Recorder
             ];
         }
 
-        $this->laritor->setExceptionOccurred();
-
         $this->laritor->addEvent($data);
+    }
+
+    public function shouldReportException($exception)
+    {
+        foreach ((array)config('laritor.exceptions.ignore') as $ignore ) {
+
+            if ($exception instanceof $ignore ) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private function getFileContents(string $filePath, int $line, int $before = 15, int $after = 10 )
