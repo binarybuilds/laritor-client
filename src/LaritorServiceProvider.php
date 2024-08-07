@@ -15,9 +15,6 @@ use Illuminate\Http\Client\Events\RequestSending;
 use Illuminate\Http\Client\Events\ResponseReceived;
 use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Queue\Events\JobFailed;
-use Illuminate\Queue\Events\JobProcessed;
-use Illuminate\Queue\Events\JobProcessing;
-use Illuminate\Queue\Events\JobQueued;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -41,11 +38,11 @@ class LaritorServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->mergeConfigFrom( __DIR__ . '/../config/laritor.php', 'laritor' );
+
         if ( ! config('laritor.enabled') ) {
             return;
         }
-
-        $this->mergeConfigFrom( __DIR__ . '/../config/laritor.php', 'laritor' );
 
         if (method_exists($this->app, 'scoped')) {
             $this->app->scoped(Laritor::class, function () {
@@ -90,9 +87,6 @@ class LaritorServiceProvider extends ServiceProvider
             CommandFinished::class => SchedulerRecorder::class,
             ScheduledTaskStarting::class => ScheduledCommandRecorder::class,
             ScheduledTaskFinished::class => ScheduledCommandRecorder::class,
-//            JobQueued::class => QueuedJobRecorder::class,
-//            JobProcessing::class => QueuedJobRecorder::class,
-//            JobProcessed::class => QueuedJobRecorder::class,
             JobFailed::class => QueuedJobRecorder::class,
             CacheHit::class => CacheRecorder::class,
             CacheMissed::class => CacheRecorder::class,

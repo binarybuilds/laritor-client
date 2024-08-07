@@ -29,13 +29,10 @@ class SchedulerRecorder extends Recorder
      */
     public function start()
     {
-        $data = [
-            'type' => 'scheduler',
+        $this->laritor->pushEvent('scheduler',  [
             'started_at' => now(),
             'completed_at' => null
-        ];
-
-        $this->laritor->addEvent($data);
+        ]);
     }
 
     /**
@@ -43,7 +40,16 @@ class SchedulerRecorder extends Recorder
      */
     public function finish()
     {
-        $this->laritor->completeScheduler();
+        $scheduler = $this->laritor->getEvents('scheduler');
+        $scheduler = isset($scheduler[0]) ? $scheduler[0] : null;
+
+        if ($scheduler) {
+            $scheduler['duration'] = now()->diffInMilliseconds($scheduler['started_at']);
+            $scheduler['completed_at'] = now()->toDateTimeString();
+            $scheduler['started_at'] = $scheduler['started_at']->toDateTimeString();
+        }
+
+        $this->laritor->addEvents('scheduler', [$scheduler]);
     }
 
     /**

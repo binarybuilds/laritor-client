@@ -4,11 +4,17 @@ namespace Laritor\LaravelClient\Recorders;
 
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Str;
+use Laritor\LaravelClient\Laritor;
 
 class QueryRecorder extends Recorder
 {
     use FetchesStackTrace;
 
+    public function __construct( Laritor $laritor )
+    {
+        parent::__construct( $laritor );
+        $laritor->registerPrepareCallBack([QueryRecorder::class, 'detectQueryIssues']);
+    }
 
     /**
      * @param QueryExecuted $event
@@ -16,36 +22,47 @@ class QueryRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if ( $this->recordReadQueries($event->sql) || $this->recordWriteQueries($event->sql)) {
+        if (!$this->shouldRecordQuery($event->sql)) {
+            return;
+        }
 
-            if (app()->runningInConsole() && ! config('laritor.query.monitor_console_queries') ) {
-                return;
-            }
+        if($caller = $this->getCallerFromStackTrace()) {
+            $time = $event->time;
 
-            if($caller = $this->getCallerFromStackTrace()) {
-                $time = $event->time;
+            $query = [
+                'query' => $event->sql,
+                'query_bindings' => $this->replaceBindings($event),
+                'time' => $time,
+                'file' => $caller['file'] ? Str::replaceFirst(base_path().'/', '', $caller['file']) : '',
+                'line' => $caller['line'],
+                'issues' => []
+            ];
 
-                $query = [
-                    'type' => 'query',
-                    'connection' => $event->connectionName,
-                    'query' => $event->sql,
-//                'query_bindings' => $this->replaceBindings($event),
-                    'time' => $time,
-                    'file' => $caller['file'] ? Str::replaceFirst(base_path().'/', '', $caller['file']) : '',
-                    'line' => $caller['line'],
-                ];
+            $query['location'] = $query['line'] . '-'.$query['file'];
 
-                $this->laritor->addQuery($query);
-            }
+            $this->laritor->pushEvent('queries', $query);
         }
     }
 
-    public function recordReadQueries($query) {
-        return config('laritor.query.read') && $this->isReadQuery($query);
-    }
+    /**
+     * @param $query
+     * @return bool
+     */
+    public function shouldRecordQuery($query)
+    {
+        if ($this->isReadQuery($query) && ! config('laritor.query.read')) {
+            return false;
+        }
 
-    public function recordWriteQueries($query) {
-        return config('laritor.query.write') && ! $this->isReadQuery($query);
+        if ( ! $this->isReadQuery($query) && ! config('laritor.query.write')) {
+            return false;
+        }
+
+        if (app()->runningInConsole() && ! config('laritor.query.monitor_console_queries') ) {
+            return false;
+        }
+
+        return true;
     }
 
     public function isReadQuery($query)
@@ -116,5 +133,39 @@ class QueryRecorder extends Recorder
         ]);
 
         return "'".$binding."'";
+    }
+
+    /**
+     * @param Laritor $laritor
+     * @return void
+     */
+    public static function detectQueryIssues(Laritor $laritor)
+    {
+        $queries = collect($laritor->getEvents('queries'));
+
+        $queries = $queries->map(function ($query) use ($queries){
+            if (in_array($query['query_bindings'], $queries->duplicates('query_bindings')->toArray()) ) {
+                $query['issues'][] = 'duplicate';
+            }
+
+            if (in_array($query['location'], $queries->duplicates('location')->toArray()) ) {
+                $query['issues'][] = 'n-plus-1';
+            }
+
+            if ( $query['time'] >= config('laritor.query.slow') ) {
+                $query['issues'][] = 'slow';
+            }
+
+            unset($query['query_bindings']);
+            unset($query['location']);
+
+            return $query;
+        });
+
+        $queries = $queries->filter(function ($query){
+            return ! empty($query['issues']);
+        });
+
+        $laritor->addEvents('queries', $queries->values()->toArray() );
     }
 }

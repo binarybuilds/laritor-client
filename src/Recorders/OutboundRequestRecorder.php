@@ -6,10 +6,30 @@ use Illuminate\Http\Client\Events\ConnectionFailed;
 use Illuminate\Http\Client\Events\RequestSending;
 use Illuminate\Http\Client\Events\ResponseReceived;
 use Illuminate\Support\Str;
+use Laritor\LaravelClient\Laritor;
 
 
 class OutboundRequestRecorder extends Recorder
 {
+    public function __construct( Laritor $laritor )
+    {
+        parent::__construct( $laritor );
+        $laritor->registerPrepareCallBack([OutboundRequestRecorder::class, 'removeInvalidEvents']);
+    }
+
+    /**
+     * @param Laritor $laritor
+     * @return void
+     */
+    public static function removeInvalidEvents(Laritor $laritor)
+    {
+        $laritor->addEvents('outbound_requests', collect( $laritor->getEvents('outbound_requests'))
+            ->where('status', '!=', 'sent')
+            ->values()
+            ->toArray()
+        );
+    }
+
     /**
      * @param $event
      * @return void
@@ -31,15 +51,12 @@ class OutboundRequestRecorder extends Recorder
      */
     public function sending(RequestSending $event)
     {
-        $data = [
-            'type' => 'outbound_request',
+        $this->laritor->pushEvent('outbound_requests', [
             'started_at' => now(),
             'url' => $event->request->url(),
             'method' => $event->request->method(),
             'status' => 'sent'
-        ];
-
-        $this->laritor->addOutboundRequest($data);
+        ]);
     }
 
     /**
@@ -62,19 +79,14 @@ class OutboundRequestRecorder extends Recorder
 
     public function completeOutboundRequest($outboundRequestEvent)
     {
-        foreach ( $this->laritor->outboundRequests as &$request ) {
+        $outboundRequests = collect( $this->laritor->getEvents('outbound_requests'))
+            ->map(function ($request) use ($outboundRequestEvent){
 
-            if (
-                $request['status'] === 'sent' &&
-                $request['url'] === $outboundRequestEvent->request->url()
-            ) {
+            if ( $request['status'] === 'sent' && $request['url'] === $outboundRequestEvent->request->url() ) {
                 $duration = now()->diffInMilliseconds($request['started_at']);
 
-                if ($this->recordOutboundRequest($outboundRequestEvent->request->url(), $duration)) {
-                    $request['status'] = 'completed';
-
-                    $this->laritor->addEvent([
-                        'type' => 'outbound_request',
+                if ($this->shouldRecordOutboundRequest($outboundRequestEvent->request->url(), $duration)) {
+                    return [
                         'started_at' => $request['started_at']->toDateTimeString(),
                         'completed_at' => now()->toDateTimeString(),
                         'duration' => $duration,
@@ -82,14 +94,22 @@ class OutboundRequestRecorder extends Recorder
                         'url' => $outboundRequestEvent->request->url(),
                         'method' => $outboundRequestEvent->request->method(),
                         'status' => 'completed'
-                    ]);
-                    break;
+                    ];
                 }
             }
-        }
+
+            return $request;
+        })->values()->toArray();
+
+        $this->laritor->addEvents('outbound_requests', $outboundRequests);
     }
 
-    public function recordOutboundRequest($request, $duration)
+    /**
+     * @param $request
+     * @param $duration
+     * @return bool
+     */
+    public function shouldRecordOutboundRequest($request, $duration)
     {
         if (app()->runningInConsole() &&  config('laritor.outbound_requests.ignore_console_requests') ) {
             return false;

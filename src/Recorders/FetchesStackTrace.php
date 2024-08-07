@@ -32,6 +32,8 @@ trait FetchesStackTrace
      */
     protected function ignoredPaths(): array
     {
+        return ['/Users/srinathreddydudi/projects/laravel-client', base_path('vendor'.DIRECTORY_SEPARATOR.$this->ignoredVendorPath())];
+
         return array_merge(
             [base_path('vendor'.DIRECTORY_SEPARATOR.$this->ignoredVendorPath())],
             $this->options['ignore_paths'] ?? []

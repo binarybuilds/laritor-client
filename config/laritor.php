@@ -55,7 +55,7 @@ return [
          * if a query took more than the below mentioned number of milliseconds to execute, Then the said query
          * will be flagged as slow and reported to laritor.
          */
-        'slow' => env('LARITOR_SLOW_QUERY', 1000 ),
+        'slow' => env('LARITOR_SLOW_QUERY', 100 ),
 
         /**
          * If for any reason, you do not wish to send read queries(SELECT) to laritor, set the below value to false.

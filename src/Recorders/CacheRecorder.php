@@ -12,8 +12,7 @@ class CacheRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        $this->laritor->addEvent([
-            'type' => 'cache',
+        $this->laritor->pushEvent('cache',[
             'key' => $event->key,
             'is_hit' => $event instanceof CacheHit
         ]);

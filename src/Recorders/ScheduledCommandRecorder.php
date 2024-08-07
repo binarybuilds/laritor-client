@@ -7,6 +7,7 @@ use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Console\Scheduling\CallbackEvent;
+use Illuminate\Http\Client\Events\ResponseReceived;
 
 class ScheduledCommandRecorder extends Recorder
 {
@@ -37,17 +38,14 @@ class ScheduledCommandRecorder extends Recorder
     {
         $event = $event->task;
 
-        $data = [
-            'type' => 'scheduled_command',
+        $this->laritor->pushEvent('scheduled_commands', [
             'started_at' => now(),
             'command' => $event instanceof CallbackEvent ? 'Closure' : $event->command,
             'expression' => $event->expression,
             'timezone' => $event->timezone,
             'user' => $event->user,
             'status' => 'started'
-        ];
-
-        $this->laritor->addEvent($data);
+        ]);
     }
 
     /**
@@ -59,7 +57,7 @@ class ScheduledCommandRecorder extends Recorder
     public function finish(ScheduledTaskFinished $event)
     {
         $event = $event->task;
-        $this->laritor->completeScheduledTask($event, 'completed');
+        $this->completeScheduledTask($event, 'completed');
     }
 
     /**
@@ -71,7 +69,7 @@ class ScheduledCommandRecorder extends Recorder
     public function skip(ScheduledTaskSkipped $event)
     {
         $event = $event->task;
-        $this->laritor->completeScheduledTask($event, 'skipped');
+        $this->completeScheduledTask($event, 'skipped');
     }
 
     /**
@@ -83,6 +81,26 @@ class ScheduledCommandRecorder extends Recorder
     public function fail(ScheduledTaskFailed $event)
     {
         $event = $event->task;
-        $this->laritor->completeScheduledTask($event, 'failed');
+        $this->completeScheduledTask($event, 'failed');
+    }
+
+    public function completeScheduledTask($event, $status)
+    {
+        $scheduledTasks = collect( $this->laritor->getEvents('scheduled_commands'))
+            ->map(function ($command) use ($event, $status){
+
+                if (
+                    $command['command'] === ( $event instanceof CallbackEvent ? 'Closure' : $event->command)
+                ) {
+                    $command['status'] = $status;
+                    $command['duration'] = now()->diffInMilliseconds($command['started_at']);
+                    $command['completed_at'] = now()->toDateTimeString();
+                    $command['started_at'] = $command['started_at']->toDateTimeString();
+                }
+
+                return $command;
+            })->values()->toArray();
+
+        $this->laritor->addEvents('scheduled_commands', $scheduledTasks);
     }
 }

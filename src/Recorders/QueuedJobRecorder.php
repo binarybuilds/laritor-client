@@ -13,15 +13,12 @@ class QueuedJobRecorder extends Recorder
     public function trackEvent($event)
     {
         if ($this->shouldReportJob($event->job)) {
-            $data = [
-                'type' => 'failed_job',
+            $this->laritor->pushEvent('failed_jobs', [
                 'connection' => $event->connectionName,
                 'queue' => $event->job->queue ?? config("queue.connections.{$event->connectionName}.queue", 'default'),
                 'job' => $event->job->payload()['displayName'] ?? get_class($event->job),
                 'exception' => $event->exception->getMessage(),
-            ];
-
-            $this->laritor->addEvent($data);
+            ]);
         }
     }
 
