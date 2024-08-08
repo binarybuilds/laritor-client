@@ -7,7 +7,6 @@ use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Console\Scheduling\CallbackEvent;
-use Illuminate\Http\Client\Events\ResponseReceived;
 use Laritor\LaravelClient\Laritor;
 
 class ScheduledCommandRecorder extends Recorder

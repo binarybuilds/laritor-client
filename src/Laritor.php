@@ -7,13 +7,6 @@ use Illuminate\Support\Str;
 
 class Laritor
 {
-
-    /**
-     * Callbacks used by recorders to prepare the data before sending to laritor
-     * @var array
-     */
-    private $prepareCallBacks = [];
-
     /**
      * @var array
      */
@@ -91,7 +84,6 @@ class Laritor
     public function reset()
     {
         $this->events = [];
-        $this->prepareCallBacks = [];
     }
 
     /**
@@ -112,6 +104,7 @@ class Laritor
      */
     public function callApi()
     {
+        //todo: implement api
         file_put_contents(app_path('/'.Str::random(6).'.json'), $this->toJson() );
         dd(0);
     }
