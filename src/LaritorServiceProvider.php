@@ -2,32 +2,11 @@
 
 namespace Laritor\LaravelClient;
 
-use Illuminate\Cache\Events\CacheHit;
-use Illuminate\Cache\Events\CacheMissed;
-use Illuminate\Console\Events\CommandFinished;
-use Illuminate\Console\Events\CommandStarting;
-use Illuminate\Console\Events\ScheduledTaskFinished;
-use Illuminate\Console\Events\ScheduledTaskStarting;
-use Illuminate\Database\Events\QueryExecuted;
-use Illuminate\Foundation\Http\Events\RequestHandled;
-use Illuminate\Http\Client\Events\ConnectionFailed;
-use Illuminate\Http\Client\Events\RequestSending;
-use Illuminate\Http\Client\Events\ResponseReceived;
-use Illuminate\Log\Events\MessageLogged;
-use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Laritor\LaravelClient\Commands\DiscoverCommand;
 use Laritor\LaravelClient\Commands\HealthCheckMakeCommand;
-use Laritor\LaravelClient\Recorders\CacheRecorder;
-use Laritor\LaravelClient\Recorders\ExceptionRecorder;
-use Laritor\LaravelClient\Recorders\OutboundRequestRecorder;
-use Laritor\LaravelClient\Recorders\QueryRecorder;
-use Laritor\LaravelClient\Recorders\QueuedJobRecorder;
-use Laritor\LaravelClient\Recorders\RequestRecorder;
-use Laritor\LaravelClient\Recorders\ScheduledCommandRecorder;
-use Laritor\LaravelClient\Recorders\SchedulerRecorder;
 
 class LaritorServiceProvider extends ServiceProvider
 {
@@ -79,28 +58,9 @@ class LaritorServiceProvider extends ServiceProvider
      */
     public function registerRecorders()
     {
-        $recorders = [
-            MessageLogged::class => ExceptionRecorder::class,
-            RequestHandled::class => RequestRecorder::class, 
-            QueryExecuted::class => QueryRecorder::class,
-            CommandStarting::class => SchedulerRecorder::class,
-            CommandFinished::class => SchedulerRecorder::class,
-            ScheduledTaskStarting::class => ScheduledCommandRecorder::class,
-            ScheduledTaskFinished::class => ScheduledCommandRecorder::class,
-            JobFailed::class => QueuedJobRecorder::class,
-            CacheHit::class => CacheRecorder::class,
-            CacheMissed::class => CacheRecorder::class,
-            RequestSending::class => OutboundRequestRecorder::class,
-            ConnectionFailed::class => OutboundRequestRecorder::class,
-            ResponseReceived::class => OutboundRequestRecorder::class,
-        ];
-
-        foreach ($recorders as $event => $recorder ) {
-            if (in_array($recorder, (array)config('laritor.recorders'))) {
-                Event::listen( $event, [$recorder, 'handle'] );
-            }
+        foreach ((array)config('laritor.recorders') as $recorder) {
+            $recorder::registerRecorder();
         }
-
 
         if (class_exists(\Laravel\Octane\Events\RequestReceived::class)) {
             Event::listen( [

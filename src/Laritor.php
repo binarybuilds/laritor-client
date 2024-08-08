@@ -101,10 +101,6 @@ class Laritor
     {
         if ($this->shouldSendEvents()) {
 
-            foreach ($this->prepareCallBacks as $callBack) {
-                $callBack($this);
-            }
-
             $this->callApi();
         }
 
@@ -125,7 +121,22 @@ class Laritor
      */
     public function shouldSendEvents()
     {
+        $report = false;
+        foreach ((array)config('laritor.recorders') as $recorder) {
+
+            if ( $recorder::shouldReportEvents($this) ) {
+                $report = true;
+            }
+        }
+
+        //todo: remove after testing
         return true;
+
+        if (!$report) {
+            return false;
+        }
+
+
         if (app()->runningInConsole() || ! $this->isRateLimiterEnabled() ) {
             return true;
         }
@@ -142,16 +153,5 @@ class Laritor
     public function isRateLimiterEnabled()
     {
         return config('laritor.use_rate_limiter');
-    }
-
-    /**
-     * @param callable $callback
-     * @return void
-     */
-    public function registerPrepareCallBack(callable $callback)
-    {
-        if ( !in_array($callback, $this->prepareCallBacks)) {
-            $this->prepareCallBacks[] = $callback;
-        }
     }
 }

@@ -2,10 +2,16 @@
 
 namespace Laritor\LaravelClient\Recorders;
 
+use Illuminate\Support\Facades\Event;
 use Laritor\LaravelClient\Laritor;
 
 class Recorder
 {
+    /**
+     * @var array
+     */
+    public static $events = [];
+
     /**
      * @var Laritor
      */
@@ -34,5 +40,24 @@ class Recorder
 
     public function trackEvent( $event )
     {
+    }
+
+    /**
+     * @param Laritor $laritor
+     * @return false
+     */
+    public static function shouldReportEvents(Laritor $laritor)
+    {
+        return false;
+    }
+
+    /**
+     * @return void
+     */
+    public static function registerRecorder()
+    {
+        foreach (static::$events as $event) {
+            Event::listen( $event, [static::class, 'handle'] );
+        }
     }
 }

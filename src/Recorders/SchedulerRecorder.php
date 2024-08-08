@@ -4,9 +4,15 @@ namespace Laritor\LaravelClient\Recorders;
 
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Console\Events\CommandStarting;
+use Laritor\LaravelClient\Laritor;
 
 class SchedulerRecorder extends Recorder
 {
+    public static $events = [
+        CommandStarting::class,
+        CommandFinished::class
+    ];
+
     /**
      * @param $event
      * @return void
@@ -59,5 +65,14 @@ class SchedulerRecorder extends Recorder
     private function isSchedulerCommand($event)
     {
         return $event->command === 'schedule:run' || $event->command === 'schedule:finish';
+    }
+
+    /**
+     * @param Laritor $laritor
+     * @return bool
+     */
+    public static function shouldReportEvents( Laritor $laritor )
+    {
+        return true;
     }
 }

@@ -5,9 +5,16 @@ namespace Laritor\LaravelClient\Recorders;
 use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Support\Str;
 use Laritor\LaravelClient\Helpers\FileHelper;
+use Laritor\LaravelClient\Laritor;
 
 class ExceptionRecorder extends Recorder
 {
+    /**
+     * @var string[]
+     */
+    public static $events = [
+        MessageLogged::class
+    ];
 
     /**
      * Handle the event.
@@ -70,5 +77,10 @@ class ExceptionRecorder extends Recorder
             ->before($before)
             ->after($after)
             ->getContents();
+    }
+
+    public static function shouldReportEvents( Laritor $laritor )
+    {
+        return true;
     }
 }

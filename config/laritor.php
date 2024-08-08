@@ -81,7 +81,9 @@ return [
         'ignore' => [
             'nova/*',
             'nova-api/*',
-            'telescope/*'
+            'telescope/*'.
+            '_debugbar*',
+            '__clockwork*',
         ]
     ],
 

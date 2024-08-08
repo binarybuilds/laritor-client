@@ -11,23 +11,18 @@ use Laritor\LaravelClient\Laritor;
 
 class OutboundRequestRecorder extends Recorder
 {
+    /**
+     * @var string[]
+     */
+    public static $events = [
+        RequestSending::class,
+        ConnectionFailed::class,
+        ResponseReceived::class
+    ];
+
     public function __construct( Laritor $laritor )
     {
         parent::__construct( $laritor );
-        $laritor->registerPrepareCallBack([OutboundRequestRecorder::class, 'removeInvalidEvents']);
-    }
-
-    /**
-     * @param Laritor $laritor
-     * @return void
-     */
-    public static function removeInvalidEvents(Laritor $laritor)
-    {
-        $laritor->addEvents('outbound_requests', collect( $laritor->getEvents('outbound_requests'))
-            ->where('status', '!=', 'sent')
-            ->values()
-            ->toArray()
-        );
     }
 
     /**
@@ -51,12 +46,14 @@ class OutboundRequestRecorder extends Recorder
      */
     public function sending(RequestSending $event)
     {
-        $this->laritor->pushEvent('outbound_requests', [
-            'started_at' => now(),
-            'url' => $event->request->url(),
-            'method' => $event->request->method(),
-            'status' => 'sent'
-        ]);
+        if ($this->shouldRecordOutboundRequest($event->request->url())) {
+            $this->laritor->pushEvent('outbound_requests', [
+                'started_at' => now(),
+                'url' => $event->request->url(),
+                'method' => $event->request->method(),
+                'status' => 'sent'
+            ]);
+        }
     }
 
     /**
@@ -84,18 +81,16 @@ class OutboundRequestRecorder extends Recorder
 
             if ( $request['status'] === 'sent' && $request['url'] === $outboundRequestEvent->request->url() ) {
                 $duration = now()->diffInMilliseconds($request['started_at']);
-
-                if ($this->shouldRecordOutboundRequest($outboundRequestEvent->request->url(), $duration)) {
-                    return [
-                        'started_at' => $request['started_at']->toDateTimeString(),
-                        'completed_at' => now()->toDateTimeString(),
-                        'duration' => $duration,
-                        'code' => $outboundRequestEvent instanceof ResponseReceived ? $outboundRequestEvent->response->status() : 0,
-                        'url' => $outboundRequestEvent->request->url(),
-                        'method' => $outboundRequestEvent->request->method(),
-                        'status' => 'completed'
-                    ];
-                }
+                return [
+                    'started_at' => $request['started_at']->toDateTimeString(),
+                    'completed_at' => now()->toDateTimeString(),
+                    'duration' => $duration,
+                    'code' => $outboundRequestEvent instanceof ResponseReceived ? $outboundRequestEvent->response->status() : 0,
+                    'url' => $outboundRequestEvent->request->url(),
+                    'method' => $outboundRequestEvent->request->method(),
+                    'status' => 'completed',
+                    'slow' => $duration >= config('laritor.outbound_requests.slow')
+                ];
             }
 
             return $request;
@@ -106,16 +101,11 @@ class OutboundRequestRecorder extends Recorder
 
     /**
      * @param $request
-     * @param $duration
      * @return bool
      */
-    public function shouldRecordOutboundRequest($request, $duration)
+    public function shouldRecordOutboundRequest($request)
     {
         if (app()->runningInConsole() &&  config('laritor.outbound_requests.ignore_console_requests') ) {
-            return false;
-        }
-
-        if ( $duration < config('laritor.outbound_requests.slow')) {
             return false;
         }
 
@@ -126,5 +116,12 @@ class OutboundRequestRecorder extends Recorder
         }
 
         return true;
+    }
+
+    public static function shouldReportEvents( Laritor $laritor )
+    {
+        return collect( $laritor->getEvents('outbound_requests'))
+            ->where('slow', true)
+            ->isNotEmpty();
     }
 }

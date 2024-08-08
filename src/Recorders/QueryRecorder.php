@@ -10,10 +10,13 @@ class QueryRecorder extends Recorder
 {
     use FetchesStackTrace;
 
+    public static $events = [
+        QueryExecuted::class
+    ];
+
     public function __construct( Laritor $laritor )
     {
         parent::__construct( $laritor );
-        $laritor->registerPrepareCallBack([QueryRecorder::class, 'detectQueryIssues']);
     }
 
     /**
@@ -135,25 +138,26 @@ class QueryRecorder extends Recorder
         return "'".$binding."'";
     }
 
-    /**
-     * @param Laritor $laritor
-     * @return void
-     */
-    public static function detectQueryIssues(Laritor $laritor)
+    public static function shouldReportEvents( Laritor $laritor )
     {
+
+        $report = false;
         $queries = collect($laritor->getEvents('queries'));
 
-        $queries = $queries->map(function ($query) use ($queries){
+        $queries = $queries->map(function ($query) use ($queries, &$report){
             if (in_array($query['query_bindings'], $queries->duplicates('query_bindings')->toArray()) ) {
                 $query['issues'][] = 'duplicate';
+                $report = true;
             }
 
             if (in_array($query['location'], $queries->duplicates('location')->toArray()) ) {
                 $query['issues'][] = 'n-plus-1';
+                $report = true;
             }
 
             if ( $query['time'] >= config('laritor.query.slow') ) {
                 $query['issues'][] = 'slow';
+                $report = true;
             }
 
             unset($query['query_bindings']);
@@ -162,10 +166,8 @@ class QueryRecorder extends Recorder
             return $query;
         });
 
-        $queries = $queries->filter(function ($query){
-            return ! empty($query['issues']);
-        });
-
         $laritor->addEvents('queries', $queries->values()->toArray() );
+
+        return $report;
     }
 }
