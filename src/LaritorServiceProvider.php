@@ -72,6 +72,10 @@ class LaritorServiceProvider extends ServiceProvider
             } );
         }
 
+        Event::listen( [ \Illuminate\Queue\Events\JobFailed::class ], function (){
+            app(Laritor::class)->sendEvents();
+        });
+
         $this->app->terminating(function (){
             app(Laritor::class)->sendEvents();
         });

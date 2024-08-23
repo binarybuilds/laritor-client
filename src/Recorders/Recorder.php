@@ -44,11 +44,11 @@ class Recorder
 
     /**
      * @param Laritor $laritor
-     * @return false
+     * @return bool
      */
     public static function shouldReportEvents(Laritor $laritor)
     {
-        return false;
+        return true;
     }
 
     /**

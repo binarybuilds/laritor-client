@@ -2,19 +2,21 @@
 
 namespace Laritor\LaravelClient\Checks;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
 class MailHealthCheck extends BaseHealthCheck
 {
     /**
-     * @return bool
+     * @param Request $request
+     * @return true
      */
-    public function check()
+    public function check(Request $request)
     {
-        Mail::send([], [], function ($message) {
-            $message->to('test@test.com')
-                ->subject('A test email')
-                ->setBody('This is the email content.');
+        Mail::send([], [], function ($message) use ($request) {
+            $message->to($request->input('recipient'))
+                ->subject($request->input('subject'))
+                ->setBody($request->input('body'));
         });
 
         return true;

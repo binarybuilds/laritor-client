@@ -2,14 +2,16 @@
 
 namespace Laritor\LaravelClient\Checks;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class DatabaseHealthCheck extends BaseHealthCheck
 {
     /**
-     * @return bool
+     * @param Request $request
+     * @return true
      */
-    public function check()
+    public function check(Request $request)
     {
         DB::select('SELECT 1');
 

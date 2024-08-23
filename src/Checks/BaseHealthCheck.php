@@ -14,7 +14,7 @@ class BaseHealthCheck
     {
         if (config('laritor.keys.backend') && $request->input('token') === config('laritor.keys.backend')) {
             try{
-                $isSuccess = $this->check();
+                $isSuccess = $this->check($request);
 
                 if ($isSuccess) {
                     return response()->json(['message' => $this->successMessage() ]);
@@ -35,7 +35,7 @@ class BaseHealthCheck
     /**
      * @return bool
      */
-    public function check()
+    public function check(Request $request)
     {
         return false;
     }

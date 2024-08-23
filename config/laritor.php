@@ -22,14 +22,15 @@ return [
      * will send events to laritor.
      */
     'recorders' => [
-//      \Laritor\LaravelClient\Recorders\CacheRecorder::class,
-      \Laritor\LaravelClient\Recorders\ExceptionRecorder::class,
-      \Laritor\LaravelClient\Recorders\OutboundRequestRecorder::class,
-      \Laritor\LaravelClient\Recorders\QueryRecorder::class,
-      \Laritor\LaravelClient\Recorders\QueuedJobRecorder::class,
-      \Laritor\LaravelClient\Recorders\RequestRecorder::class,
-      \Laritor\LaravelClient\Recorders\ScheduledCommandRecorder::class,
-      \Laritor\LaravelClient\Recorders\SchedulerRecorder::class
+        \Laritor\LaravelClient\Recorders\CacheRecorder::class,
+        \Laritor\LaravelClient\Recorders\ExceptionRecorder::class,
+        \Laritor\LaravelClient\Recorders\OutboundRequestRecorder::class,
+        \Laritor\LaravelClient\Recorders\QueryRecorder::class,
+        \Laritor\LaravelClient\Recorders\QueuedJobRecorder::class,
+        \Laritor\LaravelClient\Recorders\RequestRecorder::class,
+        \Laritor\LaravelClient\Recorders\CommandRecorder::class,
+        \Laritor\LaravelClient\Recorders\ScheduledCommandRecorder::class,
+        \Laritor\LaravelClient\Recorders\SchedulerRecorder::class
     ],
 
     /**
@@ -64,7 +65,7 @@ return [
         'read' => true,
 
         /**
-         * Most of the applications primary focus on read query performance. If you wish to also monitor the performance
+         * Most of the applications primarily focus on read query performance. If you wish to also monitor the performance
          * of write(INSERT, UPDATE, DELETE) queries, set the below value to true.
          */
         'write' => false,
@@ -74,6 +75,12 @@ return [
          * wish to monitor the queries executed in the console as well, set the below value to true.
          */
         'monitor_console_queries' => false,
+
+        /**
+         * To protect sensitive information, We only record SQL queries but not their bindings or data. If you wish to
+         * send the bindings along with the query, Set the below value to true.
+         */
+        'record_bindings' => false,
     ],
 
     'requests' => [
@@ -84,6 +91,7 @@ return [
             'telescope/*'.
             '_debugbar*',
             '__clockwork*',
+            '_ignition/*'
         ]
     ],
 

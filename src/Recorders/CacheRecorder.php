@@ -3,16 +3,26 @@
 namespace Laritor\LaravelClient\Recorders;
 
 use Illuminate\Cache\Events\CacheHit;
+use Illuminate\Cache\Events\CacheMissed;
 
 class CacheRecorder extends Recorder
 {
+    public static $events = [
+        CacheHit::class,
+        CacheMissed::class,
+    ];
+
     /**
      * @param $event
      * @return void
      */
     public function trackEvent($event)
     {
-        $this->laritor->pushEvent('cache',[
+        if ($event->key === 'laritor_check') {
+            return;
+        }
+
+        $this->laritor->pushEvent('caches', [
             'key' => $event->key,
             'is_hit' => $event instanceof CacheHit
         ]);

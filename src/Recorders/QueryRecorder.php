@@ -14,11 +14,6 @@ class QueryRecorder extends Recorder
         QueryExecuted::class
     ];
 
-    public function __construct( Laritor $laritor )
-    {
-        parent::__construct( $laritor );
-    }
-
     /**
      * @param QueryExecuted $event
      * @return void
@@ -57,7 +52,7 @@ class QueryRecorder extends Recorder
             return false;
         }
 
-        if ( ! $this->isReadQuery($query) && ! config('laritor.query.write')) {
+        if ( $this->isWriteQuery($query) && ! config('laritor.query.write')) {
             return false;
         }
 
@@ -71,6 +66,11 @@ class QueryRecorder extends Recorder
     public function isReadQuery($query)
     {
         return Str::startsWith(strtoupper(trim($query)), ['SELECT', 'SHOW', 'DESCRIBE', 'EXPLAIN'] );
+    }
+
+    public function isWriteQuery($query)
+    {
+        return ! $this->isReadQuery($query);
     }
 
     /**
@@ -140,24 +140,23 @@ class QueryRecorder extends Recorder
 
     public static function shouldReportEvents( Laritor $laritor )
     {
-
-        $report = false;
         $queries = collect($laritor->getEvents('queries'));
 
-        $queries = $queries->map(function ($query) use ($queries, &$report){
+        $queries = $queries->map(function ($query) use ($queries){
             if (in_array($query['query_bindings'], $queries->duplicates('query_bindings')->toArray()) ) {
                 $query['issues'][] = 'duplicate';
-                $report = true;
             }
 
             if (in_array($query['location'], $queries->duplicates('location')->toArray()) ) {
                 $query['issues'][] = 'n-plus-1';
-                $report = true;
             }
 
             if ( $query['time'] >= config('laritor.query.slow') ) {
                 $query['issues'][] = 'slow';
-                $report = true;
+            }
+
+            if (config('laritor.query.record_bindings') && Str::length($query['query_bindings']) <= 1000 ) {
+                $query['query'] = $query['query_bindings'];
             }
 
             unset($query['query_bindings']);
@@ -168,6 +167,6 @@ class QueryRecorder extends Recorder
 
         $laritor->addEvents('queries', $queries->values()->toArray() );
 
-        return $report;
+        return true;
     }
 }

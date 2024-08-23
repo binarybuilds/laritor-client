@@ -7,7 +7,6 @@ use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Console\Scheduling\CallbackEvent;
-use Laritor\LaravelClient\Laritor;
 
 class ScheduledCommandRecorder extends Recorder
 {
@@ -66,21 +65,27 @@ class ScheduledCommandRecorder extends Recorder
     }
 
     /**
-     * Handle the event.
-     *
-     * @param  object  $event
+     * @param ScheduledTaskSkipped $event
      * @return void
      */
     public function skip(ScheduledTaskSkipped $event)
     {
         $event = $event->task;
-        $this->completeScheduledTask($event, 'skipped');
+
+        $this->laritor->pushEvent('scheduled_commands', [
+            'started_at' => now()->toDateTimeString(),
+            'completed_at' => now()->toDateTimeString(),
+            'duration' => 0,
+            'command' => $event instanceof CallbackEvent ? 'Closure' : $event->command,
+            'expression' => $event->expression,
+            'timezone' => $event->timezone,
+            'user' => $event->user,
+            'status' => 'skipped'
+        ]);
     }
 
     /**
-     * Handle the event.
-     *
-     * @param  object  $event
+     * @param ScheduledTaskFailed $event
      * @return void
      */
     public function fail(ScheduledTaskFailed $event)
@@ -98,7 +103,7 @@ class ScheduledCommandRecorder extends Recorder
                     $command['command'] === ( $event instanceof CallbackEvent ? 'Closure' : $event->command)
                 ) {
                     $command['status'] = $status;
-                    $command['duration'] = now()->diffInMilliseconds($command['started_at']);
+                    $command['duration'] = now()->diffInSeconds($command['started_at']);
                     $command['completed_at'] = now()->toDateTimeString();
                     $command['started_at'] = $command['started_at']->toDateTimeString();
                 }
@@ -107,14 +112,5 @@ class ScheduledCommandRecorder extends Recorder
             })->values()->toArray();
 
         $this->laritor->addEvents('scheduled_commands', $scheduledTasks);
-    }
-
-    /**
-     * @param Laritor $laritor
-     * @return bool
-     */
-    public static function shouldReportEvents( Laritor $laritor )
-    {
-        return true;
     }
 }

@@ -7,6 +7,7 @@ use Laritor\LaravelClient\Checks\BaseHealthCheck;
 use Laritor\LaravelClient\Checks\CacheHealthCheck;
 use Laritor\LaravelClient\Checks\DatabaseHealthCheck;
 use Laritor\LaravelClient\Checks\MailHealthCheck;
+use Laritor\LaravelClient\Checks\QueueWorkerHealthCheck;
 use Laritor\LaravelClient\Checks\SessionHealthCheck;
 use Laritor\LaravelClient\Checks\StorageHealthCheck;
 
@@ -26,6 +27,7 @@ class HealthCheckController
             case 'mail' : $health_check = app( MailHealthCheck::class );break;
             case 'session' : $health_check = app( SessionHealthCheck::class );break;
             case 'storage' : $health_check = app( StorageHealthCheck::class );break;
+            case 'queue' : $health_check = app( QueueWorkerHealthCheck::class );break;
             default: {
 
                 $health_check_class = app()->getNamespace()."Laritor\\$check_type";

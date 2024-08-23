@@ -34,6 +34,7 @@ class RequestRecorder extends Recorder
             'request' => [
                 'method' => $request->method(),
                 'url' => $request->fullUrl(),
+                'headers' => $request->headers
             ],
             'response' => [
                 'status_code' => $event->response->status(),
@@ -41,6 +42,7 @@ class RequestRecorder extends Recorder
                 'memory' => round(memory_get_peak_usage(true) / 1024 / 1024, 1),
             ],
             'user' => [
+                'authenticated' => $request->user(),
                 'ip' => $request->getClientIp(),
                 'user_agent' => $request->userAgent(),
             ],
@@ -60,16 +62,5 @@ class RequestRecorder extends Recorder
         }
 
         return true;
-    }
-
-    /**
-     * @param Laritor $laritor
-     * @return bool
-     */
-    public static function shouldReportEvents( Laritor $laritor )
-    {
-        return collect( $laritor->getEvents('requests'))
-            ->where('slow', true)
-            ->isNotEmpty();
     }
 }

@@ -2,15 +2,18 @@
 
 namespace Laritor\LaravelClient\Checks;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class CacheHealthCheck extends BaseHealthCheck
 {
     /**
-     * @return bool
+     * @param Request $request
+     * @return true
      */
-    public function check()
+    public function check(Request $request)
     {
+        Cache::put('laritor_check', 'test');
         Cache::get('laritor_check');
 
         return true;

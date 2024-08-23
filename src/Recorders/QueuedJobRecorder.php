@@ -3,14 +3,11 @@
 namespace Laritor\LaravelClient\Recorders;
 
 use Illuminate\Queue\Events\JobFailed;
-use Illuminate\Queue\Events\JobProcessed;
-use Laritor\LaravelClient\Laritor;
 
 class QueuedJobRecorder extends Recorder
 {
     public static $events = [
-        JobFailed::class,
-        JobProcessed::class
+        JobFailed::class
     ];
 
     /**
@@ -23,12 +20,11 @@ class QueuedJobRecorder extends Recorder
             return;
         }
 
-        $this->laritor->pushEvent('jobs', [
+        $this->laritor->pushEvent('failed_jobs', [
             'connection' => $event->connectionName,
             'queue' => $event->job->queue ?? config("queue.connections.{$event->connectionName}.queue", 'default'),
             'job' => $event->job->payload()['displayName'] ?? get_class($event->job),
-            'exception' => $event instanceof JobFailed ? $event->exception->getMessage() : '',
-            'status' =>  $event instanceof JobFailed ? 'failed' : 'completed'
+            'exception' => $event->exception->getMessage()
         ]);
     }
 
@@ -42,16 +38,5 @@ class QueuedJobRecorder extends Recorder
         }
 
         return true;
-    }
-
-    /**
-     * @param Laritor $laritor
-     * @return bool
-     */
-    public static function shouldReportEvents( Laritor $laritor )
-    {
-        return collect( $laritor->getEvents('jobs'))
-            ->where('status', 'failed')
-            ->isNotEmpty();
     }
 }

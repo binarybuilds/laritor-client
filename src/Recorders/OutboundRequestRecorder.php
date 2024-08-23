@@ -6,7 +6,6 @@ use Illuminate\Http\Client\Events\ConnectionFailed;
 use Illuminate\Http\Client\Events\RequestSending;
 use Illuminate\Http\Client\Events\ResponseReceived;
 use Illuminate\Support\Str;
-use Laritor\LaravelClient\Laritor;
 
 
 class OutboundRequestRecorder extends Recorder
@@ -19,11 +18,6 @@ class OutboundRequestRecorder extends Recorder
         ConnectionFailed::class,
         ResponseReceived::class
     ];
-
-    public function __construct( Laritor $laritor )
-    {
-        parent::__construct( $laritor );
-    }
 
     /**
      * @param $event
@@ -116,12 +110,5 @@ class OutboundRequestRecorder extends Recorder
         }
 
         return true;
-    }
-
-    public static function shouldReportEvents( Laritor $laritor )
-    {
-        return collect( $laritor->getEvents('outbound_requests'))
-            ->where('slow', true)
-            ->isNotEmpty();
     }
 }
