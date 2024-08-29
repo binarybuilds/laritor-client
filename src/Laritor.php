@@ -52,7 +52,7 @@ class Laritor
         $app = app();
 
         return [
-            'app_key' => 'jhfdvhvhsdkdf',
+            'app_key' => config('laritor.keys.backend', 'jhfdvhvhsdkdf'),
             'app' => url('/'),
             'version' => $app->version(),
             'event_at' => now(),
@@ -109,7 +109,6 @@ class Laritor
     {
         //todo: implement api
         $response = Http::post('http:/159.223.153.239/api/events', $this->toArray());
-        file_put_contents(app_path('/'.Str::random(6).'.json'), $this->toJson() );
     }
 
     /**
