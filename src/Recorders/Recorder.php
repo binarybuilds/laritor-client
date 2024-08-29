@@ -34,6 +34,7 @@ class Recorder
         try{
             $this->trackEvent($event);
         } catch (\Throwable $exception) {
+            report($exception);
 
         }
     }
