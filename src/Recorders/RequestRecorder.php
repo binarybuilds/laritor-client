@@ -47,7 +47,7 @@ class RequestRecorder extends Recorder
                 'user_agent' => $request->userAgent(),
             ],
             'route' => [
-                'controller' => $request->route() ? get_class(optional($request->route())->getController()) : 'callback',
+                'controller' => optional($request->route())->getController() ? get_class(optional($request->route())->getController()) : 'callback',
                 'method' => optional($request->route())->getActionMethod(),
             ],
         ]);
