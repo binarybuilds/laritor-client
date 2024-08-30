@@ -7,6 +7,8 @@ use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Console\Scheduling\CallbackEvent;
+use Illuminate\Support\Str;
+use Laritor\LaravelClient\Laritor;
 
 class ScheduledCommandRecorder extends Recorder
 {
@@ -112,5 +114,14 @@ class ScheduledCommandRecorder extends Recorder
             })->values()->toArray();
 
         $this->laritor->addEvents('scheduled_commands', $scheduledTasks);
+    }
+
+    public static function shouldReportEvents( Laritor $laritor )
+    {
+        if (!empty($laritor->getEvents('scheduled_commands'))) {
+            $laritor->addEvents('commands', [] );
+        }
+
+        return true;
     }
 }

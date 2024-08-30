@@ -18,6 +18,10 @@ class CommandRecorder extends Recorder
      */
     public function trackEvent($event)
     {
+        if ($this->ignore($event->command)) {
+            return;
+        }
+
         if ($event instanceof CommandStarting ) {
             $this->start($event);
         } elseif ($event instanceof CommandFinished ) {
@@ -31,9 +35,8 @@ class CommandRecorder extends Recorder
     public function start(CommandStarting $event)
     {
         $this->laritor->pushEvent('commands',  [
-            'command' => $event->command .' '
-                . implode(' ', $event->input->getArguments()).' '
-                .implode(' ',  $event->input->getOptions()),
+            'command' => trim(implode(' ', $event->input->getArguments()).' '
+                .implode(' ',  $event->input->getOptions())),
             'started_at' => now(),
             'completed_at' => null
         ]);
@@ -48,12 +51,25 @@ class CommandRecorder extends Recorder
         $command = isset($command[0]) ? $command[0] : null;
 
         if ($command) {
-            $command['duration'] = now()->diffInSeconds($command['started_at']);
+            $command['duration'] = round($command['started_at']->diffInSeconds());
             $command['completed_at'] = now()->toDateTimeString();
             $command['started_at'] = $command['started_at']->toDateTimeString();
             $command['code'] = $event->exitCode;
 
             $this->laritor->addEvents('commands', [$command]);
         }
+    }
+
+    public function ignore($command) : bool
+    {
+        return in_array($command, [
+           'schedule:run',
+           'schedule:finish',
+           'package:discover',
+           'event:cache',
+           'view:cache',
+           'config:cache',
+           ''
+        ]);
     }
 }
