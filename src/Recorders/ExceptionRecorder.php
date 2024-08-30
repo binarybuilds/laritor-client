@@ -2,46 +2,40 @@
 
 namespace Laritor\LaravelClient\Recorders;
 
-use Illuminate\Log\Events\MessageLogged;
+use Illuminate\Foundation\Exceptions\Handler;
 use Illuminate\Support\Str;
 use Laritor\LaravelClient\Helpers\FileHelper;
 
 class ExceptionRecorder extends Recorder
 {
     /**
-     * @var string[]
-     */
-    public static $events = [
-        MessageLogged::class
-    ];
-
-    /**
      * Handle the event.
      *
-     * @param  MessageLogged  $event
+     * @param  \Throwable $event
      * @return void
      */
     public function trackEvent($event)
     {
-        if (!$this->shouldReportException($event->context['exception'])) {
+        $throwable = $event;
+        if (!$this->shouldReportException(get_class($throwable))) {
             return;
         }
 
         $data = [
-            'message' => $event->message,
-            'level' => $event->level,
-            'exception_class' => get_class($event->context['exception']),
+            'message' => $throwable->message,
+            'level' => 'error',
+            'exception_class' => get_class($throwable),
             'stacktrace' => [],
         ];
 
         $data['stacktrace'][] = [
-            'file' => Str::replaceFirst(base_path().'/', '', $event->context['exception']->getFile()),
-            'line' => $event->context['exception']->getLine(),
-            'file_contents' => $this->getFileContents($event->context['exception']->getFile(), $event->context['exception']->getLine())
+            'file' => Str::replaceFirst(base_path().'/', '', $throwable->getFile()),
+            'line' => $throwable->getLine(),
+            'file_contents' => $this->getFileContents($throwable->getFile(), $throwable->getLine())
         ];
 
         $iteration = 1;
-        foreach ($event->context['exception']->getTrace() as $trace) {
+        foreach ($throwable->getTrace() as $trace) {
             $data['stacktrace'][] = [
                 'file' => $trace['file'] ? Str::replaceFirst(base_path().'/', '', $trace['file']) : '',
                 'line' => $trace['line'] ?? '',
@@ -76,5 +70,12 @@ class ExceptionRecorder extends Recorder
             ->before($before)
             ->after($after)
             ->getContents();
+    }
+
+    public static function registerRecorder()
+    {
+        app(Handler::class)->reportable(function ($exception){
+            $this->handle($exception);
+        });
     }
 }
