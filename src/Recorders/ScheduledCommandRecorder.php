@@ -115,13 +115,4 @@ class ScheduledCommandRecorder extends Recorder
 
         $this->laritor->addEvents('scheduled_commands', $scheduledTasks);
     }
-
-    public static function shouldReportEvents( Laritor $laritor )
-    {
-        if (!empty($laritor->getEvents('scheduled_commands'))) {
-            $laritor->addEvents('commands', [] );
-        }
-
-        return true;
-    }
 }

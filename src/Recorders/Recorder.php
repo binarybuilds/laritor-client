@@ -44,15 +44,6 @@ class Recorder
     }
 
     /**
-     * @param Laritor $laritor
-     * @return bool
-     */
-    public static function shouldReportEvents(Laritor $laritor)
-    {
-        return true;
-    }
-
-    /**
      * @return void
      */
     public static function registerRecorder()

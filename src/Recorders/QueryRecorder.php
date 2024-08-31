@@ -29,14 +29,12 @@ class QueryRecorder extends Recorder
 
             $query = [
                 'query' => $event->sql,
-                'query_bindings' => $this->replaceBindings($event),
+                'query_bindings' => config('laritor.query.record_bindings') ? $this->replaceBindings($event) : '',
                 'time' => $time,
                 'file' => $caller['file'] ? Str::replaceFirst(base_path().'/', '', $caller['file']) : '',
                 'line' => $caller['line'],
-                'issues' => []
+                'slow' => $time >= config('laritor.query.slow')
             ];
-
-            $query['location'] = $query['line'] . '-'.$query['file'];
 
             $this->laritor->pushEvent('queries', $query);
         }
@@ -136,37 +134,5 @@ class QueryRecorder extends Recorder
         ]);
 
         return "'".$binding."'";
-    }
-
-    public static function shouldReportEvents( Laritor $laritor )
-    {
-        $queries = collect($laritor->getEvents('queries'));
-
-        $queries = $queries->map(function ($query) use ($queries){
-            if (in_array($query['query_bindings'], $queries->duplicates('query_bindings')->toArray()) ) {
-                $query['issues'][] = 'duplicate';
-            }
-
-            if (in_array($query['location'], $queries->duplicates('location')->toArray()) ) {
-                $query['issues'][] = 'n-plus-1';
-            }
-
-            if ( $query['time'] >= config('laritor.query.slow') ) {
-                $query['issues'][] = 'slow';
-            }
-
-            if (config('laritor.query.record_bindings') && Str::length($query['query_bindings']) <= 1000 ) {
-                $query['query'] = $query['query_bindings'];
-            }
-
-            unset($query['query_bindings']);
-            unset($query['location']);
-
-            return $query;
-        });
-
-        $laritor->addEvents('queries', $queries->values()->toArray() );
-
-        return true;
     }
 }

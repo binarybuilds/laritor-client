@@ -116,21 +116,8 @@ class Laritor
      */
     public function shouldSendEvents()
     {
-        $report = false;
-        foreach ((array)config('laritor.recorders') as $recorder) {
-
-            if ( $recorder::shouldReportEvents($this) ) {
-                $report = true;
-            }
-        }
-
         //todo: remove after testing
         return true;
-
-        if (!$report) {
-            return false;
-        }
-
 
         if (app()->runningInConsole() || ! $this->isRateLimiterEnabled() ) {
             return true;
