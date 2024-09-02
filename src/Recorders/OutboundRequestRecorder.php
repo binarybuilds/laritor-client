@@ -74,7 +74,7 @@ class OutboundRequestRecorder extends Recorder
             ->map(function ($request) use ($outboundRequestEvent){
 
             if ( $request['status'] === 'sent' && $request['url'] === $outboundRequestEvent->request->url() ) {
-                $duration = now()->diffInMilliseconds($request['started_at']);
+                $duration = $request['started_at']->diffInMilliseconds();
                 return [
                     'started_at' => $request['started_at']->toDateTimeString(),
                     'completed_at' => now()->toDateTimeString(),

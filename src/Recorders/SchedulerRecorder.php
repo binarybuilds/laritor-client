@@ -48,7 +48,7 @@ class SchedulerRecorder extends Recorder
         $scheduler = isset($scheduler[0]) ? $scheduler[0] : null;
 
         if ($scheduler) {
-            $scheduler['duration'] = now()->diffInMilliseconds($scheduler['started_at']);
+            $scheduler['duration'] = $scheduler['started_at']->diffInMilliseconds();
             $scheduler['completed_at'] = now()->toDateTimeString();
             $scheduler['started_at'] = $scheduler['started_at']->toDateTimeString();
         }
