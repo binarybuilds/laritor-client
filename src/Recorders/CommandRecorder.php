@@ -63,13 +63,15 @@ class CommandRecorder extends Recorder
     public function ignore($command) : bool
     {
         return in_array($command, [
-           'schedule:run',
-           'schedule:finish',
-           'package:discover',
-           'event:cache',
-           'view:cache',
-           'config:cache',
-           ''
+            'schedule:run',
+            'schedule:finish',
+            'package:discover',
+            'event:cache',
+            'view:cache',
+            'config:cache',
+            'package:discover',
+            'queue:work',
+            'queue:listen'
         ]);
     }
 }

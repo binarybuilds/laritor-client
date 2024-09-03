@@ -51,9 +51,8 @@ class SchedulerRecorder extends Recorder
             $scheduler['duration'] = $scheduler['started_at']->diffInMilliseconds();
             $scheduler['completed_at'] = now()->toDateTimeString();
             $scheduler['started_at'] = $scheduler['started_at']->toDateTimeString();
+            $this->laritor->addEvents('scheduler', [$scheduler]);
         }
-
-        $this->laritor->addEvents('scheduler', [$scheduler]);
     }
 
     /**
