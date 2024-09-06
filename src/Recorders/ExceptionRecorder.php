@@ -2,6 +2,7 @@
 
 namespace Laritor\LaravelClient\Recorders;
 
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Foundation\Exceptions\Handler;
 use Illuminate\Support\Str;
 use Laritor\LaravelClient\Helpers\FileHelper;
@@ -22,14 +23,14 @@ class ExceptionRecorder extends Recorder
         }
 
         $data = [
-            'message' => $throwable->message,
+            'message' => $throwable->getMessage(),
             'level' => 'error',
             'exception_class' => get_class($throwable),
             'stacktrace' => [],
         ];
 
         $data['stacktrace'][] = [
-            'file' => Str::replaceFirst(base_path().'/', '', $throwable->getFile()),
+            'file' => FileHelper::parseFileName($throwable->getFile()),
             'line' => $throwable->getLine(),
             'file_contents' => $this->getFileContents($throwable->getFile(), $throwable->getLine())
         ];
@@ -37,7 +38,7 @@ class ExceptionRecorder extends Recorder
         $iteration = 1;
         foreach ($throwable->getTrace() as $trace) {
             $data['stacktrace'][] = [
-                'file' => $trace['file'] ? Str::replaceFirst(base_path().'/', '', $trace['file']) : '',
+                'file' => FileHelper::parseFileName($trace['file']),
                 'line' => $trace['line'] ?? '',
                 'file_contents' => isset($trace['file']) && $iteration <= 20 ? $this->getFileContents($trace['file'], $trace['line']) : []
             ];
@@ -74,8 +75,10 @@ class ExceptionRecorder extends Recorder
 
     public static function registerRecorder()
     {
-        app(Handler::class)->reportable(function ($exception){
-            $this->handle($exception);
+        app()->afterResolving(ExceptionHandler::class, function (ExceptionHandler $handler){
+            $handler->reportable(function (\Throwable $exception){
+                app(ExceptionRecorder::class)->handle($exception);
+            });
         });
     }
 }

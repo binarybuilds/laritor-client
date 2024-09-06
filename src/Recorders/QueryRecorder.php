@@ -4,6 +4,7 @@ namespace Laritor\LaravelClient\Recorders;
 
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Str;
+use Laritor\LaravelClient\Helpers\FileHelper;
 use Laritor\LaravelClient\Laritor;
 
 class QueryRecorder extends Recorder
@@ -31,22 +32,13 @@ class QueryRecorder extends Recorder
                 'query' => $event->sql,
                 'query_bindings' => config('laritor.query.record_bindings') ? $this->replaceBindings($event) : '',
                 'time' => $time,
-                'file' => $this->getFileName($caller['file']),
+                'file' => FileHelper::parseFileName($caller['file']),
                 'line' => $caller['line'],
                 'slow' => $time >= config('laritor.query.slow')
             ];
 
             $this->laritor->pushEvent('queries', $query);
         }
-    }
-
-    private function getFileName($file)
-    {
-        if (Str::contains($file, 'laravel-serializable-closure')) {
-            return 'closure';
-        }
-
-        return Str::replaceFirst(base_path().'/', '', $file);
     }
 
     /**

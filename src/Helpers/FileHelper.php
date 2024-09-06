@@ -2,6 +2,7 @@
 
 namespace Laritor\LaravelClient\Helpers;
 
+use Illuminate\Support\Str;
 use RuntimeException;
 
 class FileHelper
@@ -30,6 +31,15 @@ class FileHelper
         $this->offset = $offset;
 
         return $this;
+    }
+
+    public static function parseFileName($file)
+    {
+        if (Str::contains($file, 'laravel-serializable-closure')) {
+            return 'closure';
+        }
+
+        return Str::replaceFirst(base_path().'/', '', $file);
     }
 
     /**
