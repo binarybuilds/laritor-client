@@ -47,7 +47,7 @@ class QueuedJobRecorder extends Recorder
         $this->laritor->pushEvent('jobs', [
             'connection' => $event->connectionName,
             'queue' => $event->job->queue ?? config("queue.connections.{$event->connectionName}.queue", 'default'),
-            'job' => $event->job->payload()['displayName'] ?? get_class($event->job),
+            'job' => get_class($event->job),
             'id' => $event->id,
             'queued_at' => now()->toDateTimeString(),
             'status' => 'queued'
@@ -59,7 +59,7 @@ class QueuedJobRecorder extends Recorder
         $this->laritor->pushEvent('jobs', [
             'connection' => $event->connectionName,
             'queue' => $event->job->queue ?? config("queue.connections.{$event->connectionName}.queue", 'default'),
-            'job' => $event->job->payload()['displayName'] ?? get_class($event->job),
+            'job' => get_class($event->job),
             'started_at' => now(),
         ]);
     }

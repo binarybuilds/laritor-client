@@ -30,11 +30,11 @@ class QueryRecorder extends Recorder
 
             $query = [
                 'query' => $event->sql,
-                'query_bindings' => config('laritor.query.record_bindings') ? $this->replaceBindings($event) : '',
+                'bindings' => config('laritor.query.record_bindings') ? $this->replaceBindings($event) : '',
                 'time' => $time,
-                'file' => FileHelper::parseFileName($caller['file']),
-                'line' => $caller['line'],
-                'slow' => $time >= config('laritor.query.slow')
+                'path' => FileHelper::parseFileName($caller['file']) .'@'.$caller['line'],
+                'slow' => $time >= config('laritor.query.slow'),
+                'sample' => Str::limit(implode(',',$event->bindings), 30)
             ];
 
             $this->laritor->pushEvent('queries', $query);

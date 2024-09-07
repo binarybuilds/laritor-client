@@ -105,7 +105,7 @@ class ScheduledCommandRecorder extends Recorder
                     $command['command'] === ( $event instanceof CallbackEvent ? 'Closure' : $event->command)
                 ) {
                     $command['status'] = $status;
-                    $command['duration'] = now()->diffInSeconds($command['started_at']);
+                    $command['duration'] = $command['started_at']->diffInSeconds();
                     $command['completed_at'] = now()->toDateTimeString();
                     $command['started_at'] = $command['started_at']->toDateTimeString();
                 }
