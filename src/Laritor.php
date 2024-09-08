@@ -130,6 +130,7 @@ class Laritor
         $data = [
             'app_key' => config('laritor.keys.backend', 'jhfdvhvhsdkdf'),
             'env' => config('app.env'),
+            'app' => url('/'),
             'health_checks' => $health_checks,
             'scheduled_commands' => $scheduled_commands
         ];
