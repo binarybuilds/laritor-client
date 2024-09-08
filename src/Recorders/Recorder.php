@@ -8,6 +8,11 @@ use Laritor\LaravelClient\Laritor;
 class Recorder
 {
     /**
+     * @var
+     */
+    public static $eventType;
+
+    /**
      * @var array
      */
     public static $events = [];
@@ -51,5 +56,14 @@ class Recorder
         foreach (static::$events as $event) {
             Event::listen( $event, [static::class, 'handle'] );
         }
+    }
+
+    /**
+     * @param $events
+     * @return mixed
+     */
+    public static function transformEvents($events)
+    {
+        return $events;
     }
 }

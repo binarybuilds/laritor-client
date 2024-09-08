@@ -7,6 +7,11 @@ use Illuminate\Console\Events\CommandStarting;
 
 class CommandRecorder extends Recorder
 {
+    /**
+     * @var string
+     */
+    public static $eventType = 'commands';
+
     public static $events = [
         CommandStarting::class,
         CommandFinished::class
@@ -34,7 +39,7 @@ class CommandRecorder extends Recorder
      */
     public function start(CommandStarting $event)
     {
-        $this->laritor->pushEvent('commands',  [
+        $this->laritor->pushEvent(static::$eventType,  [
             'command' => trim(implode(' ', $event->input->getArguments()).' '
                 .implode(' ',  $event->input->getOptions())),
             'started_at' => now(),
@@ -47,16 +52,16 @@ class CommandRecorder extends Recorder
      */
     public function finish(CommandFinished $event)
     {
-        $command = $this->laritor->getEvents('commands');
+        $command = $this->laritor->getEvents(static::$eventType);
         $command = isset($command[0]) ? $command[0] : null;
 
         if ($command) {
-            $command['duration'] = round($command['started_at']->diffInSeconds());
+            $command['duration'] = round($command['started_at']->diffInMilliseconds());
             $command['completed_at'] = now()->toDateTimeString();
             $command['started_at'] = $command['started_at']->toDateTimeString();
             $command['code'] = $event->exitCode;
 
-            $this->laritor->addEvents('commands', [$command]);
+            $this->laritor->addEvents(static::$eventType, [$command]);
         }
     }
 

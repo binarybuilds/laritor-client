@@ -5,11 +5,12 @@ namespace Laritor\LaravelClient\Recorders;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Str;
 use Laritor\LaravelClient\Helpers\FileHelper;
-use Laritor\LaravelClient\Laritor;
 
 class QueryRecorder extends Recorder
 {
     use FetchesStackTrace;
+
+    public static $eventType = 'queries';
 
     public static $events = [
         QueryExecuted::class
@@ -30,14 +31,13 @@ class QueryRecorder extends Recorder
 
             $query = [
                 'query' => $event->sql,
-                'bindings' => config('laritor.query.record_bindings') ? $this->replaceBindings($event) : '',
+                'bindings' => $this->replaceBindings($event),
                 'time' => $time,
                 'path' => FileHelper::parseFileName($caller['file']) .'@'.$caller['line'],
                 'slow' => $time >= config('laritor.query.slow'),
-                'sample' => Str::limit(implode(',',$event->bindings), 30)
             ];
 
-            $this->laritor->pushEvent('queries', $query);
+            $this->laritor->pushEvent(static::$eventType, $query);
         }
     }
 
@@ -135,5 +135,44 @@ class QueryRecorder extends Recorder
         ]);
 
         return "'".$binding."'";
+    }
+
+    /**
+     * @param $events
+     * @return array
+     */
+    public static function transformEvents($events)
+    {
+        $queries = collect($events);
+
+        $duplicateBindings = $queries->duplicates('bindings')->toArray();
+        $duplicatePath = $queries->duplicates('path')->toArray();
+
+        $queries = $queries->map(function ($query) use ( $duplicateBindings, $duplicatePath){
+            $query['issues'] = [];
+            $path = explode('@', $query['path']);
+            $query['file'] = $path[0];
+            $query['line'] = $path[1];
+            if ( in_array($query['bindings'], $duplicateBindings) ) {
+                $query['issues'][] = 'duplicate';
+            } elseif (in_array($query['path'], $duplicatePath) ) {
+                $query['issues'][] = 'n-plus-1';
+            }
+
+            if ( $query['slow'] ) {
+                $query['issues'][] = 'slow';
+            }
+
+            $query['bindings'] = config('laritor.query.record_bindings') ? $query['bindings'] : '';
+
+            unset($query['path']);
+
+            return $query;
+        });
+
+        unset($duplicateBindings);
+        unset($duplicatePath);
+
+        return $queries->toArray();
     }
 }

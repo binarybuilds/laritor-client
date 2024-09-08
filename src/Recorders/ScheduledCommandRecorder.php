@@ -12,6 +12,8 @@ use Laritor\LaravelClient\Laritor;
 
 class ScheduledCommandRecorder extends Recorder
 {
+    public static $eventType = 'scheduled_commands';
+
     public static $events = [
         ScheduledTaskStarting::class,
         ScheduledTaskFinished::class
@@ -44,7 +46,7 @@ class ScheduledCommandRecorder extends Recorder
     {
         $event = $event->task;
 
-        $this->laritor->pushEvent('scheduled_commands', [
+        $this->laritor->pushEvent(static::$eventType, [
             'started_at' => now(),
             'command' => $event instanceof CallbackEvent ? 'Closure' : $event->command,
             'expression' => $event->expression,
@@ -74,7 +76,7 @@ class ScheduledCommandRecorder extends Recorder
     {
         $event = $event->task;
 
-        $this->laritor->pushEvent('scheduled_commands', [
+        $this->laritor->pushEvent(static::$eventType, [
             'started_at' => now()->toDateTimeString(),
             'completed_at' => now()->toDateTimeString(),
             'duration' => 0,
@@ -98,14 +100,14 @@ class ScheduledCommandRecorder extends Recorder
 
     public function completeScheduledTask($event, $status)
     {
-        $scheduledTasks = collect( $this->laritor->getEvents('scheduled_commands'))
+        $scheduledTasks = collect( $this->laritor->getEvents(static::$eventType))
             ->map(function ($command) use ($event, $status){
 
                 if (
                     $command['command'] === ( $event instanceof CallbackEvent ? 'Closure' : $event->command)
                 ) {
                     $command['status'] = $status;
-                    $command['duration'] = $command['started_at']->diffInSeconds();
+                    $command['duration'] = $command['started_at']->diffInMilliseconds();
                     $command['completed_at'] = now()->toDateTimeString();
                     $command['started_at'] = $command['started_at']->toDateTimeString();
                 }
@@ -113,6 +115,6 @@ class ScheduledCommandRecorder extends Recorder
                 return $command;
             })->values()->toArray();
 
-        $this->laritor->addEvents('scheduled_commands', $scheduledTasks);
+        $this->laritor->addEvents(static::$eventType, $scheduledTasks);
     }
 }

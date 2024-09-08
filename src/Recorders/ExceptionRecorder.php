@@ -3,12 +3,16 @@
 namespace Laritor\LaravelClient\Recorders;
 
 use Illuminate\Contracts\Debug\ExceptionHandler;
-use Illuminate\Foundation\Exceptions\Handler;
 use Illuminate\Support\Str;
 use Laritor\LaravelClient\Helpers\FileHelper;
 
 class ExceptionRecorder extends Recorder
 {
+    /**
+     * @var string
+     */
+    public static $eventType = 'exceptions';
+
     /**
      * Handle the event.
      *
@@ -45,7 +49,7 @@ class ExceptionRecorder extends Recorder
             $iteration++;
         }
 
-        $this->laritor->pushEvent('exceptions', $data);
+        $this->laritor->pushEvent(static::$eventType, $data);
     }
 
     public function shouldReportException($exception)

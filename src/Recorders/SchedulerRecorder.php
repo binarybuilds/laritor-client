@@ -4,8 +4,17 @@ namespace Laritor\LaravelClient\Recorders;
 
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Console\Events\CommandStarting;
+
 class SchedulerRecorder extends Recorder
 {
+    /**
+     * @var string
+     */
+    public static $eventType = 'scheduler';
+
+    /**
+     * @var string[]
+     */
     public static $events = [
         CommandStarting::class,
         CommandFinished::class
@@ -33,7 +42,7 @@ class SchedulerRecorder extends Recorder
      */
     public function start()
     {
-        $this->laritor->pushEvent('scheduler',  [
+        $this->laritor->pushEvent(static::$eventType,  [
             'started_at' => now(),
             'completed_at' => null
         ]);
@@ -44,14 +53,14 @@ class SchedulerRecorder extends Recorder
      */
     public function finish()
     {
-        $scheduler = $this->laritor->getEvents('scheduler');
+        $scheduler = $this->laritor->getEvents(static::$eventType);
         $scheduler = isset($scheduler[0]) ? $scheduler[0] : null;
 
         if ($scheduler) {
             $scheduler['duration'] = $scheduler['started_at']->diffInMilliseconds();
             $scheduler['completed_at'] = now()->toDateTimeString();
             $scheduler['started_at'] = $scheduler['started_at']->toDateTimeString();
-            $this->laritor->addEvents('scheduler', [$scheduler]);
+            $this->laritor->addEvents(static::$eventType, [$scheduler]);
         }
     }
 

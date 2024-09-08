@@ -4,10 +4,17 @@ namespace Laritor\LaravelClient\Recorders;
 
 use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Http\Request;
-use Laritor\LaravelClient\Laritor;
 
 class RequestRecorder extends Recorder
 {
+    /**
+     * @var string
+     */
+    public static $eventType = 'requests';
+
+    /**
+     * @var string[]
+     */
     public static $events = [
         RequestHandled::class
     ];
@@ -29,7 +36,7 @@ class RequestRecorder extends Recorder
         $startTime = defined('LARAVEL_START') ? LARAVEL_START : $event->request->server('REQUEST_TIME_FLOAT');
         $duration =  $startTime ? floor((microtime(true) - $startTime) * 1000) : null;
 
-        $this->laritor->pushEvent('requests', [
+        $this->laritor->pushEvent(static::$eventType, [
             'slow' => $duration >= config('laritor.requests.slow'),
             'request' => [
                 'method' => $request->method(),

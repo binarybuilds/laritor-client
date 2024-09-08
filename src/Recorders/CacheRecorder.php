@@ -7,6 +7,14 @@ use Illuminate\Cache\Events\CacheMissed;
 
 class CacheRecorder extends Recorder
 {
+    /**
+     * @var string
+     */
+    public static $eventType = 'caches';
+
+    /**
+     * @var string[]
+     */
     public static $events = [
         CacheHit::class,
         CacheMissed::class,
@@ -22,7 +30,7 @@ class CacheRecorder extends Recorder
             return;
         }
 
-        $this->laritor->pushEvent('caches', [
+        $this->laritor->pushEvent(static::$eventType, [
             'key' => $event->key,
             'is_hit' => $event instanceof CacheHit
         ]);

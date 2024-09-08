@@ -9,6 +9,11 @@ use Illuminate\Queue\Events\JobQueued;
 
 class QueuedJobRecorder extends Recorder
 {
+    /**
+     * @var string
+     */
+    public static $eventType = 'jobs';
+
     public static $events = [
         JobQueued::class,
         JobProcessing::class,
@@ -44,7 +49,7 @@ class QueuedJobRecorder extends Recorder
      */
     public function queued(JobQueued $event)
     {
-        $this->laritor->pushEvent('jobs', [
+        $this->laritor->pushEvent(static::$eventType, [
             'connection' => $event->connectionName,
             'queue' => $event->job->queue ?? config("queue.connections.{$event->connectionName}.queue", 'default'),
             'job' => get_class($event->job),
@@ -56,7 +61,7 @@ class QueuedJobRecorder extends Recorder
 
     public function processing(JobProcessing $event)
     {
-        $this->laritor->pushEvent('jobs', [
+        $this->laritor->pushEvent(static::$eventType, [
             'connection' => $event->connectionName,
             'queue' => $event->job->queue ?? config("queue.connections.{$event->connectionName}.queue", 'default'),
             'job' => get_class($event->job),
@@ -70,7 +75,7 @@ class QueuedJobRecorder extends Recorder
      */
     public function complete($event)
     {
-        $job = $this->laritor->getEvents('jobs')[0];
+        $job = $this->laritor->getEvents(static::$eventType)[0];
         $job['duration'] = $job['started_at']->diffInMilliseconds();
         $job['started_at'] = $job['started_at']->toDateTimeString();
         $job['completed_at'] = now()->toDateTimeString();

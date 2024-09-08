@@ -10,6 +10,8 @@ use Illuminate\Support\Str;
 
 class OutboundRequestRecorder extends Recorder
 {
+    public static $eventType = 'outbound_requests';
+
     /**
      * @var string[]
      */
@@ -41,7 +43,7 @@ class OutboundRequestRecorder extends Recorder
     public function sending(RequestSending $event)
     {
         if ($this->shouldRecordOutboundRequest($event->request->url())) {
-            $this->laritor->pushEvent('outbound_requests', [
+            $this->laritor->pushEvent(static::$eventType, [
                 'started_at' => now(),
                 'url' => $event->request->url(),
                 'method' => $event->request->method(),
@@ -68,9 +70,12 @@ class OutboundRequestRecorder extends Recorder
         $this->completeOutboundRequest($event);
     }
 
+    /**
+     * @param $outboundRequestEvent
+     */
     public function completeOutboundRequest($outboundRequestEvent)
     {
-        $outboundRequests = collect( $this->laritor->getEvents('outbound_requests'))
+        $outboundRequests = collect( $this->laritor->getEvents(static::$eventType))
             ->map(function ($request) use ($outboundRequestEvent){
 
             if ( $request['status'] === 'sent' && $request['url'] === $outboundRequestEvent->request->url() ) {
@@ -90,7 +95,7 @@ class OutboundRequestRecorder extends Recorder
             return $request;
         })->values()->toArray();
 
-        $this->laritor->addEvents('outbound_requests', $outboundRequests);
+        $this->laritor->addEvents(static::$eventType, $outboundRequests);
     }
 
     /**

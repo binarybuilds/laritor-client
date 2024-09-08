@@ -57,8 +57,6 @@ class Laritor
             'version' => $app->version(),
             'event_at' => now(),
             'env' => config('app.env'),
-            'run_time' => $app->runningInConsole() ? 'console' : 'web',
-            'command' => $app->runningInConsole() ? implode( ' ', $_SERVER[ 'argv' ] ) : '',
             'php' => phpversion(),
             'server' => [
                 'host' => gethostbyname(gethostname()),
@@ -94,12 +92,24 @@ class Laritor
      */
     public function sendEvents()
     {
-        if ($this->shouldSendEvents()) {
+        $this->transformEvents();
 
+        if ($this->shouldSendEvents()) {
             $this->callApi();
         }
 
         $this->reset();
+    }
+
+    public function transformEvents()
+    {
+        foreach ((array)config('laritor.recorders') as $recorder) {
+            if (isset($this->events[$recorder::$eventType])) {
+                $this->events[$recorder::$eventType] = $recorder::transformEvents(
+                    $this->events[$recorder::$eventType]
+                );
+            }
+        }
     }
 
     /**
@@ -108,7 +118,24 @@ class Laritor
     public function callApi()
     {
         //todo: implement api
-        $response = Http::post('http:/159.223.153.239/api/events', $this->toArray());
+        Http::post('http:/159.223.153.239/api/events', $this->toArray());
+    }
+
+    /**
+     * @param $health_checks
+     * @param $scheduled_commands
+     */
+    public function discover($health_checks, $scheduled_commands)
+    {
+        $data = [
+            'app_key' => config('laritor.keys.backend', 'jhfdvhvhsdkdf'),
+            'env' => config('app.env'),
+            'health_checks' => $health_checks,
+            'scheduled_commands' => $scheduled_commands
+        ];
+
+        //todo: implement api
+        Http::post('http:/159.223.153.239/api/discover', $data);
     }
 
     /**

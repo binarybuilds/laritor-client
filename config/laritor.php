@@ -29,7 +29,7 @@ return [
         \Laritor\LaravelClient\Recorders\QueuedJobRecorder::class,
         \Laritor\LaravelClient\Recorders\RequestRecorder::class,
         \Laritor\LaravelClient\Recorders\CommandRecorder::class,
-        \Laritor\LaravelClient\Recorders\ScheduledCommandRecorder::class,
+//        \Laritor\LaravelClient\Recorders\ScheduledCommandRecorder::class,
         \Laritor\LaravelClient\Recorders\SchedulerRecorder::class
     ],
 
@@ -56,7 +56,7 @@ return [
          * if a query took more than the below mentioned number of milliseconds to execute, Then the said query
          * will be flagged as slow and reported to laritor.
          */
-        'slow' => env('LARITOR_SLOW_QUERY', 100 ),
+        'slow' => env('LARITOR_SLOW_QUERY', 10 ),
 
         /**
          * If for any reason, you do not wish to send read queries(SELECT) to laritor, set the below value to false.
@@ -68,13 +68,13 @@ return [
          * Most of the applications primarily focus on read query performance. If you wish to also monitor the performance
          * of write(INSERT, UPDATE, DELETE) queries, set the below value to true.
          */
-        'write' => false,
+        'write' => true,
 
         /**
          * Most of the time, queries running in console do not cause any performance issues to the application. If you
          * wish to monitor the queries executed in the console as well, set the below value to true.
          */
-        'monitor_console_queries' => false,
+        'monitor_console_queries' => true,
 
         /**
          * To protect sensitive information, We only record SQL queries but not their bindings or data. If you wish to

@@ -4,6 +4,7 @@ namespace Laritor\LaravelClient\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
+use Laritor\LaravelClient\Laritor;
 use Symfony\Component\Finder\Finder;
 
 class DiscoverCommand extends Command
@@ -24,6 +25,18 @@ class DiscoverCommand extends Command
 
     public function handle()
     {
+        $scheduled_commands = [];
+
+        foreach (app()->make(\Illuminate\Console\Scheduling\Schedule::class)->events() as $event) {
+            $scheduled_commands[] = [
+                'command' => Str::substr(
+                    Str::replace("'",'', $event->command),
+                    Str::position(Str::replace("'",'', $event->command), 'artisan')
+                ),
+                'expression' => $event->expression
+            ];
+        }
+
         $namespace = app()->getNamespace();
 
         $health_checks = [];
@@ -36,6 +49,8 @@ class DiscoverCommand extends Command
                 );
         }
 
-        //TODO: sync health checks to laritor
+        app()
+            ->make(Laritor::class)
+            ->discover($health_checks, $scheduled_commands);
     }
 }
