@@ -37,16 +37,17 @@ class DiscoverCommand extends Command
             ];
         }
 
-        $namespace = app()->getNamespace();
-
         $health_checks = [];
 
-        foreach ((new Finder)->in(app_path('Laritor'))->files() as $health_check) {
-            $health_checks[] = $namespace.str_replace(
-                    ['/', '.php'],
-                    ['\\', ''],
-                    Str::after($health_check->getPathname(), app_path().DIRECTORY_SEPARATOR)
-                );
+        if (is_dir(app_path('Laritor'))) {
+            $namespace = app()->getNamespace();
+            foreach ((new Finder)->in(app_path('Laritor'))->files() as $health_check) {
+                $health_checks[] = $namespace.str_replace(
+                        ['/', '.php'],
+                        ['\\', ''],
+                        Str::after($health_check->getPathname(), app_path().DIRECTORY_SEPARATOR)
+                    );
+            }
         }
 
         app()
