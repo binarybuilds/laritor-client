@@ -6,6 +6,7 @@ use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Queue\Events\JobQueued;
+use Illuminate\Queue\Jobs\DatabaseJob;
 
 class QueuedJobRecorder extends Recorder
 {
@@ -52,7 +53,7 @@ class QueuedJobRecorder extends Recorder
         $this->laritor->pushEvent(static::$eventType, [
             'connection' => $event->connectionName,
             'queue' => $event->job->queue ?? config("queue.connections.{$event->connectionName}.queue", 'default'),
-            'job' => get_class($event->job),
+            'job' => $event->job->getName(),
             'id' => $event->id,
             'queued_at' => now()->toDateTimeString(),
             'status' => 'queued'
@@ -64,7 +65,7 @@ class QueuedJobRecorder extends Recorder
         $this->laritor->pushEvent(static::$eventType, [
             'connection' => $event->connectionName,
             'queue' => $event->job->queue ?? config("queue.connections.{$event->connectionName}.queue", 'default'),
-            'job' => get_class($event->job),
+            'job' => $event->job->getName(),
             'started_at' => now(),
         ]);
     }
