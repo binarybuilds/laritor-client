@@ -10,7 +10,7 @@ use Illuminate\Console\Scheduling\CallbackEvent;
 use Illuminate\Support\Str;
 use Laritor\LaravelClient\Laritor;
 
-class ScheduledCommandRecorder extends Recorder
+class ScheduledTaskRecorder extends Recorder
 {
     public static $eventType = 'scheduled_commands';
 
