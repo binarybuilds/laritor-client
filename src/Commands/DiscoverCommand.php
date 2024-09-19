@@ -25,11 +25,11 @@ class DiscoverCommand extends Command
 
     public function handle()
     {
-        $scheduled_commands = [];
+        $scheduled_tasks = [];
 
         foreach (app()->make(\Illuminate\Console\Scheduling\Schedule::class)->events() as $event) {
-            $scheduled_commands[] = [
-                'command' => Str::substr(
+            $scheduled_tasks[] = [
+                'task' => Str::substr(
                     Str::replace("'",'', $event->command),
                     Str::position(Str::replace("'",'', $event->command), 'artisan')
                 ),
@@ -52,6 +52,6 @@ class DiscoverCommand extends Command
 
         app()
             ->make(Laritor::class)
-            ->discover($health_checks, $scheduled_commands);
+            ->discover($health_checks, $scheduled_tasks);
     }
 }

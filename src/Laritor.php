@@ -123,16 +123,16 @@ class Laritor
 
     /**
      * @param $health_checks
-     * @param $scheduled_commands
+     * @param $scheduled_tasks
      */
-    public function discover($health_checks, $scheduled_commands)
+    public function discover($health_checks, $scheduled_tasks)
     {
         $data = [
             'app_key' => config('laritor.keys.backend', 'jhfdvhvhsdkdf'),
             'env' => config('app.env'),
             'app' => url('/'),
             'health_checks' => $health_checks,
-            'scheduled_commands' => $scheduled_commands
+            'scheduled_tasks' => $scheduled_tasks
         ];
 
         //todo: implement api

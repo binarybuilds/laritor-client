@@ -39,9 +39,21 @@ class CommandRecorder extends Recorder
      */
     public function start(CommandStarting $event)
     {
+        $arguments = implode(' ', $event->input->getArguments());
+        $options = array_filter(
+            array_map(function ($option){
+                if (is_array($option)) {
+                    return implode(',', $option);
+                }
+                return $option;
+            }, $event->input->getOptions()
+            )
+        );
+
+        $options = implode(' ',  $options);
+
         $this->laritor->pushEvent(static::$eventType,  [
-            'command' => trim(implode(' ', $event->input->getArguments()).' '
-                .implode(' ',  $event->input->getOptions())),
+            'command' => trim($arguments.' '.$options),
             'started_at' => now(),
             'completed_at' => null
         ]);
@@ -74,7 +86,6 @@ class CommandRecorder extends Recorder
             'event:cache',
             'view:cache',
             'config:cache',
-            'package:discover',
             'queue:work',
             'queue:listen'
         ]);

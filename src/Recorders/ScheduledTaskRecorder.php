@@ -7,12 +7,10 @@ use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Console\Scheduling\CallbackEvent;
-use Illuminate\Support\Str;
-use Laritor\LaravelClient\Laritor;
 
 class ScheduledTaskRecorder extends Recorder
 {
-    public static $eventType = 'scheduled_commands';
+    public static $eventType = 'scheduled_tasks';
 
     public static $events = [
         ScheduledTaskStarting::class,
