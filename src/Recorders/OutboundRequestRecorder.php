@@ -88,6 +88,7 @@ class OutboundRequestRecorder extends Recorder
                     'url' => $outboundRequestEvent->request->url(),
                     'method' => $outboundRequestEvent->request->method(),
                     'status' => 'completed',
+                    'order' => $request['order'],
                     'slow' => $duration >= config('laritor.outbound_requests.slow')
                 ];
             }
