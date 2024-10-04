@@ -13,6 +13,8 @@ class Laritor
      */
     private $events = [];
 
+    private $order = 0;
+
     /**
      * @param $name
      * @param $event
@@ -20,6 +22,8 @@ class Laritor
      */
     public function pushEvent($name, $event)
     {
+        $event['order'] = $this->order;
+        $this->order++;
         $this->events[ $name ][] = $event;
         return $this;
     }
@@ -85,6 +89,7 @@ class Laritor
     public function reset()
     {
         $this->events = [];
+        $this->order = 0;
     }
 
     /**

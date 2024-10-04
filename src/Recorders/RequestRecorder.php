@@ -37,7 +37,11 @@ class RequestRecorder extends Recorder
         $duration =  $startTime ? floor((microtime(true) - $startTime) * 1000) : null;
 
         $this->laritor->pushEvent(static::$eventType, [
+            'started_at' => now()->subMilliseconds($duration),
+            'completed_at' => now(),
             'slow' => $duration >= config('laritor.requests.slow'),
+            'duration' => $duration,
+            'memory' => round(memory_get_peak_usage(true) / 1024 / 1024, 1),
             'request' => [
                 'method' => $request->method(),
                 'url' => $request->fullUrl(),
@@ -45,11 +49,12 @@ class RequestRecorder extends Recorder
             ],
             'response' => [
                 'status_code' => $event->response->status(),
-                'duration' => $duration,
-                'memory' => round(memory_get_peak_usage(true) / 1024 / 1024, 1),
             ],
             'user' => [
-                'authenticated' => $request->user(),
+                'authenticated' => [
+                    'name' => $request->user() ? $request->user()->name : '',
+                    'email' => $request->user() ? $request->user()->email : '',
+                ],
                 'ip' => $request->getClientIp(),
                 'user_agent' => $request->userAgent(),
             ],
