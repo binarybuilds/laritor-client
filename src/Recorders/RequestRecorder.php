@@ -37,8 +37,8 @@ class RequestRecorder extends Recorder
         $duration =  $startTime ? floor((microtime(true) - $startTime) * 1000) : null;
 
         $this->laritor->pushEvent(static::$eventType, [
-            'started_at' => now()->subMilliseconds($duration),
-            'completed_at' => now(),
+            'started_at' => now()->subMilliseconds($duration)->toDateTimeString(),
+            'completed_at' => now()->toDateTimeString(),
             'slow' => $duration >= config('laritor.requests.slow'),
             'duration' => $duration,
             'memory' => round(memory_get_peak_usage(true) / 1024 / 1024, 1),
