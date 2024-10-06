@@ -43,7 +43,7 @@ class SchedulerRecorder extends Recorder
     public function start()
     {
         $this->laritor->pushEvent(static::$eventType,  [
-            'started_at' => now(),
+            'started_at' => now()->format('Y-m-d H:i:s.u'),
             'completed_at' => null
         ]);
     }
@@ -58,8 +58,8 @@ class SchedulerRecorder extends Recorder
 
         if ($scheduler) {
             $scheduler['duration'] = $scheduler['started_at']->diffInMilliseconds();
-            $scheduler['completed_at'] = now()->toDateTimeString();
-            $scheduler['started_at'] = $scheduler['started_at']->toDateTimeString();
+            $scheduler['completed_at'] = now()->format('Y-m-d H:i:s.u');
+            $scheduler['started_at'] = $scheduler['started_at']->format('Y-m-d H:i:s.u');
             $this->laritor->addEvents(static::$eventType, [$scheduler]);
         }
     }

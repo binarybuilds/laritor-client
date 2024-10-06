@@ -69,8 +69,8 @@ class CommandRecorder extends Recorder
 
         if ($command) {
             $command['duration'] = round($command['started_at']->diffInMilliseconds());
-            $command['completed_at'] = now()->toDateTimeString();
-            $command['started_at'] = $command['started_at']->toDateTimeString();
+            $command['completed_at'] = now()->format('Y-m-d H:i:s.u');
+            $command['started_at'] = $command['started_at']->format('Y-m-d H:i:s.u');
             $command['code'] = $event->exitCode;
 
             $this->laritor->addEvents(static::$eventType, [$command]);

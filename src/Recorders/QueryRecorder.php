@@ -35,6 +35,8 @@ class QueryRecorder extends Recorder
                 'time' => $time,
                 'path' => FileHelper::parseFileName($caller['file']) .'@'.$caller['line'],
                 'slow' => $time >= config('laritor.query.slow'),
+                'started_at' => now()->subMilliseconds($time)->format('Y-m-d H:i:s.u'),
+                'completed_at' => now()->format('Y-m-d H:i:s.u')
             ];
 
             $this->laritor->pushEvent(static::$eventType, $query);
