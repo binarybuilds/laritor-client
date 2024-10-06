@@ -43,7 +43,7 @@ class SchedulerRecorder extends Recorder
     public function start()
     {
         $this->laritor->pushEvent(static::$eventType,  [
-            'started_at' => now()->format('Y-m-d H:i:s.u'),
+            'started_at' => now(),
             'completed_at' => null
         ]);
     }
