@@ -54,6 +54,7 @@ class QueuedJobRecorder extends Recorder
             'queue' => $event->job->queue ?? config("queue.connections.{$event->connectionName}.queue", 'default'),
             'job' =>  isset($event->payload()['displayName']) ? $event->payload()['displayName'] : get_class($event->job),
             'id' => $event->id,
+            'delay' => $event->delay,
             'queued_at' => now()->format('Y-m-d H:i:s.u'),
             'status' => 'queued'
         ]);

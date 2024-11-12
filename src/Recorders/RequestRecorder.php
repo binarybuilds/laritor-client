@@ -4,6 +4,8 @@ namespace Laritor\LaravelClient\Recorders;
 
 use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 class RequestRecorder extends Recorder
 {
@@ -37,21 +39,19 @@ class RequestRecorder extends Recorder
         $duration =  $startTime ? floor((microtime(true) - $startTime) * 1000) : null;
 
         $this->laritor->pushEvent(static::$eventType, [
-            'started_at' => now()->subMilliseconds($duration)->format('Y-m-d H:i:s.u'),
-            'completed_at' => now()->format('Y-m-d H:i:s.u'),
-            'slow' => $duration >= config('laritor.requests.slow'),
-            'duration' => $duration,
-            'memory' => round(memory_get_peak_usage(true) / 1024 / 1024, 1),
             'request' => [
-                'method' => $request->method(),
-                'url' => $request->fullUrl(),
-                'headers' => $request->headers
+                'started_at' => now()->subMilliseconds($duration)->format('Y-m-d H:i:s.u'),
+                'completed_at' => now()->format('Y-m-d H:i:s.u'),
+                'duration' => $duration,
+                'memory' => round(memory_get_peak_usage(true) / 1024 / 1024, 1),
+                'url' => $request->fullUrl()
             ],
             'response' => [
                 'status_code' => $event->response->status(),
             ],
             'user' => [
                 'authenticated' => [
+                    'id' => Auth::id(),
                     'name' => $request->user() ? $request->user()->name : '',
                     'email' => $request->user() ? $request->user()->email : '',
                 ],
@@ -59,8 +59,11 @@ class RequestRecorder extends Recorder
                 'user_agent' => $request->userAgent(),
             ],
             'route' => [
-                'controller' => optional($request->route())->getController() ? get_class(optional($request->route())->getController()) : 'callback',
-                'method' => optional($request->route())->getActionMethod(),
+                'name' => optional($request->route())->getName(),
+                'uri' => optional($request->route())->uri(),
+                'controller' => optional($request->route())->getController() ? get_class(optional($request->route())->getController()) : 'closure',
+                'controller_method' => optional($request->route())->getActionMethod(),
+                'method' => $request->method(),
             ],
         ]);
     }
