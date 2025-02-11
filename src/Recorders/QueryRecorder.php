@@ -31,7 +31,7 @@ class QueryRecorder extends Recorder
 
             $query = [
                 'query' => $event->sql,
-//                'bindings' => $this->replaceBindings($event),
+                'bindings' => $this->replaceBindings($event),
                 'time' => $time,
                 'path' => FileHelper::parseFileName($caller['file']) .'@'.$caller['line'],
 //                'slow' => $time >= config('laritor.query.slow'),
