@@ -33,7 +33,8 @@ class CacheRecorder extends Recorder
         $this->laritor->pushEvent(static::$eventType, [
             'key' => $event->key,
             'is_hit' => $event instanceof CacheHit,
-            'occurred_at' => now()->format('Y-m-d H:i:s.u')
+            'occurred_at' => now()->format('Y-m-d H:i:s'),
+            'context' => $this->laritor->getContext()
         ]);
     }
 }

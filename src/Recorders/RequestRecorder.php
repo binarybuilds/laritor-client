@@ -40,14 +40,16 @@ class RequestRecorder extends Recorder
 
         $this->laritor->pushEvent(static::$eventType, [
             'request' => [
-                'started_at' => now()->subMilliseconds($duration)->format('Y-m-d H:i:s.u'),
-                'completed_at' => now()->format('Y-m-d H:i:s.u'),
+                'started_at' => now()->subMilliseconds($duration)->format('Y-m-d H:i:s'),
+                'completed_at' => now()->format('Y-m-d H:i:s'),
                 'duration' => $duration,
                 'memory' => round(memory_get_peak_usage(true) / 1024 / 1024, 1),
-                'url' => $request->fullUrl()
+                'url' => $request->path(),
+                'size' => strlen($request->getContent())
             ],
             'response' => [
                 'status_code' => $event->response->status(),
+                'size' => strlen($event->response->getContent())
             ],
             'user' => [
                 'authenticated' => [

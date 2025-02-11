@@ -15,6 +15,94 @@ class Laritor
 
     private $order = 0;
 
+    private $started = 0;
+
+    private $booted = 0;
+
+    private $middleware = 0;
+
+    private $controller = 0;
+
+    private $response = 0;
+
+    private $context = 'BOOT';
+
+    /**
+     * @return string
+     */
+    public function getContext()
+    {
+        return $this->context;
+    }
+
+    /**
+     * @param string $context
+     */
+    public function setContext($context)
+    {
+        $this->context = $context;
+    }
+
+
+
+    public function setStarted()
+    {
+        $this->started = defined('LARAVEL_START') ? LARAVEL_START : $event->request->server('REQUEST_TIME_FLOAT');
+    }
+
+    /**
+     * @return int
+     */
+    public function getBooted()
+    {
+        return $this->booted;
+    }
+
+    public function setBooted()
+    {
+        $this->booted = $this->started ? $this->getDurationFrom($this->started) : 0;
+        $this->setContext('MIDDLEWARE');
+    }
+
+    /**
+     * @return int
+     */
+    public function getMiddleware()
+    {
+        return $this->middleware;
+    }
+
+    public function getDurationFrom($time)
+    {
+        return floor((microtime(true) - $time) * 1000);
+    }
+
+    public function setMiddlewareEnded()
+    {
+        $this->middleware = $this->getDurationFrom($this->started) - $this->booted;
+        $this->setContext('CONTROLLER');
+    }
+
+    /**
+     * @return int
+     */
+    public function getController()
+    {
+        return $this->controller;
+    }
+
+    public function setControllerCompleted()
+    {
+        $this->controller = $this->getDurationFrom($this->started) - ($this->booted + $this->middleware );
+        $this->setContext('RESPONSE');
+    }
+
+    public function setResponseCompleted()
+    {
+        $this->response = $this->getDurationFrom($this->started) - ($this->booted + $this->middleware + $this->controller );
+        $this->setContext('TERMINATE');
+    }
+
     /**
      * @param $name
      * @param $event
@@ -71,7 +159,11 @@ class Laritor
                 'routes' => $app->routesAreCached(),
                 'events' => $app->eventsAreCached()
             ],
-            'events' => $this->events
+            'events' => $this->events,
+            'booted' => $this->booted,
+            'middleware' => $this->middleware,
+            'controller' => $this->controller,
+            'response' => $this->response
         ];
     }
 

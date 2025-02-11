@@ -31,12 +31,13 @@ class QueryRecorder extends Recorder
 
             $query = [
                 'query' => $event->sql,
-                'bindings' => $this->replaceBindings($event),
+//                'bindings' => $this->replaceBindings($event),
                 'time' => $time,
                 'path' => FileHelper::parseFileName($caller['file']) .'@'.$caller['line'],
-                'slow' => $time >= config('laritor.query.slow'),
-                'started_at' => now()->subMilliseconds($time)->format('Y-m-d H:i:s.u'),
-                'completed_at' => now()->format('Y-m-d H:i:s.u')
+//                'slow' => $time >= config('laritor.query.slow'),
+//                'started_at' => now()->subMilliseconds($time)->format('Y-m-d H:i:s'),
+                'completed_at' => now()->format('Y-m-d H:i:s'),
+                'context' => $this->laritor->getContext()
             ];
 
             $this->laritor->pushEvent(static::$eventType, $query);

@@ -75,8 +75,8 @@ class ScheduledTaskRecorder extends Recorder
         $event = $event->task;
 
         $this->laritor->pushEvent(static::$eventType, [
-            'started_at' => now()->format('Y-m-d H:i:s.u'),
-            'completed_at' => now()->format('Y-m-d H:i:s.u'),
+            'started_at' => now()->format('Y-m-d H:i:s'),
+            'completed_at' => now()->format('Y-m-d H:i:s'),
             'duration' => 0,
             'command' => $event instanceof CallbackEvent ? 'Closure' : $event->command,
             'expression' => $event->expression,
@@ -106,8 +106,8 @@ class ScheduledTaskRecorder extends Recorder
                 ) {
                     $command['status'] = $status;
                     $command['duration'] = $command['started_at']->diffInMilliseconds();
-                    $command['completed_at'] = now()->format('Y-m-d H:i:s.u');
-                    $command['started_at'] = $command['started_at']->format('Y-m-d H:i:s.u');
+                    $command['completed_at'] = now()->format('Y-m-d H:i:s');
+                    $command['started_at'] = $command['started_at']->format('Y-m-d H:i:s');
                 }
 
                 return $command;

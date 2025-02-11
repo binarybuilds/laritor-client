@@ -47,7 +47,8 @@ class OutboundRequestRecorder extends Recorder
                 'started_at' => now(),
                 'url' => $event->request->url(),
                 'method' => $event->request->method(),
-                'status' => 'sent'
+                'status' => 'sent',
+                'context' => $this->laritor->getContext()
             ]);
         }
     }
@@ -81,15 +82,16 @@ class OutboundRequestRecorder extends Recorder
             if ( $request['status'] === 'sent' && $request['url'] === $outboundRequestEvent->request->url() ) {
                 $duration = $request['started_at']->diffInMilliseconds();
                 return [
-                    'started_at' => $request['started_at']->format('Y-m-d H:i:s.u'),
-                    'completed_at' => now()->format('Y-m-d H:i:s.u'),
+                    'started_at' => $request['started_at']->format('Y-m-d H:i:s'),
+                    'completed_at' => now()->format('Y-m-d H:i:s'),
                     'duration' => $duration,
                     'code' => $outboundRequestEvent instanceof ResponseReceived ? $outboundRequestEvent->response->status() : 0,
                     'url' => $outboundRequestEvent->request->url(),
                     'method' => $outboundRequestEvent->request->method(),
                     'status' => 'completed',
                     'order' => $request['order'],
-                    'slow' => $duration >= config('laritor.outbound_requests.slow')
+                    'slow' => $duration >= config('laritor.outbound_requests.slow'),
+                    'context' => $request['context']
                 ];
             }
 

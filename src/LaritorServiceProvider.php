@@ -2,6 +2,8 @@
 
 namespace Laritor\LaravelClient;
 
+use Illuminate\Routing\ControllerDispatcher;
+use Illuminate\Routing\Events\PreparingResponse;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -38,8 +40,32 @@ class LaritorServiceProvider extends ServiceProvider
             DiscoverCommand::class
         ]);
 
+        app(Laritor::class)->setStarted();
+
+        app()->bind(ControllerDispatcher::class, function ($app) {
+            return new class($app) extends ControllerDispatcher {
+                public function dispatch($route, $controller, $method)
+                {
+                    app(Laritor::class)->setMiddlewareEnded();
+                    return parent::dispatch($route, $controller, $method);
+                }
+            };
+        });
+
+        Event::listen(function (PreparingResponse $event) {
+            app(Laritor::class)->setControllerCompleted();
+        });
+
+        Event::listen(function (ResponsePrepared $event) {
+            app(Laritor::class)->setResponseCompleted();
+        });
+
+
         $this->app->booted(function () {
             $this->routes();
+
+            app(Laritor::class)->setBooted();
+
         });
     }
 
