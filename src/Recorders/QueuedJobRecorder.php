@@ -68,6 +68,7 @@ class QueuedJobRecorder extends Recorder
             'queue' => $event->job->queue ?? config("queue.connections.{$event->connectionName}.queue", 'default'),
             'job' =>  isset($event->job->payload()['displayName']) ? $event->job->payload()['displayName'] : get_class($event->job),
             'started_at' => now(),
+            'id' => $event->job->getJobId()
         ]);
     }
 

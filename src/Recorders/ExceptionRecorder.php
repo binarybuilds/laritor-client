@@ -43,12 +43,14 @@ class ExceptionRecorder extends Recorder
 
         $iteration = 1;
         foreach ($throwable->getTrace() as $trace) {
-            $data['stacktrace'][] = [
-                'file' => FileHelper::parseFileName($trace['file']),
-                'line' => $trace['line'] ?? '',
-                'file_contents' => isset($trace['file']) && $iteration <= 20 ? $this->getFileContents($trace['file'], $trace['line']) : []
-            ];
-            $iteration++;
+            if (isset($trace['file'])) {
+                $data['stacktrace'][] = [
+                    'file' => FileHelper::parseFileName($trace['file']),
+                    'line' => $trace['line'] ?? '',
+                    'file_contents' => isset($trace['file']) && $iteration <= 20 ? $this->getFileContents($trace['file'], $trace['line']) : []
+                ];
+                $iteration++;
+            }
         }
 
         $this->laritor->pushEvent(static::$eventType, $data);

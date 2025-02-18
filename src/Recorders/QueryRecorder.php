@@ -162,10 +162,6 @@ class QueryRecorder extends Recorder
                 $query['issues'][] = 'n-plus-1';
             }
 
-            if ( $query['slow'] ) {
-                $query['issues'][] = 'slow';
-            }
-
             $query['bindings'] = config('laritor.query.record_bindings') ? $query['bindings'] : '';
 
             unset($query['path']);
