@@ -2,6 +2,7 @@
 
 namespace Laritor\LaravelClient;
 
+use Illuminate\Routing\Contracts\CallableDispatcher;
 use Illuminate\Routing\ControllerDispatcher;
 use Illuminate\Routing\Events\PreparingResponse;
 use Illuminate\Support\Facades\Event;
@@ -48,6 +49,16 @@ class LaritorServiceProvider extends ServiceProvider
                 {
                     app(Laritor::class)->setMiddlewareEnded();
                     return parent::dispatch($route, $controller, $method);
+                }
+            };
+        });
+
+        app()->bind(CallableDispatcher::class, function ($app) {
+            return new class($app) extends \Illuminate\Routing\CallableDispatcher {
+                public function dispatch($route, $callable)
+                {
+                    app(Laritor::class)->setMiddlewareEnded();
+                    return parent::dispatch($route, $callable);
                 }
             };
         });

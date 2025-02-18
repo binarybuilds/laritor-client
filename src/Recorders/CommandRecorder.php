@@ -39,7 +39,18 @@ class CommandRecorder extends Recorder
      */
     public function start(CommandStarting $event)
     {
-        $arguments = implode(' ', $event->input->getArguments());
+        $arguments = array_filter(
+            array_map(function ($option){
+                if (is_array($option)) {
+                    return implode(',', $option);
+                }
+                return $option;
+            }, $event->input->getArguments()
+            )
+        );
+
+        $arguments = implode(' ',  $arguments);
+
         $options = array_filter(
             array_map(function ($option){
                 if (is_array($option)) {
