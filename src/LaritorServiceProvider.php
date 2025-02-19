@@ -72,10 +72,6 @@ class LaritorServiceProvider extends ServiceProvider
             app(Laritor::class)->responseRenderCompleted();
         });
 
-        Event::listen(['creating:*'],function ($event, $data) {
-            app(Laritor::class)->viewRenderStarted();
-        });
-
 
         $this->app->booted(function () {
             $this->routes();

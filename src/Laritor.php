@@ -23,8 +23,6 @@ class Laritor
 
     private $controller = 0;
 
-    private $view = 0;
-
     private $response = 0;
 
     private $context = 'BOOT';
@@ -62,31 +60,16 @@ class Laritor
         $this->setContext('CONTROLLER');
     }
 
-    public function viewRenderStarted()
-    {
-        if ($this->context !== 'VIEW') {
-            $this->controller = $this->getDurationFrom($this->started) - ($this->booted + $this->middleware );
-            $this->setContext('VIEW');
-        }
-    }
-
     public function responseRenderStarted()
     {
-        if ($this->context === 'VIEW') {
-            // View render event executed
-            $this->view = $this->getDurationFrom($this->started) - ($this->booted + $this->middleware + $this->controller );
-        } else {
-            // view render not executed. Possibly no view.
-            $this->controller = $this->getDurationFrom($this->started) - ($this->booted + $this->middleware );
-        }
-
+        $this->controller = $this->getDurationFrom($this->started) - ($this->booted + $this->middleware );
         $this->setContext('RESPONSE');
     }
 
     public function responseRenderCompleted()
     {
         $this->response = $this->getDurationFrom($this->started) - (
-            $this->booted + $this->middleware + $this->controller + $this->view
+            $this->booted + $this->middleware + $this->controller
             );
 
         $this->setContext('TERMINATE');
@@ -157,7 +140,6 @@ class Laritor
             'booted' => $this->booted,
             'middleware' => $this->middleware,
             'controller' => $this->controller,
-            'view' => $this->view,
             'response' => $this->response
         ];
     }
