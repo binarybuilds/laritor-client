@@ -8,6 +8,7 @@ use Illuminate\Routing\Events\PreparingResponse;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 use Laritor\LaravelClient\Commands\DiscoverCommand;
 use Laritor\LaravelClient\Commands\HealthCheckMakeCommand;
 
@@ -41,13 +42,13 @@ class LaritorServiceProvider extends ServiceProvider
             DiscoverCommand::class
         ]);
 
-        app(Laritor::class)->setStarted();
+        app(Laritor::class)->started();
 
         app()->bind(ControllerDispatcher::class, function ($app) {
             return new class($app) extends ControllerDispatcher {
                 public function dispatch($route, $controller, $method)
                 {
-                    app(Laritor::class)->setMiddlewareEnded();
+                    app(Laritor::class)->controllerStarted();
                     return parent::dispatch($route, $controller, $method);
                 }
             };
@@ -57,25 +58,36 @@ class LaritorServiceProvider extends ServiceProvider
             return new class($app) extends \Illuminate\Routing\CallableDispatcher {
                 public function dispatch($route, $callable)
                 {
-                    app(Laritor::class)->setMiddlewareEnded();
+                    app(Laritor::class)->controllerStarted();
                     return parent::dispatch($route, $callable);
                 }
             };
         });
 
         Event::listen(function (PreparingResponse $event) {
-            app(Laritor::class)->setControllerCompleted();
+            app(Laritor::class)->responseRenderStarted();
         });
 
         Event::listen(function (ResponsePrepared $event) {
-            app(Laritor::class)->setResponseCompleted();
+            app(Laritor::class)->responseRenderCompleted();
+        });
+
+        Event::listen(['creating:*','composing:*'],function ($event, $data) {
+
+            if (Str::startsWith($event, 'composing:')) {
+                app(Laritor::class)->composerStarted();
+            }
+
+            if (Str::startsWith($event, 'creating:')) {
+                app(Laritor::class)->viewRenderStarted();
+            }
         });
 
 
         $this->app->booted(function () {
             $this->routes();
 
-            app(Laritor::class)->setBooted();
+            app(Laritor::class)->booted();
 
         });
     }

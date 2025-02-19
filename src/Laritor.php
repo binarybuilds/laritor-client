@@ -23,6 +23,10 @@ class Laritor
 
     private $controller = 0;
 
+    private $composer = 0;
+
+    private $view = 0;
+
     private $response = 0;
 
     private $context = 'BOOT';
@@ -43,64 +47,70 @@ class Laritor
         $this->context = $context;
     }
 
-
-
-    public function setStarted()
+    public function started()
     {
         $this->started = defined('LARAVEL_START') ? LARAVEL_START : $event->request->server('REQUEST_TIME_FLOAT');
     }
 
-    /**
-     * @return int
-     */
-    public function getBooted()
-    {
-        return $this->booted;
-    }
-
-    public function setBooted()
+    public function booted()
     {
         $this->booted = $this->started ? $this->getDurationFrom($this->started) : 0;
         $this->setContext('MIDDLEWARE');
     }
 
-    /**
-     * @return int
-     */
-    public function getMiddleware()
-    {
-        return $this->middleware;
-    }
-
-    public function getDurationFrom($time)
-    {
-        return floor((microtime(true) - $time) * 1000);
-    }
-
-    public function setMiddlewareEnded()
+    public function controllerStarted()
     {
         $this->middleware = $this->getDurationFrom($this->started) - $this->booted;
         $this->setContext('CONTROLLER');
     }
 
-    /**
-     * @return int
-     */
-    public function getController()
-    {
-        return $this->controller;
-    }
-
-    public function setControllerCompleted()
+    public function composerStarted()
     {
         $this->controller = $this->getDurationFrom($this->started) - ($this->booted + $this->middleware );
+        $this->setContext('COMPOSER');
+    }
+
+    public function viewRenderStarted()
+    {
+        if ($this->context === 'COMPOSER') {
+            // View composer event executed
+            $this->composer = $this->getDurationFrom($this->started) - ($this->booted + $this->middleware + $this->controller );
+        } else {
+            $this->controller = $this->getDurationFrom($this->started) - ($this->booted + $this->middleware );
+        }
+
+        $this->setContext('VIEW');
+    }
+
+    public function responseRenderStarted()
+    {
+        if ($this->context === 'COMPOSER') {
+            // View composer event executed
+            $this->composer = $this->getDurationFrom($this->started) - ($this->booted + $this->middleware + $this->controller );
+        } elseif ($this->context === 'VIEW') {
+            // View render event executed
+            $this->view = $this->getDurationFrom($this->started) - ($this->booted + $this->middleware + $this->controller + $this->composer );
+        } else {
+            // Neither of the view events executed. Possibly no view.
+            $this->controller = $this->getDurationFrom($this->started) - ($this->booted + $this->middleware );
+        }
+
         $this->setContext('RESPONSE');
     }
 
-    public function setResponseCompleted()
+    public function responseRenderCompleted()
     {
-        $this->response = $this->getDurationFrom($this->started) - ($this->booted + $this->middleware + $this->controller );
+        $this->response = $this->getDurationFrom($this->started) - (
+            $this->booted + $this->middleware + $this->controller +
+            $this->composer + $this->view
+            );
+
         $this->setContext('TERMINATE');
+    }
+
+    public function getDurationFrom($time)
+    {
+        return floor((microtime(true) - $time) * 1000);
     }
 
     /**
