@@ -35,6 +35,8 @@ class RequestRecorder extends Recorder
             return;
         }
 
+        $this->laritor->responseRenderCompleted();
+
         $startTime = defined('LARAVEL_START') ? LARAVEL_START : $event->request->server('REQUEST_TIME_FLOAT');
         $duration =  $startTime ? floor((microtime(true) - $startTime) * 1000) : null;
 

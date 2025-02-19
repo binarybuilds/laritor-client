@@ -8,7 +8,6 @@ use Illuminate\Routing\Events\PreparingResponse;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Str;
 use Laritor\LaravelClient\Commands\DiscoverCommand;
 use Laritor\LaravelClient\Commands\HealthCheckMakeCommand;
 
@@ -66,10 +65,6 @@ class LaritorServiceProvider extends ServiceProvider
 
         Event::listen(function (PreparingResponse $event) {
             app(Laritor::class)->responseRenderStarted();
-        });
-
-        Event::listen(function (ResponsePrepared $event) {
-            app(Laritor::class)->responseRenderCompleted();
         });
 
 

@@ -62,8 +62,10 @@ class Laritor
 
     public function responseRenderStarted()
     {
-        $this->controller = $this->getDurationFrom($this->started) - ($this->booted + $this->middleware );
-        $this->setContext('RESPONSE');
+        if ($this->context !== 'RESPONSE') {
+            $this->controller = $this->getDurationFrom($this->started) - ($this->booted + $this->middleware );
+            $this->setContext('RESPONSE');
+        }
     }
 
     public function responseRenderCompleted()
@@ -71,8 +73,6 @@ class Laritor
         $this->response = $this->getDurationFrom($this->started) - (
             $this->booted + $this->middleware + $this->controller
             );
-
-        $this->setContext('TERMINATE');
     }
 
     public function getDurationFrom($time)
