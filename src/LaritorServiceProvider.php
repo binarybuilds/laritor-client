@@ -72,15 +72,8 @@ class LaritorServiceProvider extends ServiceProvider
             app(Laritor::class)->responseRenderCompleted();
         });
 
-        Event::listen(['creating:*','composing:*'],function ($event, $data) {
-
-            if (Str::startsWith($event, 'composing:')) {
-                app(Laritor::class)->composerStarted();
-            }
-
-            if (Str::startsWith($event, 'creating:')) {
-                app(Laritor::class)->viewRenderStarted();
-            }
+        Event::listen(['creating:*'],function ($event, $data) {
+            app(Laritor::class)->viewRenderStarted();
         });
 
 

@@ -23,8 +23,6 @@ class Laritor
 
     private $controller = 0;
 
-    private $composer = 0;
-
     private $view = 0;
 
     private $response = 0;
@@ -64,34 +62,21 @@ class Laritor
         $this->setContext('CONTROLLER');
     }
 
-    public function composerStarted()
-    {
-        $this->controller = $this->getDurationFrom($this->started) - ($this->booted + $this->middleware );
-        $this->setContext('COMPOSER');
-    }
-
     public function viewRenderStarted()
     {
-        if ($this->context === 'COMPOSER') {
-            // View composer event executed
-            $this->composer = $this->getDurationFrom($this->started) - ($this->booted + $this->middleware + $this->controller );
-        } else {
+        if ($this->context !== 'VIEW') {
             $this->controller = $this->getDurationFrom($this->started) - ($this->booted + $this->middleware );
+            $this->setContext('VIEW');
         }
-
-        $this->setContext('VIEW');
     }
 
     public function responseRenderStarted()
     {
-        if ($this->context === 'COMPOSER') {
-            // View composer event executed
-            $this->composer = $this->getDurationFrom($this->started) - ($this->booted + $this->middleware + $this->controller );
-        } elseif ($this->context === 'VIEW') {
+        if ($this->context === 'VIEW') {
             // View render event executed
-            $this->view = $this->getDurationFrom($this->started) - ($this->booted + $this->middleware + $this->controller + $this->composer );
+            $this->view = $this->getDurationFrom($this->started) - ($this->booted + $this->middleware + $this->controller );
         } else {
-            // Neither of the view events executed. Possibly no view.
+            // view render not executed. Possibly no view.
             $this->controller = $this->getDurationFrom($this->started) - ($this->booted + $this->middleware );
         }
 
@@ -101,8 +86,7 @@ class Laritor
     public function responseRenderCompleted()
     {
         $this->response = $this->getDurationFrom($this->started) - (
-            $this->booted + $this->middleware + $this->controller +
-            $this->composer + $this->view
+            $this->booted + $this->middleware + $this->controller + $this->view
             );
 
         $this->setContext('TERMINATE');
@@ -173,6 +157,7 @@ class Laritor
             'booted' => $this->booted,
             'middleware' => $this->middleware,
             'controller' => $this->controller,
+            'view' => $this->view,
             'response' => $this->response
         ];
     }
