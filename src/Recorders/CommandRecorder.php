@@ -79,7 +79,10 @@ class CommandRecorder extends Recorder
         $command = isset($command[0]) ? $command[0] : null;
 
         if ($command) {
-            $command['duration'] = round($command['started_at']->diffInMilliseconds());
+            $startTime = defined('LARAVEL_START') ? LARAVEL_START : 0;
+            $duration =  $startTime ? floor((microtime(true) - $startTime) * 1000) : 0;
+
+            $command['duration'] = $duration;
             $command['completed_at'] = now()->format('Y-m-d H:i:s');
             $command['started_at'] = $command['started_at']->format('Y-m-d H:i:s');
             $command['code'] = $event->exitCode;
