@@ -2,6 +2,8 @@
 
 namespace Laritor\LaravelClient;
 
+use Illuminate\Container\Container;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
@@ -51,7 +53,12 @@ class Laritor
     public function booted()
     {
         $this->booted = $this->started ? $this->getDurationFrom($this->started) : 0;
-        $this->setContext('MIDDLEWARE');
+
+        if ( App::runningInConsole() ) {
+            $this->setContext('COMMAND');
+        } else {
+            $this->setContext('MIDDLEWARE');
+        }
     }
 
     public function controllerStarted()
