@@ -46,7 +46,7 @@ class ScheduledTaskRecorder extends Recorder
 
         $this->laritor->pushEvent(static::$eventType, [
             'started_at' => now(),
-            'command' => $event instanceof CallbackEvent ? 'Closure' : $event->command,
+            'task' => $event instanceof CallbackEvent ? 'Closure' : $event->command,
             'expression' => $event->expression,
             'timezone' => $event->timezone,
             'user' => $event->user,
@@ -78,7 +78,7 @@ class ScheduledTaskRecorder extends Recorder
             'started_at' => now()->format('Y-m-d H:i:s'),
             'completed_at' => now()->format('Y-m-d H:i:s'),
             'duration' => 0,
-            'command' => $event instanceof CallbackEvent ? 'Closure' : $event->command,
+            'task' => $event instanceof CallbackEvent ? 'Closure' : $event->command,
             'expression' => $event->expression,
             'timezone' => $event->timezone,
             'user' => $event->user,
@@ -99,18 +99,18 @@ class ScheduledTaskRecorder extends Recorder
     public function completeScheduledTask($event, $status)
     {
         $scheduledTasks = collect( $this->laritor->getEvents(static::$eventType))
-            ->map(function ($command) use ($event, $status){
+            ->map(function ($task) use ($event, $status){
 
                 if (
-                    $command['command'] === ( $event instanceof CallbackEvent ? 'Closure' : $event->command)
+                    $task['task'] === ( $event instanceof CallbackEvent ? 'Closure' : $event->command)
                 ) {
-                    $command['status'] = $status;
-                    $command['duration'] = $command['started_at']->diffInMilliseconds();
-                    $command['completed_at'] = now()->format('Y-m-d H:i:s');
-                    $command['started_at'] = $command['started_at']->format('Y-m-d H:i:s');
+                    $task['status'] = $status;
+                    $task['duration'] = $task['started_at']->diffInMilliseconds();
+                    $task['completed_at'] = now()->format('Y-m-d H:i:s');
+                    $task['started_at'] = $task['started_at']->format('Y-m-d H:i:s');
                 }
 
-                return $command;
+                return $task;
             })->values()->toArray();
 
         $this->laritor->addEvents(static::$eventType, $scheduledTasks);
