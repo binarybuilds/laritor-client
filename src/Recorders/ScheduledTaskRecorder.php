@@ -85,7 +85,7 @@ class ScheduledTaskRecorder extends Recorder
             'status' => 'skipped'
         ]);
 
-        $this->laritor->sendEvents();
+        $this->sendEvents();
     }
 
     /**
@@ -117,6 +117,14 @@ class ScheduledTaskRecorder extends Recorder
 
         $this->laritor->addEvents(static::$eventType, $scheduledTasks);
 
+        $this->sendEvents();
+    }
+
+    public function sendEvents()
+    {
+        $scheduler = $this->laritor->getEvents(SchedulerRecorder::$eventType);
+        $this->laritor->removeScheduler();
         $this->laritor->sendEvents();
+        $this->laritor->addEvents(SchedulerRecorder::$eventType, $scheduler);
     }
 }

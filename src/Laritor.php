@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
+use Laritor\LaravelClient\Recorders\SchedulerRecorder;
 
 class Laritor
 {
@@ -109,6 +110,11 @@ class Laritor
     {
         $this->events[$name] = $events;
         return $this;
+    }
+
+    public function removeScheduler()
+    {
+        unset($this->events[SchedulerRecorder::$eventType]);
     }
 
     /**
