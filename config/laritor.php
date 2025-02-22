@@ -29,7 +29,7 @@ return [
         \Laritor\LaravelClient\Recorders\QueuedJobRecorder::class,
         \Laritor\LaravelClient\Recorders\RequestRecorder::class,
         \Laritor\LaravelClient\Recorders\CommandRecorder::class,
-//        \Laritor\LaravelClient\Recorders\ScheduledTaskRecorder::class,
+        \Laritor\LaravelClient\Recorders\ScheduledTaskRecorder::class,
         \Laritor\LaravelClient\Recorders\SchedulerRecorder::class
     ],
 
