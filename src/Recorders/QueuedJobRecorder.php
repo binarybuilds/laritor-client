@@ -86,6 +86,8 @@ class QueuedJobRecorder extends Recorder
         $job['status'] = $event instanceof JobFailed ? 'failed' : 'processed';
 
         $this->laritor->addEvents('jobs', [$job]);
+
+        $this->laritor->sendEvents();
     }
 
     public function shouldReportJob($job)
