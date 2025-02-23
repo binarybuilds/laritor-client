@@ -44,7 +44,10 @@ class ScheduledTaskRecorder extends Recorder
     {
         $event = $event->task;
 
+        $scheduler = $this->laritor->getEvents(SchedulerRecorder::$eventType);
+
         $this->laritor->pushEvent(static::$eventType, [
+            'scheduled_at' => $scheduler[0]['started_at']->startOfMinute()->format('Y-m-d H:i:s'),
             'started_at' => now(),
             'task' => $event instanceof CallbackEvent ? 'Closure' : $event->command,
             'expression' => $event->expression,
@@ -74,7 +77,10 @@ class ScheduledTaskRecorder extends Recorder
     {
         $event = $event->task;
 
+        $scheduler = $this->laritor->getEvents(SchedulerRecorder::$eventType);
+
         $this->laritor->pushEvent(static::$eventType, [
+            'scheduled_at' => $scheduler[0]['started_at']->startOfMinute()->format('Y-m-d H:i:s'),
             'started_at' => now()->format('Y-m-d H:i:s'),
             'completed_at' => now()->format('Y-m-d H:i:s'),
             'duration' => 0,
@@ -125,6 +131,8 @@ class ScheduledTaskRecorder extends Recorder
         $scheduler = $this->laritor->getEvents(SchedulerRecorder::$eventType);
         $this->laritor->removeScheduler();
         $this->laritor->sendEvents();
-        $this->laritor->addEvents(SchedulerRecorder::$eventType, $scheduler);
+        if (!empty($scheduler)) {
+            $this->laritor->addEvents(SchedulerRecorder::$eventType, $scheduler);
+        }
     }
 }
