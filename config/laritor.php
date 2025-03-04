@@ -30,7 +30,10 @@ return [
         \Laritor\LaravelClient\Recorders\RequestRecorder::class,
         \Laritor\LaravelClient\Recorders\CommandRecorder::class,
         \Laritor\LaravelClient\Recorders\ScheduledTaskRecorder::class,
-        \Laritor\LaravelClient\Recorders\SchedulerRecorder::class
+        \Laritor\LaravelClient\Recorders\SchedulerRecorder::class,
+        \Laritor\LaravelClient\Recorders\LogRecorder::class,
+        \Laritor\LaravelClient\Recorders\MailRecorder::class,
+        \Laritor\LaravelClient\Recorders\NotificationRecorder::class,
     ],
 
     /**
