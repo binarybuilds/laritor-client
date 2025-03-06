@@ -2,9 +2,13 @@
 
 namespace Laritor\LaravelClient\Recorders;
 
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Mail\Events\MessageSent;
+use Illuminate\Mail\Mailable;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Str;
 
 class MailRecorder extends Recorder
 {
@@ -41,7 +45,6 @@ class MailRecorder extends Recorder
     public function sending(MessageSending $event)
     {
         $message = $event->message;
-
         if ($message instanceof \Swift_Message) {
             $eventData = [
                 'to' => $message->getTo(),
@@ -50,9 +53,6 @@ class MailRecorder extends Recorder
                 'from' => $message->getFrom(),
                 'reply' => $message->getReplyTo(),
                 'subject' => $message->getSubject(),
-                'id' => $message->getId(),
-                'context' => $this->laritor->getContext(),
-                'started_at' => now()->format('Y-m-d H:i:s'),
             ];
         } else {
             $eventData = [
@@ -72,11 +72,13 @@ class MailRecorder extends Recorder
                     return $address->getAddress();
                 }, $message->getReplyTo())),
                 'subject' => $message->getSubject(),
-                'id' => $message->getHeaders()->get('Message-ID'),
-                'context' => $this->laritor->getContext(),
-                'started_at' => now()->format('Y-m-d H:i:s'),
             ];
         }
+
+        $eventData['id'] = $event->data['__laritor_id'] ?? '';
+        $eventData['mailable'] = $event->data['__laritor_mailable'] ?? '';
+        $eventData['context'] = $this->laritor->getContext();
+        $eventData['started_at'] = now()->format('Y-m-d H:i:s');
 
         $this->laritor->pushEvent(static::$eventType, $eventData );
     }
@@ -86,13 +88,7 @@ class MailRecorder extends Recorder
      */
     public function sent(MessageSent $event)
     {
-        $message = $event->message;
-
-        if ($message instanceof \Swift_Message) {
-            $id = $message->getId();
-        } else {
-            $id = $message->getHeaders()->get('Message-ID');
-        }
+        $id = $event->data['__laritor_id'] ?? '';
 
         $events = collect($this->laritor->getEvents(static::$eventType))->map(function ($event) use ($id){
             if ($event['id'] === $id) {
@@ -102,5 +98,29 @@ class MailRecorder extends Recorder
         });
 
         $this->laritor->addEvents(static::$eventType, $events);
+    }
+
+    public static function registerRecorder()
+    {
+        parent::registerRecorder();
+
+        $existing_callback = Mailable::$viewDataCallback;
+
+        Mailable::buildViewDataUsing(function ($mailable) use ( $existing_callback ) {
+
+            $data = [];
+
+            if( $existing_callback ) {
+                $data = call_user_func( $existing_callback, $mailable );
+
+                if( ! is_array($data) ) $data = [];
+            }
+
+            return array_merge($data, [
+                '__laritor_id' => Str::uuid(),
+                '__laritor_mailable' => get_class($mailable),
+                '__laritor_queued' => in_array(ShouldQueue::class, class_implements($mailable)),
+            ]);
+        });
     }
 }
