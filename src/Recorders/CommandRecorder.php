@@ -101,7 +101,8 @@ class CommandRecorder extends Recorder
             'view:cache',
             'config:cache',
             'queue:work',
-            'queue:listen'
+            'queue:listen',
+            'laritor:send-metrics'
         ]);
     }
 }
