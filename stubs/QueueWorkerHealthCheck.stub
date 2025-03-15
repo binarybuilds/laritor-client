@@ -1,0 +1,22 @@
+<?php
+
+namespace {{ namespace }};
+
+use Laritor\LaravelClient\Checks\QueueWorkerHealthCheck;
+use Illuminate\Http\Request;
+
+class {{ class }} extends QueueWorkerHealthCheck
+{
+    /**
+     * Add a queue connection name to monitor. Leave null if you wish to use default connection.
+     * @var string|null
+     */
+    public $connection = null;
+
+    /**
+     * Add a queue name to monitor. Leave null if you wish to use default queue.
+     * @var string|null
+     */
+    public $queue = null;
+
+}

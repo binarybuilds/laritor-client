@@ -4,28 +4,28 @@ namespace Laritor\LaravelClient\Commands;
 
 use Illuminate\Console\GeneratorCommand;
 
-class HealthCheckMakeCommand extends GeneratorCommand
+class QueueHealthCheckMakeCommand extends GeneratorCommand
 {
     /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'make:laritor-custom-hc';
+    protected $name = 'make:laritor-queue-hc';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create a custom health check for laritor';
+    protected $description = 'Create a queue worker health check for laritor';
 
     /**
      * The type of class being generated.
      *
      * @var string
      */
-    protected $type = 'HealthCheck';
+    protected $type = 'QueueWorkerHealthCheck';
 
     /**
      * Get the stub file for the generator.

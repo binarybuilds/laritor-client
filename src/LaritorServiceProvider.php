@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Laritor\LaravelClient\Commands\DiscoverCommand;
 use Laritor\LaravelClient\Commands\HealthCheckMakeCommand;
+use Laritor\LaravelClient\Commands\QueueHealthCheckMakeCommand;
 use Laritor\LaravelClient\Commands\SendServerMetricsCommand;
 
 class LaritorServiceProvider extends ServiceProvider
@@ -39,6 +40,7 @@ class LaritorServiceProvider extends ServiceProvider
 
         $this->commands([
             HealthCheckMakeCommand::class,
+            QueueHealthCheckMakeCommand::class,
             DiscoverCommand::class,
             SendServerMetricsCommand::class
         ]);

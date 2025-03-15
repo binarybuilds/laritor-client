@@ -9,14 +9,22 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 
+/**
+ * Class QueueHealthCheck
+ * @package Laritor\LaravelClient\Jobs
+ */
 class QueueHealthCheck implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /**
+     * @var int
+     */
     protected $checkId;
 
     /**
-     * @param $check_id
+     * QueueHealthCheck constructor.
+     * @param int $check_id
      */
     public function __construct($check_id)
     {

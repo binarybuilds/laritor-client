@@ -21,6 +21,14 @@ class HealthCheckController
      */
     public function check(Request $request, $check_type )
     {
+        if (
+            !config('laritor.enabled') ||
+            !config('laritor.keys.backend') ||
+            $request->input('token') !== config('laritor.keys.backend'))
+        {
+            return response()->json(['message' => 'unauthorized'], 401);
+        }
+
         switch ($check_type) {
             case 'db' : $health_check = app( DatabaseHealthCheck::class );break;
             case 'cache' : $health_check = app( CacheHealthCheck::class );break;
@@ -37,7 +45,7 @@ class HealthCheckController
                 } else {
                     $health_check = app( BaseHealthCheck::class );
                 }
-            }break;
+            } break;
         }
 
         return $health_check->run($request);

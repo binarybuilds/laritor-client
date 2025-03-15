@@ -3,32 +3,51 @@
 namespace Laritor\LaravelClient\Checks;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
+/**
+ * Class BaseHealthCheck
+ * @package Laritor\LaravelClient\Checks
+ */
 class BaseHealthCheck
 {
     /**
+     * @var int
+     */
+    protected $timeout = 10;
+
+    /**
+     * @var bool
+     */
+    protected $ping_back = false;
+
+    /**
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return mixed
      */
     public function run(Request $request)
     {
-        if (config('laritor.keys.backend') && $request->input('token') === config('laritor.keys.backend')) {
-            try{
-                $isSuccess = $this->check($request);
+        try{
+            $isSuccess = $this->check($request);
 
-                if ($isSuccess) {
-                    return response()->json(['message' => $this->successMessage() ]);
-                }
-
-                return response()->json(['message' => $this->failureMessage() ], 500);
-
-            } catch (\Throwable $exception) {
-                return response()->json(['message' => $exception->getMessage()], 500);
+            if ($isSuccess) {
+                return response()->json([
+                    'message' => Str::limit($this->successMessage(), 200),
+                    'ping_back' => $this->ping_back
+                ]);
             }
+
+            return response()->json([
+                'message' => Str::limit($this->failureMessage(), 200),
+                'ping_back' => $this->ping_back
+            ], 500);
+
+        } catch (\Throwable $exception) {
+            return response()->json([
+                'message' => Str::limit($exception->getMessage(), 200),
+                'ping_back' => $this->ping_back
+            ], 500);
         }
-
-        return response()->json(['message' => 'token is invalid'], 401);
-
     }
 
 
@@ -55,5 +74,4 @@ class BaseHealthCheck
     {
         return 'health check not configured properly';
     }
-
 }

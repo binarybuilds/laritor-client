@@ -8,6 +8,21 @@ use Laritor\LaravelClient\Jobs\QueueHealthCheck;
 class QueueWorkerHealthCheck extends BaseHealthCheck
 {
     /**
+     * @var bool
+     */
+    protected $ping_back = true;
+
+    /**
+     * @var null
+     */
+    public $connection = null;
+
+    /**
+     * @var null
+     */
+    public $queue = null;
+
+    /**
      * @param Request $request
      * @return true
      */
@@ -15,11 +30,11 @@ class QueueWorkerHealthCheck extends BaseHealthCheck
     {
         $queue = QueueHealthCheck::dispatch($request->input('check_id'));
 
-        if ($request->input('connection')) {
+        if ($this->connection) {
             $queue->onConnection($request->input('connection'));
         }
 
-        if ($request->input('queue')) {
+        if ($this->queue) {
             $queue->onQueue($request->input('queue'));
         }
 
