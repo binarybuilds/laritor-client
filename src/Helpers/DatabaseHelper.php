@@ -2,6 +2,8 @@
 
 namespace Laritor\LaravelClient\Helpers;
 
+use Illuminate\Support\Facades\DB;
+
 /**
  * Class DatabaseHelper
  * @package Laritor\LaravelClient\Helpers
