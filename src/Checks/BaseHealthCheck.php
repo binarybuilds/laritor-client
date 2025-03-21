@@ -13,8 +13,16 @@ class BaseHealthCheck
 {
     /**
      * @var int
+     * Max no of seconds to run the health check before timing out
      */
-    protected $timeout = 10;
+    public static $timeout = 10;
+
+    /**
+     * @var string
+     * Cron expression which represents the schedule at which this
+     * health check should run
+     */
+    public static $expression = '*/5 * * * *';
 
     /**
      * @var bool
