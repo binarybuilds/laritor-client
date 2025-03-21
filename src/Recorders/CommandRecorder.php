@@ -5,6 +5,10 @@ namespace Laritor\LaravelClient\Recorders;
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Console\Events\CommandStarting;
 
+/**
+ * Class CommandRecorder
+ * @package Laritor\LaravelClient\Recorders
+ */
 class CommandRecorder extends Recorder
 {
     /**
@@ -12,6 +16,9 @@ class CommandRecorder extends Recorder
      */
     public static $eventType = 'commands';
 
+    /**
+     * @var string[]
+     */
     public static $events = [
         CommandStarting::class,
         CommandFinished::class
@@ -19,7 +26,6 @@ class CommandRecorder extends Recorder
 
     /**
      * @param $event
-     * @return void
      */
     public function trackEvent($event)
     {
@@ -35,7 +41,7 @@ class CommandRecorder extends Recorder
     }
 
     /**
-     * @return void
+     * @param CommandStarting $event
      */
     public function start(CommandStarting $event)
     {
@@ -71,7 +77,7 @@ class CommandRecorder extends Recorder
     }
 
     /**
-     * @return void
+     * @param CommandFinished $event
      */
     public function finish(CommandFinished $event)
     {
@@ -91,7 +97,11 @@ class CommandRecorder extends Recorder
         }
     }
 
-    public function ignore($command) : bool
+    /**
+     * @param $command
+     * @return bool
+     */
+    public function ignore($command)
     {
         return in_array($command, [
             'schedule:run',
@@ -102,6 +112,7 @@ class CommandRecorder extends Recorder
             'config:cache',
             'queue:work',
             'queue:listen',
+            'laritor:sync',
             'laritor:send-metrics'
         ]);
     }

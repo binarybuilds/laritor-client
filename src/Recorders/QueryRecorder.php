@@ -158,11 +158,13 @@ class QueryRecorder extends Recorder
             $query['line'] = $path[1];
             if ( in_array($query['bindings'], $duplicateBindings) ) {
                 $query['issues'][] = 'duplicate';
-            } elseif (in_array($query['path'], $duplicatePath) ) {
+            }
+            if (in_array($query['path'], $duplicatePath) ) {
                 $query['issues'][] = 'n-plus-1';
             }
 
-            $query['bindings'] = config('laritor.query.record_bindings') ? $query['bindings'] : '';
+            $query['query'] = config('laritor.query.record_bindings') ? $query['bindings'] : $query['query'];
+            $query['bindings'] = '';
 
             unset($query['path']);
 

@@ -34,6 +34,7 @@ return [
         \Laritor\LaravelClient\Recorders\LogRecorder::class,
         \Laritor\LaravelClient\Recorders\MailRecorder::class,
         \Laritor\LaravelClient\Recorders\NotificationRecorder::class,
+        \Laritor\LaravelClient\Recorders\DatabaseSchemaChangesRecorder::class,
     ],
 
     /**

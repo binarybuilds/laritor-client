@@ -209,21 +209,17 @@ class Laritor
     }
 
     /**
-     * @param $health_checks
-     * @param $scheduled_tasks
+     * @param $data
      */
-    public function discover($health_checks, $scheduled_tasks)
+    public function sync($data)
     {
-        $data = [
+        //todo: implement api
+        Http::post('http:/159.223.153.239/api/sync', [
             'app_key' => config('laritor.keys.backend', 'jhfdvhvhsdkdf'),
             'env' => config('app.env'),
-            'app' => url('/'),
-            'health_checks' => $health_checks,
-            'scheduled_tasks' => $scheduled_tasks
-        ];
-
-        //todo: implement api
-        Http::post('http:/159.223.153.239/api/discover', $data);
+            'url' => url('/'),
+            'data' => $data
+        ]);
     }
 
     /**
