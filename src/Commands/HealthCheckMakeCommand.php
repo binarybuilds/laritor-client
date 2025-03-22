@@ -58,6 +58,8 @@ class HealthCheckMakeCommand extends GeneratorCommand
     {
         $stub = parent::buildClass($name);
 
-        return str_replace(['{{ name }}'], Str::headline($name), $stub);
+        $pieces = explode('\\', $name);
+
+        return str_replace(['{{ name }}'], Str::headline($pieces[count($pieces) - 1]), $stub);
     }
 }
