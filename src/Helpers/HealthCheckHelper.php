@@ -19,14 +19,6 @@ class HealthCheckHelper
     {
         $health_checks = [];
 
-        $health_checks[] = [
-            'name' => 'Task Scheduler',
-            'type' => 'scheduler',
-            'expression' => '* * * * *',
-            'timeout' => 10,
-            'active' => in_array(SchedulerRecorder::class, config('laritor.recorders'))
-        ];
-
         if (is_dir(app_path('Laritor'))) {
             foreach ((new Finder())->in(app_path('Laritor'))->files() as $health_check) {
                 $name = str_replace(
@@ -40,9 +32,7 @@ class HealthCheckHelper
                 $health_checks[] = [
                     'name' => $class::$name,
                     'type' => $name,
-                    'expression' => $class::$expression,
-                    'timeout' => $class::$timeout,
-                    'active' => $class::isActive()
+                    'timeout' => $class::$timeout
                 ];
             }
         }

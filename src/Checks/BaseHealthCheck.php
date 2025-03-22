@@ -19,13 +19,6 @@ class BaseHealthCheck
 
     /**
      * @var string
-     * Cron expression which represents the schedule at which this
-     * health check should run
-     */
-    public static $expression = '*/5 * * * *';
-
-    /**
-     * @var string
      */
     public static $name = 'Custom Health Check';
 
@@ -63,7 +56,6 @@ class BaseHealthCheck
         }
     }
 
-
     /**
      * @return bool
      */
@@ -86,13 +78,5 @@ class BaseHealthCheck
     public function failureMessage()
     {
         return 'health check not configured properly';
-    }
-
-    /**
-     * @return bool
-     */
-    public static function isActive()
-    {
-        return true;
     }
 }

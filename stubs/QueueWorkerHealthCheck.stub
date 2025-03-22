@@ -20,5 +20,4 @@ class {{ class }} extends QueueWorkerHealthCheck
      * @var string|null
      */
     public $queue = null;
-
 }
