@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class {{ class }} extends QueueWorkerHealthCheck
 {
-    public static $name = {{ name }};
+    public static $name = '{{ name }}';
 
     /**
      * Add a queue connection name to monitor. Leave null if you wish to use default connection.

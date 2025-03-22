@@ -2,9 +2,7 @@
 
 namespace Laritor\LaravelClient\Commands;
 
-use Illuminate\Console\GeneratorCommand;
-
-class QueueHealthCheckMakeCommand extends GeneratorCommand
+class QueueHealthCheckMakeCommand extends HealthCheckMakeCommand
 {
     /**
      * The console command name.
@@ -26,25 +24,4 @@ class QueueHealthCheckMakeCommand extends GeneratorCommand
      * @var string
      */
     protected $type = 'QueueWorkerHealthCheck';
-
-    /**
-     * Get the stub file for the generator.
-     *
-     * @return string
-     */
-    protected function getStub()
-    {
-       return __DIR__.'/../../stubs/LaritorHealthCheck.stub';
-    }
-
-    /**
-     * Get the default namespace for the class.
-     *
-     * @param  string  $rootNamespace
-     * @return string
-     */
-    protected function getDefaultNamespace($rootNamespace)
-    {
-        return $rootNamespace.'\Laritor';
-    }
 }

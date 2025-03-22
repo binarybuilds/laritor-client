@@ -50,13 +50,13 @@ class HealthCheckMakeCommand extends GeneratorCommand
     }
 
     /**
-     * @param string $stub
      * @param string $name
      * @return array|string|string[]
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    protected function replaceClass($stub, $name)
+    protected function buildClass($name)
     {
-        $stub = parent::replaceClass($stub, $name);
+        $stub = parent::buildClass($name);
 
         return str_replace(['{{ name }}'], Str::headline($name), $stub);
     }

@@ -10,7 +10,7 @@ class {{ class }} extends BaseHealthCheck
     /**
      * @var string
      */
-    public static $name = {{ name }};
+    public static $name = '{{ name }}';
 
     /**
      * @return bool
