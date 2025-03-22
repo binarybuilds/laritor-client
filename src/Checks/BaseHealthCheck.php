@@ -25,6 +25,11 @@ class BaseHealthCheck
     public static $expression = '*/5 * * * *';
 
     /**
+     * @var string
+     */
+    public static $name = 'Custom Health Check';
+
+    /**
      * @var bool
      */
     protected $ping_back = false;
@@ -81,5 +86,13 @@ class BaseHealthCheck
     public function failureMessage()
     {
         return 'health check not configured properly';
+    }
+
+    /**
+     * @return bool
+     */
+    public static function isActive()
+    {
+        return true;
     }
 }

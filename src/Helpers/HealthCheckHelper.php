@@ -19,13 +19,13 @@ class HealthCheckHelper
     {
         $health_checks = [];
 
-        if (in_array(SchedulerRecorder::class, config('laritor.recorders'))) {
-            $health_checks[] = [
-                'name' => 'Scheduler',
-                'expression' => '* * * * *',
-                'timeout' => 10
-            ];
-        }
+        $health_checks[] = [
+            'name' => 'Task Scheduler',
+            'type' => 'scheduler',
+            'expression' => '* * * * *',
+            'timeout' => 10,
+            'active' => in_array(SchedulerRecorder::class, config('laritor.recorders'))
+        ];
 
         if (is_dir(app_path('Laritor'))) {
             foreach ((new Finder())->in(app_path('Laritor'))->files() as $health_check) {
@@ -38,9 +38,11 @@ class HealthCheckHelper
                 $class = app()->getNamespace().'Laritor\\'.$name;
 
                 $health_checks[] = [
-                    'name' => $name,
+                    'name' => $class::$name,
+                    'type' => $name,
                     'expression' => $class::$expression,
-                    'timeout' => $class::$timeout
+                    'timeout' => $class::$timeout,
+                    'active' => $class::isActive()
                 ];
             }
         }

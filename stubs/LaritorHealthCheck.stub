@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 class {{ class }} extends BaseHealthCheck
 {
     /**
+     * @var string
+     */
+    public static $name = {{ name }};
+
+    /**
      * @return bool
      */
     public function check(Request $request)
