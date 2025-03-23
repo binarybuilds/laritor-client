@@ -25,8 +25,8 @@ class ScheduledTaskRecorder extends Recorder
     public function trackEvent($event)
     {
         $task = Str::substr(
-            Str::replace("'",'', $event->task),
-            Str::position(Str::replace("'",'', $event->task), 'artisan')
+            Str::replace("'",'', $event->task->command),
+            Str::position(Str::replace("'",'', $event->task->command), 'artisan')
         );
 
         if (in_array($task, ['artisan laritor:send-metrics'])) {
