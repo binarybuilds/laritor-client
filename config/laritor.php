@@ -95,7 +95,8 @@ return [
             'telescope/*'.
             '_debugbar*',
             '__clockwork*',
-            '_ignition/*'
+            '_ignition/*',
+            'laritor/*'
         ]
     ],
 
