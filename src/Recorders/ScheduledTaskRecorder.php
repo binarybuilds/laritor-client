@@ -7,6 +7,7 @@ use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Console\Scheduling\CallbackEvent;
+use Illuminate\Support\Str;
 
 class ScheduledTaskRecorder extends Recorder
 {
@@ -23,6 +24,15 @@ class ScheduledTaskRecorder extends Recorder
      */
     public function trackEvent($event)
     {
+        $task = Str::substr(
+            Str::replace("'",'', $event->task),
+            Str::position(Str::replace("'",'', $event->task), 'artisan')
+        );
+
+        if (in_array($task, ['artisan laritor:send-metrics'])) {
+           return;
+        }
+
         if ($event instanceof ScheduledTaskStarting ) {
             $this->start($event);
         } elseif ($event instanceof ScheduledTaskFinished ) {
