@@ -205,7 +205,7 @@ class Laritor
     public function callApi()
     {
         //todo: implement api
-        Http::post('http:/159.223.153.239/api/events', $this->toArray());
+        Http::post('https:/app.laritor.com/api/events', $this->toArray());
     }
 
     /**
@@ -214,7 +214,7 @@ class Laritor
     public function sync($data)
     {
         //todo: implement api
-        Http::post('http:/159.223.153.239/api/sync', [
+        Http::post('https:/app.laritor.com/api/sync', [
             'app_key' => config('laritor.keys.backend', 'jhfdvhvhsdkdf'),
             'env' => config('app.env'),
             'url' => url('/'),
