@@ -134,7 +134,6 @@ class Laritor
         $app = app();
 
         return [
-            'app_key' => config('laritor.keys.backend', 'jhfdvhvhsdkdf'),
             'app' => url('/'),
             'version' => $app->version(),
             'event_at' => now(),
@@ -205,7 +204,7 @@ class Laritor
     public function callApi()
     {
         //todo: implement api
-        Http::post('https:/app.laritor.com/api/events', $this->toArray());
+        Http::post(  rtrim(config('laritor.ingest_url'),'/').'/events', $this->toArray());
     }
 
     /**
@@ -213,9 +212,7 @@ class Laritor
      */
     public function sync($data)
     {
-        //todo: implement api
-        Http::post('https:/app.laritor.com/api/sync', [
-            'app_key' => config('laritor.keys.backend', 'jhfdvhvhsdkdf'),
+        Http::post(rtrim(config('laritor.ingest_url'),'/').'/sync', [
             'env' => config('app.env'),
             'url' => url('/'),
             'data' => $data

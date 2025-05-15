@@ -8,13 +8,7 @@ return [
      */
     'enabled' => env('LARITOR_ENABLED', true),
 
-    /**
-     * Your laritor project API Keys. If you re-generate the API keys from the dashboard
-     *  Make sure you update the below env variable with the new value
-     */
-    'keys' => [
-        'backend' => env('LARITOR_BACKEND_KEY'),
-    ],
+    'ingest_url' => env('LARITOR_INGEST_URL'),
 
     /**
      * Here you can enable or disable a specific recorder. If you do not wish a specific recorder to
