@@ -203,8 +203,9 @@ class Laritor
      */
     public function callApi()
     {
-        //todo: implement api
-        Http::post(  rtrim(config('laritor.ingest_url'),'/').'/events', $this->toArray());
+        rescue(function () {
+            Http::post(  rtrim(config('laritor.ingest_url'),'/').'/events', $this->toArray());
+        }, null, false);
     }
 
     /**
@@ -212,11 +213,13 @@ class Laritor
      */
     public function sync($data)
     {
-        Http::post(rtrim(config('laritor.ingest_url'),'/').'/sync', [
-            'env' => config('app.env'),
-            'url' => url('/'),
-            'data' => $data
-        ]);
+        rescue(function () use ($data) {
+            Http::post(rtrim(config('laritor.ingest_url'),'/').'/sync', [
+                'env' => config('app.env'),
+                'url' => url('/'),
+                'data' => $data
+            ]);
+        }, null, false);
     }
 
     /**
