@@ -131,22 +131,11 @@ class Laritor
      */
     public function toArray()
     {
-        $app = app();
-
         return [
             'app' => url('/'),
-            'version' => $app->version(),
-            'event_at' => now(),
-            'env' => config('app.env'),
-            'php' => phpversion(),
+            'event_at' => now()->toDateTimeString(),
             'server' => [
                 'host' => config('laritor.serverless') ? 'serverless' : gethostname(),
-                'os' => PHP_OS,
-            ],
-            'cache' => [
-                'config' => $app->configurationIsCached(),
-                'routes' => $app->routesAreCached(),
-                'events' => $app->eventsAreCached()
             ],
             'events' => $this->events,
             'booted' => $this->booted,
