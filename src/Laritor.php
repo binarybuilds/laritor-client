@@ -178,24 +178,11 @@ class Laritor
      */
     public function sendEvents()
     {
-        $this->transformEvents();
-
         if ($this->shouldSendEvents()) {
             $this->callApi();
         }
 
         $this->reset();
-    }
-
-    public function transformEvents()
-    {
-        foreach ((array)config('laritor.recorders') as $recorder) {
-            if (isset($this->events[$recorder::$eventType])) {
-                $this->events[$recorder::$eventType] = $recorder::transformEvents(
-                    $this->events[$recorder::$eventType]
-                );
-            }
-        }
     }
 
     /**

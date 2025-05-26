@@ -58,13 +58,4 @@ class Recorder
             Event::listen( $event, [static::class, 'handle'] );
         }
     }
-
-    /**
-     * @param $events
-     * @return mixed
-     */
-    public static function transformEvents($events)
-    {
-        return $events;
-    }
 }

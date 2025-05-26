@@ -31,11 +31,9 @@ class QueryRecorder extends Recorder
 
             $query = [
                 'query' => $event->sql,
-                'bindings' => $this->replaceBindings($event),
+                'bindings' => config('laritor.query.record_bindings') ? $this->replaceBindings($event) : null,
                 'time' => $time,
                 'path' => FileHelper::parseFileName($caller['file']) .'@'.$caller['line'],
-//                'slow' => $time >= config('laritor.query.slow'),
-//                'started_at' => now()->subMilliseconds($time)->format('Y-m-d H:i:s'),
                 'completed_at' => now()->format('Y-m-d H:i:s'),
                 'context' => $this->laritor->getContext()
             ];
@@ -138,42 +136,5 @@ class QueryRecorder extends Recorder
         ]);
 
         return "'".$binding."'";
-    }
-
-    /**
-     * @param $events
-     * @return array
-     */
-    public static function transformEvents($events)
-    {
-        $queries = collect($events);
-
-        $duplicateBindings = $queries->duplicates('bindings')->toArray();
-        $duplicatePath = $queries->duplicates('path')->toArray();
-
-        $queries = $queries->map(function ($query) use ( $duplicateBindings, $duplicatePath){
-            $query['issues'] = [];
-            $path = explode('@', $query['path']);
-            $query['file'] = $path[0];
-            $query['line'] = $path[1];
-            if ( in_array($query['bindings'], $duplicateBindings) ) {
-                $query['issues'][] = 'duplicate';
-            }
-            if (in_array($query['path'], $duplicatePath) ) {
-                $query['issues'][] = 'n-plus-1';
-            }
-
-            $query['query'] = config('laritor.query.record_bindings') ? $query['bindings'] : $query['query'];
-            $query['bindings'] = '';
-
-            unset($query['path']);
-
-            return $query;
-        });
-
-        unset($duplicateBindings);
-        unset($duplicatePath);
-
-        return $queries->toArray();
     }
 }
