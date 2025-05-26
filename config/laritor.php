@@ -8,6 +8,9 @@ return [
      */
     'enabled' => env('LARITOR_ENABLED', true),
 
+    /**
+     * This is your laritor ingest url. You can find it in your laritor dashboard.
+     */
     'ingest_url' => env('LARITOR_INGEST_URL'),
 
     /**
@@ -37,7 +40,7 @@ return [
      * to rate limit the number of events you send to laritor. If rate limiter is enabled, All requests are
      * rate limited to a given number per minute per request.
      */
-    'use_rate_limiter' => true,
+    'use_rate_limiter' => env('LARITOR_USE_RATE_LIMITER', true),
 
     /**
      * Here you can define how many times can a request send events to laritor before hitting the rate limit. For example,
@@ -46,46 +49,36 @@ return [
      * Note: Rate limiting is only by request url. Means events sent from url a will not be counted towards rate limit
      * for events sent from url b. Each url has its own rate limits.
      */
-    'rate_limiter_attempts' => 1,
+    'rate_limiter_attempts' => env('LARITOR_RATE_LIMITER_ATTEMPTS', 5),
 
     'query' => [
-        /**
-         * Below you can define number of milliseconds threshold to determine whether a query is running slow. Means
-         * if a query took more than the below mentioned number of milliseconds to execute, Then the said query
-         * will be flagged as slow and reported to laritor.
-         */
-        'slow' => env('LARITOR_SLOW_QUERY', 10 ),
-
         /**
          * If for any reason, you do not wish to send read queries(SELECT) to laritor, set the below value to false.
          * This will not report any read queries to laritor.
          */
-        'read' => true,
+        'read' => env('LARITOR_RECORD_READ_QUERIES', true),
 
         /**
          * Most of the applications primarily focus on read query performance. If you wish to also monitor the performance
-         * of write(INSERT, UPDATE, DELETE) queries, set the below value to true.
+         * of write (INSERT, UPDATE, DELETE) queries, set the below value to true.
          */
-        'write' => true,
+        'write' => env('LARITOR_RECORD_WRITE_QUERIES', true),
 
         /**
          * Most of the time, queries running in console do not cause any performance issues to the application. If you
          * wish to monitor the queries executed in the console as well, set the below value to true.
          */
-        'monitor_console_queries' => true,
+        'console' => env('LARITOR_RECORD_CONSOLE_QUERIES', true),
 
         /**
          * To protect sensitive information, We only record SQL queries but not their bindings or data. If you wish to
          * send the bindings along with the query, Set the below value to true.
          */
-        'record_bindings' => false,
+        'bindings' => env('LARITOR_RECORD_QUERY_BINDINGS', false),
     ],
 
     'requests' => [
-        'slow' =>  env('LARITOR_SLOW_REQUESTS', 2000 ),
         'ignore' => [
-            'nova/*',
-            'nova-api/*',
             'telescope/*'.
             '_debugbar*',
             '__clockwork*',
@@ -95,8 +88,7 @@ return [
     ],
 
     'outbound_requests' => [
-        'slow' =>  env('LARITOR_SLOW_OUTBOUND_REQUESTS', 2000 ),
-        'ignore_console_requests' => true,
+        'ignore_console_requests' => env('LARITOR_RECORD_CONSOLE_OUTBOUND_REQUESTS', true),
         'ignore' => [
         ]
     ],
@@ -113,6 +105,7 @@ return [
 
     'jobs' => [
         'ignore' => [
+            \Laritor\LaravelClient\Jobs\QueueHealthCheck::class
         ]
     ],
 ];

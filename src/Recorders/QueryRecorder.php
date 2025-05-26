@@ -31,7 +31,7 @@ class QueryRecorder extends Recorder
 
             $query = [
                 'query' => $event->sql,
-                'bindings' => config('laritor.query.record_bindings') ? $this->replaceBindings($event) : null,
+                'bindings' => config('laritor.query.bindings') ? $this->replaceBindings($event) : null,
                 'time' => $time,
                 'path' => FileHelper::parseFileName($caller['file']) .'@'.$caller['line'],
                 'completed_at' => now()->format('Y-m-d H:i:s'),
@@ -56,7 +56,7 @@ class QueryRecorder extends Recorder
             return false;
         }
 
-        if (app()->runningInConsole() && ! config('laritor.query.monitor_console_queries') ) {
+        if (app()->runningInConsole() && ! config('laritor.query.console') ) {
             return false;
         }
 
