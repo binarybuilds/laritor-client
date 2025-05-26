@@ -140,7 +140,7 @@ class Laritor
             'env' => config('app.env'),
             'php' => phpversion(),
             'server' => [
-                'host' => gethostbyname(gethostname()),
+                'host' => gethostname(),
                 'os' => PHP_OS,
             ],
             'cache' => [
@@ -214,9 +214,21 @@ class Laritor
     public function sync($data)
     {
         rescue(function () use ($data) {
+            $app = app();
             Http::post(rtrim(config('laritor.ingest_url'),'/').'/sync', [
                 'env' => config('app.env'),
                 'url' => url('/'),
+                'version' => $app->version(),
+                'php' => phpversion(),
+                'server' => [
+                    'host' => gethostname(),
+                    'os' => PHP_OS,
+                ],
+                'cache' => [
+                    'config' => $app->configurationIsCached(),
+                    'routes' => $app->routesAreCached(),
+                    'events' => $app->eventsAreCached()
+                ],
                 'data' => $data
             ]);
         }, null, false);
