@@ -39,7 +39,7 @@ class SyncCommand extends Command
         Laritor $laritor
     )
     {
-        if (config('laritor.enabled') && config('laritor.keys.backend')) {
+        if (config('laritor.enabled') && config('laritor.ingest_url')) {
             $scheduled_tasks = $scheduledTaskHelper->getScheduledTasks();
             $health_checks = $healthCheckHelper->getHealthChecks();
             $schema = $databaseHelper->getSchema();

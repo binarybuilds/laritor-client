@@ -23,8 +23,8 @@ class HealthCheckController
     {
         if (
             !config('laritor.enabled') ||
-            !config('laritor.keys.backend') ||
-            $request->input('token') !== config('laritor.keys.backend'))
+            !config('laritor.ingest_url') ||
+            $request->input('ingest_url') !== config('laritor.ingest_url'))
         {
             return response()->json(['message' => 'unauthorized'], 401);
         }
