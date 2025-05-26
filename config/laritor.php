@@ -13,6 +13,8 @@ return [
      */
     'ingest_url' => env('LARITOR_INGEST_URL'),
 
+    'serverless' => env('LARITOR_SERVERLESS', false),
+
     /**
      * Here you can enable or disable a specific recorder. If you do not wish a specific recorder to
      * send events to laritor, You can comment it out below. Only recorders which are defined below

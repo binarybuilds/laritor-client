@@ -140,7 +140,7 @@ class Laritor
             'env' => config('app.env'),
             'php' => phpversion(),
             'server' => [
-                'host' => gethostname(),
+                'host' => config('laritor.serverless') ? 'serverless' : gethostname(),
                 'os' => PHP_OS,
             ],
             'cache' => [
@@ -208,7 +208,7 @@ class Laritor
                 'version' => $app->version(),
                 'php' => phpversion(),
                 'server' => [
-                    'host' => gethostname(),
+                    'host' => config('laritor.serverless') ? 'serverless' : gethostname(),
                     'os' => PHP_OS,
                 ],
                 'cache' => [

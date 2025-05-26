@@ -7,6 +7,8 @@ use Laritor\LaravelClient\Helpers\DatabaseHelper;
 use Laritor\LaravelClient\Helpers\HealthCheckHelper;
 use Laritor\LaravelClient\Helpers\ScheduledTaskHelper;
 use Laritor\LaravelClient\Laritor;
+use Laritor\LaravelClient\Recorders\DatabaseSchemaChangesRecorder;
+use Laritor\LaravelClient\Recorders\ScheduledTaskRecorder;
 
 class SyncCommand extends Command
 {
@@ -40,9 +42,18 @@ class SyncCommand extends Command
     )
     {
         if (config('laritor.enabled') && config('laritor.ingest_url')) {
-            $scheduled_tasks = $scheduledTaskHelper->getScheduledTasks();
+
+            $scheduled_tasks = [];
+            if (in_array(ScheduledTaskRecorder::class, config('laritor.recorders'))) {
+                $scheduled_tasks = $scheduledTaskHelper->getScheduledTasks();
+            }
+
             $health_checks = $healthCheckHelper->getHealthChecks();
-            $schema = $databaseHelper->getSchema();
+
+            $schema = [];
+            if (in_array(DatabaseSchemaChangesRecorder::class, config('laritor.recorders'))) {
+                $schema = $databaseHelper->getSchema();
+            }
 
             $laritor->sync([
                 'scheduled_tasks' => $scheduled_tasks,
