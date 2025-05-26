@@ -37,49 +37,51 @@ return [
     ],
 
     /**
-     * For high traffic sites, some requests which has issues(slow running, slow queries, exceptions, etc) will
-     * constantly hit laritor with lots of events. As the number of events in laritor are metered, It is better
-     * to rate limit the number of events you send to laritor. If rate limiter is enabled, All requests are
-     * rate limited to a given number per minute per request.
+     * If you are concerned about the cost, You can enable rate limiting for requests.
+     * Rate limiting is enforced by request url per minute. Please remember, Enabling
+     * rate limiting will result in certain issues go unnoticed.
      */
-    'use_rate_limiter' => env('LARITOR_USE_RATE_LIMITER', true),
+    'use_rate_limiter' => env('LARITOR_USE_RATE_LIMITER', false),
 
     /**
-     * Here you can define how many times can a request send events to laritor before hitting the rate limit. For example,
-     * if you define a value of 5 below, Any requests to a specific url will send events to laritor upto 5 times every
-     * minute.
-     * Note: Rate limiting is only by request url. Means events sent from url a will not be counted towards rate limit
-     * for events sent from url b. Each url has its own rate limits.
+     * Here you can set the maximum number of requests per url per minute
+     * that can be sent to laritor. For example, If you set a value of 5,
+     * It will only send 5 requests per minute per url to laritor. Any
+     * additional requests will be ignored until the next minute. This
+     * will only work if use_rate_limiter is set to true.
      */
     'rate_limiter_attempts' => env('LARITOR_RATE_LIMITER_ATTEMPTS', 5),
 
     'query' => [
         /**
-         * If for any reason, you do not wish to send read queries(SELECT) to laritor, set the below value to false.
-         * This will not report any read queries to laritor.
+         * Set the below value to false if you do not want to record read queries.
          */
         'read' => env('LARITOR_RECORD_READ_QUERIES', true),
 
         /**
-         * Most of the applications primarily focus on read query performance. If you wish to also monitor the performance
-         * of write (INSERT, UPDATE, DELETE) queries, set the below value to true.
+         * Set the below value to false if you do not want to record write queries.
          */
         'write' => env('LARITOR_RECORD_WRITE_QUERIES', true),
 
         /**
-         * Most of the time, queries running in console do not cause any performance issues to the application. If you
-         * wish to monitor the queries executed in the console as well, set the below value to true.
+         * Set the below value to false if you do not want to record queries
+         * executed in the console (jobs, commands, scheduled tasks).
          */
         'console' => env('LARITOR_RECORD_CONSOLE_QUERIES', true),
 
         /**
-         * To protect sensitive information, We only record SQL queries but not their bindings or data. If you wish to
-         * send the bindings along with the query, Set the below value to true.
+         * By default, Laritor will not record the bindings of the query.
+         * This is to avoid sensitive data from being recorded. If you
+         * wish to record the bindings, set the below value to true.
          */
         'bindings' => env('LARITOR_RECORD_QUERY_BINDINGS', false),
     ],
 
     'requests' => [
+
+        /**
+         * Any requests matching the below pattern will be ignored.
+         */
         'ignore' => [
             'telescope/*'.
             '_debugbar*',
@@ -90,12 +92,24 @@ return [
     ],
 
     'outbound_requests' => [
+        /**
+         * Set the below value to false if you do not want to record outbound requests
+         * executed in the console (jobs, commands, scheduled tasks).
+         */
         'ignore_console_requests' => env('LARITOR_RECORD_CONSOLE_OUTBOUND_REQUESTS', true),
+
+        /**
+         * Any outbound urls matching the below pattern will be ignored.
+         */
         'ignore' => [
         ]
     ],
 
     'exceptions' => [
+
+        /**
+         * The below exceptions will be ignored from sending to laritor.
+         */
         'ignore' => [
             \Illuminate\Database\Eloquent\ModelNotFoundException::class,
             \Symfony\Component\HttpKernel\Exception\NotFoundHttpException::class,
@@ -106,6 +120,10 @@ return [
     ],
 
     'jobs' => [
+
+        /**
+         * The below jobs will be ignored from sending to laritor.
+         */
         'ignore' => [
             \Laritor\LaravelClient\Jobs\QueueHealthCheck::class
         ]
