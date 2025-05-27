@@ -42,11 +42,10 @@ class RequestRecorder extends Recorder
 
         $this->laritor->pushEvent(static::$eventType, [
             'request' => [
-//                'started_at' => now()->subMilliseconds($duration)->format('Y-m-d H:i:s'),
                 'completed_at' => now()->format('Y-m-d H:i:s'),
                 'duration' => $duration,
                 'memory' => round(memory_get_peak_usage(true) / 1024 / 1024, 1),
-                'url' => $request->path(),
+                'url' => $this->getUrl($request),
                 'size' => strlen($request->getContent())
             ],
             'response' => [
@@ -54,13 +53,9 @@ class RequestRecorder extends Recorder
                 'size' => strlen($event->response->getContent())
             ],
             'user' => [
-                'authenticated' => [
-                    'id' => Auth::id(),
-                    'name' => $request->user() ? $request->user()->name : '',
-                    'email' => $request->user() ? $request->user()->email : '',
-                ],
-                'ip' => $request->getClientIp(),
-                'user_agent' => $request->userAgent(),
+                'authenticated' => $this->getAuthenticatedUser(),
+                'ip' => config('laritor.requests.anonymize.ip') ? $request->getClientIp() : '127.0.0.1',
+                'user_agent' => config('laritor.requests.anonymize.user_agent') ? $request->userAgent() : 'anonymous-agent',
             ],
             'route' => [
                 'name' => optional($request->route())->getName(),
@@ -70,6 +65,30 @@ class RequestRecorder extends Recorder
                 'method' => $request->method(),
             ],
         ]);
+    }
+
+    private function getAuthenticatedUser()
+    {
+        $user = Auth::user();
+
+        return [
+            'id' => $user ? $user->id : null,
+            'name' => $user ? ( config('laritor.requests.anonymize.user') ? 'User '.$user->id : $user->name) : '',
+            'email' => $user ? ( config('laritor.requests.anonymize.user') ? 'user'.$user->id.'@laritor.com' : $user->email) : '',
+        ];
+    }
+
+    private function getUrl($request)
+    {
+        if (config('laritor.requests.query_string')) {
+            $query = $request->getQueryString();
+
+            $question = $request->getPathInfo() === '/' ? '/?' : '?';
+
+            return $query ? $question.$query : $request->path();
+        }
+
+        return $request->path();
     }
 
     public function shouldRecordRequest(Request $request)

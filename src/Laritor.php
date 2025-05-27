@@ -135,7 +135,7 @@ class Laritor
             'app' => url('/'),
             'event_at' => now()->toDateTimeString(),
             'server' => [
-                'host' => config('laritor.serverless') ? 'serverless' : gethostname(),
+                'host' => config('laritor.serverless') ? 'serverless' : config('laritor.server_name', gethostname()),
             ],
             'events' => $this->events,
             'booted' => $this->booted,
@@ -197,7 +197,7 @@ class Laritor
                 'version' => $app->version(),
                 'php' => phpversion(),
                 'server' => [
-                    'host' => config('laritor.serverless') ? 'serverless' : gethostname(),
+                    'host' => config('laritor.serverless') ? 'serverless' : config('laritor.server_name', gethostname()),
                     'os' => PHP_OS,
                 ],
                 'cache' => [
@@ -223,7 +223,7 @@ class Laritor
         }
 
         $key = 'laritor-'.Str::slug(request()->path());
-        if (! RateLimiter::tooManyAttempts($key, config('laritor.rate_limiter_attempts') ) ) {
+        if (! RateLimiter::tooManyAttempts($key, config('laritor.requests.rate_limit.attempts') ) ) {
             RateLimiter::hit($key);
             return true;
         }
@@ -233,6 +233,6 @@ class Laritor
 
     public function isRateLimiterEnabled()
     {
-        return config('laritor.use_rate_limiter');
+        return config('laritor.requests.rate_limit.enabled');
     }
 }

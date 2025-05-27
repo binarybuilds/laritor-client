@@ -24,7 +24,8 @@ class HealthCheckController
         if (
             !config('laritor.enabled') ||
             !config('laritor.ingest_url') ||
-            $request->input('ingest_url') !== config('laritor.ingest_url'))
+            $request->input('ingest_url') !== rtrim(config('laritor.ingest_url'), '/')
+        )
         {
             return response()->json(['message' => 'unauthorized'], 401);
         }
