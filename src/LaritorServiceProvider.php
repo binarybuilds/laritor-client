@@ -26,7 +26,9 @@ class LaritorServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->mergeConfigFrom( __DIR__ . '/../config/laritor.php', 'laritor' );
+        $this->publishes([
+            __DIR__ . '/../config/laritor.php' => config_path('laritor.php'),
+        ]);
 
         if ( ! config('laritor.enabled') || !config('laritor.ingest_url') ) {
             return;
