@@ -1,9 +1,9 @@
 <?php
 
-namespace Laritor\LaravelClient\Checks;
+namespace BinaryBuilds\LaritorClient\Checks;
 
 use Illuminate\Http\Request;
-use Laritor\LaravelClient\Jobs\QueueHealthCheck;
+use BinaryBuilds\LaritorClient\Jobs\QueueHealthCheck;
 
 class QueueWorkerHealthCheck extends BaseHealthCheck
 {

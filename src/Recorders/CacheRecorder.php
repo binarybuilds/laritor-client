@@ -1,6 +1,6 @@
 <?php
 
-namespace Laritor\LaravelClient\Recorders;
+namespace BinaryBuilds\LaritorClient\Recorders;
 
 use Illuminate\Cache\Events\CacheHit;
 use Illuminate\Cache\Events\CacheMissed;

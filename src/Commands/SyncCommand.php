@@ -1,14 +1,14 @@
 <?php
 
-namespace Laritor\LaravelClient\Commands;
+namespace BinaryBuilds\LaritorClient\Commands;
 
 use Illuminate\Console\Command;
-use Laritor\LaravelClient\Helpers\DatabaseHelper;
-use Laritor\LaravelClient\Helpers\HealthCheckHelper;
-use Laritor\LaravelClient\Helpers\ScheduledTaskHelper;
-use Laritor\LaravelClient\Laritor;
-use Laritor\LaravelClient\Recorders\DatabaseSchemaChangesRecorder;
-use Laritor\LaravelClient\Recorders\ScheduledTaskRecorder;
+use BinaryBuilds\LaritorClient\Helpers\DatabaseHelper;
+use BinaryBuilds\LaritorClient\Helpers\HealthCheckHelper;
+use BinaryBuilds\LaritorClient\Helpers\ScheduledTaskHelper;
+use BinaryBuilds\LaritorClient\Laritor;
+use BinaryBuilds\LaritorClient\Recorders\DatabaseSchemaChangesRecorder;
+use BinaryBuilds\LaritorClient\Recorders\ScheduledTaskRecorder;
 
 class SyncCommand extends Command
 {

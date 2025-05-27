@@ -1,6 +1,6 @@
 <?php
 
-namespace Laritor\LaravelClient\Commands;
+namespace BinaryBuilds\LaritorClient\Commands;
 
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Str;

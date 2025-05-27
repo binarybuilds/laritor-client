@@ -1,13 +1,13 @@
 <?php
 
-namespace Laritor\LaravelClient\Checks;
+namespace BinaryBuilds\LaritorClient\Checks;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 /**
  * Class BaseHealthCheck
- * @package Laritor\LaravelClient\Checks
+ * @package BinaryBuilds\LaritorClient\Checks
  */
 class BaseHealthCheck
 {

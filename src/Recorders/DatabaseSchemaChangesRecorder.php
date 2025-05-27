@@ -1,10 +1,10 @@
 <?php
 
-namespace Laritor\LaravelClient\Recorders;
+namespace BinaryBuilds\LaritorClient\Recorders;
 
 /**
  * Class DatabaseSchemaChangesRecorder
- * @package Laritor\LaravelClient\Recorders
+ * @package BinaryBuilds\LaritorClient\Recorders
  */
 class DatabaseSchemaChangesRecorder extends Recorder
 {

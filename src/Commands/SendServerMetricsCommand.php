@@ -1,9 +1,9 @@
 <?php
 
-namespace Laritor\LaravelClient\Commands;
+namespace BinaryBuilds\LaritorClient\Commands;
 
 use Illuminate\Console\Command;
-use Laritor\LaravelClient\Laritor;
+use BinaryBuilds\LaritorClient\Laritor;
 
 class SendServerMetricsCommand extends Command
 {

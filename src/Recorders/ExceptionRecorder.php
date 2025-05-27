@@ -1,10 +1,10 @@
 <?php
 
-namespace Laritor\LaravelClient\Recorders;
+namespace BinaryBuilds\LaritorClient\Recorders;
 
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Str;
-use Laritor\LaravelClient\Helpers\FileHelper;
+use BinaryBuilds\LaritorClient\Helpers\FileHelper;
 
 class ExceptionRecorder extends Recorder
 {

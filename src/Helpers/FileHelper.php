@@ -1,6 +1,6 @@
 <?php
 
-namespace Laritor\LaravelClient\Helpers;
+namespace BinaryBuilds\LaritorClient\Helpers;
 
 use Illuminate\Support\Str;
 use RuntimeException;

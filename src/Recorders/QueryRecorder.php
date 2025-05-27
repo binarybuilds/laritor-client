@@ -1,10 +1,10 @@
 <?php
 
-namespace Laritor\LaravelClient\Recorders;
+namespace BinaryBuilds\LaritorClient\Recorders;
 
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Str;
-use Laritor\LaravelClient\Helpers\FileHelper;
+use BinaryBuilds\LaritorClient\Helpers\FileHelper;
 
 class QueryRecorder extends Recorder
 {

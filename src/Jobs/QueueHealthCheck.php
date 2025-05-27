@@ -1,6 +1,6 @@
 <?php
 
-namespace Laritor\LaravelClient\Jobs;
+namespace BinaryBuilds\LaritorClient\Jobs;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Http;
 
 /**
  * Class QueueHealthCheck
- * @package Laritor\LaravelClient\Jobs
+ * @package BinaryBuilds\LaritorClient\Jobs
  */
 class QueueHealthCheck implements ShouldQueue
 {

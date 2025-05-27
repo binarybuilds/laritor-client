@@ -1,6 +1,6 @@
 <?php
 
-namespace Laritor\LaravelClient\Commands;
+namespace BinaryBuilds\LaritorClient\Commands;
 
 class QueueHealthCheckMakeCommand extends HealthCheckMakeCommand
 {

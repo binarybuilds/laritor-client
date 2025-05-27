@@ -1,13 +1,13 @@
 <?php
 
-namespace Laritor\LaravelClient\Helpers;
+namespace BinaryBuilds\LaritorClient\Helpers;
 
 use Illuminate\Support\Str;
-use Laritor\LaravelClient\Recorders\ScheduledTaskRecorder;
+use BinaryBuilds\LaritorClient\Recorders\ScheduledTaskRecorder;
 
 /**
  * Class ScheduledTaskHelper
- * @package Laritor\LaravelClient\Helpers
+ * @package BinaryBuilds\LaritorClient\Helpers
  */
 class ScheduledTaskHelper
 {

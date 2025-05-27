@@ -1,6 +1,6 @@
 <?php
 
-namespace Laritor\LaravelClient\Recorders;
+namespace BinaryBuilds\LaritorClient\Recorders;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Log\Events\MessageLogged;
@@ -12,7 +12,7 @@ use Illuminate\Notifications\Events\NotificationSent;
 
 /**
  * Class NotificationRecorder
- * @package Laritor\LaravelClient\Recorders
+ * @package BinaryBuilds\LaritorClient\Recorders
  */
 class NotificationRecorder extends Recorder
 {

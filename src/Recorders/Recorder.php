@@ -1,10 +1,10 @@
 <?php
 
-namespace Laritor\LaravelClient\Recorders;
+namespace BinaryBuilds\LaritorClient\Recorders;
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Http;
-use Laritor\LaravelClient\Laritor;
+use BinaryBuilds\LaritorClient\Laritor;
 
 class Recorder
 {

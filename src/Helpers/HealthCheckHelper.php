@@ -1,14 +1,14 @@
 <?php
 
-namespace Laritor\LaravelClient\Helpers;
+namespace BinaryBuilds\LaritorClient\Helpers;
 
 use Illuminate\Support\Str;
-use Laritor\LaravelClient\Recorders\SchedulerRecorder;
+use BinaryBuilds\LaritorClient\Recorders\SchedulerRecorder;
 use Symfony\Component\Finder\Finder;
 
 /**
  * Class ScheduledTaskHelper
- * @package Laritor\LaravelClient\Helpers
+ * @package BinaryBuilds\LaritorClient\Helpers
  */
 class HealthCheckHelper
 {
@@ -27,7 +27,7 @@ class HealthCheckHelper
                     Str::after($health_check->getPathname(), app_path('Laritor').DIRECTORY_SEPARATOR)
                 );
 
-                $class = app()->getNamespace().'Laritor\\'.$name;
+                $class = app()->getNamespace().'BinaryBuilds\\'.$name;
 
                 $health_checks[] = [
                     'name' => $class::$name,

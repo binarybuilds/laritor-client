@@ -1,6 +1,6 @@
 <?php
 
-namespace Laritor\LaravelClient\Recorders;
+namespace BinaryBuilds\LaritorClient\Recorders;
 
 use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Http\Request;

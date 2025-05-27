@@ -1,6 +1,6 @@
 <?php
 
-namespace Laritor\LaravelClient;
+namespace BinaryBuilds\LaritorClient;
 
 use Illuminate\Routing\Contracts\CallableDispatcher;
 use Illuminate\Routing\ControllerDispatcher;
@@ -8,14 +8,14 @@ use Illuminate\Routing\Events\PreparingResponse;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Laritor\LaravelClient\Commands\SyncCommand;
-use Laritor\LaravelClient\Commands\HealthCheckMakeCommand;
-use Laritor\LaravelClient\Commands\QueueHealthCheckMakeCommand;
-use Laritor\LaravelClient\Commands\SendServerMetricsCommand;
+use BinaryBuilds\LaritorClient\Commands\SyncCommand;
+use BinaryBuilds\LaritorClient\Commands\HealthCheckMakeCommand;
+use BinaryBuilds\LaritorClient\Commands\QueueHealthCheckMakeCommand;
+use BinaryBuilds\LaritorClient\Commands\SendServerMetricsCommand;
 
 /**
  * Class LaritorServiceProvider
- * @package Laritor\LaravelClient
+ * @package BinaryBuilds\LaritorClient
  */
 class LaritorServiceProvider extends ServiceProvider
 {

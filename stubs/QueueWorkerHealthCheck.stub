@@ -2,7 +2,7 @@
 
 namespace {{ namespace }};
 
-use Laritor\LaravelClient\Checks\QueueWorkerHealthCheck;
+use BinaryBuilds\LaritorClient\Checks\QueueWorkerHealthCheck;
 use Illuminate\Http\Request;
 
 class {{ class }} extends QueueWorkerHealthCheck

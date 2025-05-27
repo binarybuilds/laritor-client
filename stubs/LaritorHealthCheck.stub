@@ -2,7 +2,7 @@
 
 namespace {{ namespace }};
 
-use Laritor\LaravelClient\Checks\BaseHealthCheck;
+use BinaryBuilds\LaritorClient\Checks\BaseHealthCheck;
 use Illuminate\Http\Request;
 
 class {{ class }} extends BaseHealthCheck

@@ -1,13 +1,13 @@
 <?php
 
-namespace Laritor\LaravelClient;
+namespace BinaryBuilds\LaritorClient;
 
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
-use Laritor\LaravelClient\Recorders\SchedulerRecorder;
+use BinaryBuilds\LaritorClient\Recorders\SchedulerRecorder;
 
 class Laritor
 {

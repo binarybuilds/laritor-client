@@ -20,19 +20,19 @@ return [
      * You can comment it out below.
      */
     'recorders' => [
-        \Laritor\LaravelClient\Recorders\CacheRecorder::class,
-        \Laritor\LaravelClient\Recorders\ExceptionRecorder::class,
-        \Laritor\LaravelClient\Recorders\OutboundRequestRecorder::class,
-        \Laritor\LaravelClient\Recorders\QueryRecorder::class,
-        \Laritor\LaravelClient\Recorders\QueuedJobRecorder::class,
-        \Laritor\LaravelClient\Recorders\RequestRecorder::class,
-        \Laritor\LaravelClient\Recorders\CommandRecorder::class,
-        \Laritor\LaravelClient\Recorders\ScheduledTaskRecorder::class,
-        \Laritor\LaravelClient\Recorders\SchedulerRecorder::class,
-        \Laritor\LaravelClient\Recorders\LogRecorder::class,
-        \Laritor\LaravelClient\Recorders\MailRecorder::class,
-        \Laritor\LaravelClient\Recorders\NotificationRecorder::class,
-        \Laritor\LaravelClient\Recorders\DatabaseSchemaChangesRecorder::class,
+        \BinaryBuilds\LaritorClient\Recorders\CacheRecorder::class,
+        \BinaryBuilds\LaritorClient\Recorders\ExceptionRecorder::class,
+        \BinaryBuilds\LaritorClient\Recorders\OutboundRequestRecorder::class,
+        \BinaryBuilds\LaritorClient\Recorders\QueryRecorder::class,
+        \BinaryBuilds\LaritorClient\Recorders\QueuedJobRecorder::class,
+        \BinaryBuilds\LaritorClient\Recorders\RequestRecorder::class,
+        \BinaryBuilds\LaritorClient\Recorders\CommandRecorder::class,
+        \BinaryBuilds\LaritorClient\Recorders\ScheduledTaskRecorder::class,
+        \BinaryBuilds\LaritorClient\Recorders\SchedulerRecorder::class,
+        \BinaryBuilds\LaritorClient\Recorders\LogRecorder::class,
+        \BinaryBuilds\LaritorClient\Recorders\MailRecorder::class,
+        \BinaryBuilds\LaritorClient\Recorders\NotificationRecorder::class,
+        \BinaryBuilds\LaritorClient\Recorders\DatabaseSchemaChangesRecorder::class,
     ],
 
     'query' => [
@@ -112,7 +112,7 @@ return [
     'jobs' => [
 
         'ignore' => [
-            \Laritor\LaravelClient\Jobs\QueueHealthCheck::class
+            \BinaryBuilds\LaritorClient\Jobs\QueueHealthCheck::class
         ]
     ],
 ];

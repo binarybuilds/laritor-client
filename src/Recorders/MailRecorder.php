@@ -1,6 +1,6 @@
 <?php
 
-namespace Laritor\LaravelClient\Recorders;
+namespace BinaryBuilds\LaritorClient\Recorders;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Log\Events\MessageLogged;

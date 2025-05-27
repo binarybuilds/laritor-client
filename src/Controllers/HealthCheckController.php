@@ -1,16 +1,16 @@
 <?php
 
-namespace Laritor\LaravelClient\Controllers;
+namespace BinaryBuilds\LaritorClient\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Laritor\LaravelClient\Checks\BaseHealthCheck;
-use Laritor\LaravelClient\Checks\CacheHealthCheck;
-use Laritor\LaravelClient\Checks\DatabaseHealthCheck;
-use Laritor\LaravelClient\Checks\MailHealthCheck;
-use Laritor\LaravelClient\Checks\QueueWorkerHealthCheck;
-use Laritor\LaravelClient\Checks\SessionHealthCheck;
-use Laritor\LaravelClient\Checks\StorageHealthCheck;
+use BinaryBuilds\LaritorClient\Checks\BaseHealthCheck;
+use BinaryBuilds\LaritorClient\Checks\CacheHealthCheck;
+use BinaryBuilds\LaritorClient\Checks\DatabaseHealthCheck;
+use BinaryBuilds\LaritorClient\Checks\MailHealthCheck;
+use BinaryBuilds\LaritorClient\Checks\QueueWorkerHealthCheck;
+use BinaryBuilds\LaritorClient\Checks\SessionHealthCheck;
+use BinaryBuilds\LaritorClient\Checks\StorageHealthCheck;
 
 
 class HealthCheckController
@@ -38,7 +38,7 @@ class HealthCheckController
             case 'queue' : $health_check = app( QueueWorkerHealthCheck::class );break;
             default: {
 
-                $health_check_class = app()->getNamespace()."Laritor\\$check_type";
+                $health_check_class = app()->getNamespace()."BinaryBuilds\\$check_type";
 
                 if (class_exists($health_check_class)) {
                     $health_check = app( $health_check_class );

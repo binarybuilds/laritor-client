@@ -1,12 +1,12 @@
 <?php
 
-namespace Laritor\LaravelClient\Helpers;
+namespace BinaryBuilds\LaritorClient\Helpers;
 
 use Illuminate\Support\Facades\DB;
 
 /**
  * Class DatabaseHelper
- * @package Laritor\LaravelClient\Helpers
+ * @package BinaryBuilds\LaritorClient\Helpers
  */
 class DatabaseHelper
 {

@@ -1,18 +1,17 @@
 {
-    "name": "laritor/laravel-client",
-    "description": "Laritor is a laravel health and application performance monitoring tool",
+    "name": "binarybuilds/laritor-client",
+    "description": "Laritor is a application performance monitoring and observability tool for applications built using laravel php framework",
 	"keywords": [
         "laritor",
-        "laravel",
-        "laravel monitoring tool",
-        "performance monitoring"
+        "performance monitoring for laravel",
+        "observability for laravel"
     ],
-    "homepage": "https://github.com/:vendor_slug/:package_slug",
+    "homepage": "https://github.com/binarybuilds/laritor-client",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": "author@domain.com",
+            "name": "Laritor",
+            "email": "support@laritor.com",
             "role": "Developer"
         }
     ],
@@ -23,13 +22,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Laritor\\LaravelClient\\": "src/"
+            "BinaryBuilds\\LaritorClient\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Laritor\\LaravelClient\\LaritorServiceProvider"
+                "BinaryBuilds\\LaritorClient\\LaritorServiceProvider"
             ]
         }
     },
