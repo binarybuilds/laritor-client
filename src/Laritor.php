@@ -233,6 +233,6 @@ class Laritor
 
     public function isRateLimiterEnabled()
     {
-        return config('laritor.requests.rate_limit.enabled');
+        return (bool)config('laritor.requests.rate_limit.enabled', false);
     }
 }

@@ -54,8 +54,8 @@ class RequestRecorder extends Recorder
             ],
             'user' => [
                 'authenticated' => $this->getAuthenticatedUser(),
-                'ip' => config('laritor.requests.anonymize.ip') ? $request->getClientIp() : '127.0.0.1',
-                'user_agent' => config('laritor.requests.anonymize.user_agent') ? $request->userAgent() : 'anonymous-agent',
+                'ip' => config('laritor.requests.anonymize.ip') ? '127.0.0.1' : $request->getClientIp(),
+                'user_agent' => config('laritor.requests.anonymize.user_agent') ? 'anonymous-agent' : $request->userAgent(),
             ],
             'route' => [
                 'name' => optional($request->route())->getName(),

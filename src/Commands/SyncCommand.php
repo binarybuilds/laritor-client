@@ -41,26 +41,23 @@ class SyncCommand extends Command
         Laritor $laritor
     )
     {
-        if (config('laritor.enabled') && config('laritor.ingest_url')) {
-
-            $scheduled_tasks = [];
-            if (in_array(ScheduledTaskRecorder::class, config('laritor.recorders'))) {
-                $scheduled_tasks = $scheduledTaskHelper->getScheduledTasks();
-            }
-
-            $health_checks = $healthCheckHelper->getHealthChecks();
-
-            $schema = [];
-            if (in_array(DatabaseSchemaChangesRecorder::class, config('laritor.recorders'))) {
-                $schema = $databaseHelper->getSchema();
-            }
-
-            $laritor->sync([
-                'scheduled_tasks' => $scheduled_tasks,
-                'health_checks' => $health_checks,
-                'db_schema' => $schema
-            ]);
+        $scheduled_tasks = [];
+        if (in_array(ScheduledTaskRecorder::class, config('laritor.recorders'))) {
+            $scheduled_tasks = $scheduledTaskHelper->getScheduledTasks();
         }
+
+        $health_checks = $healthCheckHelper->getHealthChecks();
+
+        $schema = [];
+        if (in_array(DatabaseSchemaChangesRecorder::class, config('laritor.recorders'))) {
+            $schema = $databaseHelper->getSchema();
+        }
+
+        $laritor->sync([
+            'scheduled_tasks' => $scheduled_tasks,
+            'health_checks' => $health_checks,
+            'db_schema' => $schema
+        ]);
 
         return self::SUCCESS;
     }

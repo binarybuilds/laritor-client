@@ -22,8 +22,6 @@ class HealthCheckController
     public function check(Request $request, $check_type )
     {
         if (
-            !config('laritor.enabled') ||
-            !config('laritor.ingest_url') ||
             $request->input('ingest_url') !== rtrim(config('laritor.ingest_url'), '/')
         )
         {

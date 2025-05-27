@@ -15,12 +15,15 @@ class DatabaseHelper
      */
     public function getSchema()
     {
-        $connection = config('database.default');
-        $databaseName = config("database.connections.$connection.database");
-        $driver = config("database.connections.$connection.driver");
+        $databaseName = DB::getDatabaseName();
+        $driver = DB::getDriverName();
 
         if (!in_array($driver, ['pgsql', 'mysql', 'mariadb', 'sqlite', 'sqlsrv'])) {
-            return [];
+            return [
+                'database' => $driver,
+                'version' => null,
+                "tables" => []
+            ];
         }
 
         $tables = $this->getTablesAndComments($driver, $databaseName);

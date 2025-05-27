@@ -28,7 +28,7 @@ class LaritorServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom( __DIR__ . '/../config/laritor.php', 'laritor' );
 
-        if ( ! config('laritor.enabled') ) {
+        if ( ! config('laritor.enabled') || !config('laritor.ingest_url') ) {
             return;
         }
 

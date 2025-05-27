@@ -3,6 +3,7 @@
 namespace Laritor\LaravelClient\Recorders;
 
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Http;
 use Laritor\LaravelClient\Laritor;
 
 class Recorder
@@ -39,9 +40,19 @@ class Recorder
         try{
             $this->trackEvent($event);
         } catch (\Throwable $exception) {
-           // report($exception);
-
-            dd($exception);
+            // Exception occurred during ingest. Send the exception to laritor
+            // and silently ignore so request continues.
+            rescue(function () use ($exception) {
+                Http::post(rtrim(config('laritor.ingest_url'),'/').'/ingest-exception', [
+                    'env' => config('app.env'),
+                    'version' => app()->version(),
+                    'php' => phpversion(),
+                    'data' => [
+                        'exception' => $exception->getMessage(),
+                        'trace' => $exception->getTraceAsString()
+                    ]
+                ]);
+            }, null, false);
         }
     }
 
