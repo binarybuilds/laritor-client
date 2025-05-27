@@ -194,7 +194,7 @@ class Laritor
             $app = app();
             Http::post(rtrim(config('laritor.ingest_url'),'/').'/sync', [
                 'env' => config('app.env'),
-                'url' => url('/'),
+                'app' => url('/'),
                 'version' => $app->version(),
                 'php' => phpversion(),
                 'server' => [
