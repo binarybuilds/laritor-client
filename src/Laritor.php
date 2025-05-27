@@ -133,6 +133,7 @@ class Laritor
     {
         return [
             'app' => url('/'),
+            'env' => config('app.env'),
             'event_at' => now()->toDateTimeString(),
             'server' => [
                 'host' => config('laritor.serverless') ? 'serverless' : config('laritor.server_name', gethostname()),
