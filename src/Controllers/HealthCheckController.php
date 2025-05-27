@@ -3,6 +3,7 @@
 namespace Laritor\LaravelClient\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Laritor\LaravelClient\Checks\BaseHealthCheck;
 use Laritor\LaravelClient\Checks\CacheHealthCheck;
 use Laritor\LaravelClient\Checks\DatabaseHealthCheck;
@@ -22,7 +23,7 @@ class HealthCheckController
     public function check(Request $request, $check_type )
     {
         if (
-            $request->input('ingest_url') !== rtrim(config('laritor.ingest_url'), '/')
+            $request->input('token') !== Str::afterLast(rtrim(config('laritor.ingest_url'), '/'), '/')
         )
         {
             return response()->json(['message' => 'unauthorized'], 401);
