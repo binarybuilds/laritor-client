@@ -1,7 +1,7 @@
 {
     "name": "binarybuilds/laritor-client",
     "description": "Laritor is a application performance monitoring and observability tool for applications built using laravel php framework",
-	"keywords": [
+    "keywords": [
         "laritor",
         "performance monitoring for laravel",
         "observability for laravel"
@@ -17,7 +17,7 @@
     ],
     "require": {
         "php": "^7.2|^7.3|^7.4|^8.0|^8.1|^8.2|^8.3|^8.4",
-        "laravel/framework": ">=7.0",
+        "laravel/framework": "^7.0.0|^8.0.0|^9.0.0|^10.0.0|^11.0.0|^12.0.0",
         "ext-json": "*"
     },
     "autoload": {
@@ -33,5 +33,30 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "require-dev": {
+        "orchestra/testbench": "^6.0|^7.0|^8.0|^9.0|^10.0"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Workbench\\App\\": "workbench/app/",
+            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/",
+            "BinaryBuilds\\LaritorClient\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare"
+        ],
+        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "build": "@php vendor/bin/testbench workbench:build --ansi",
+        "serve": [
+            "Composer\\Config::disableProcessTimeout",
+            "@build",
+            "@php vendor/bin/testbench serve --ansi"
+        ]
+    }
 }

@@ -92,7 +92,7 @@ return [
          * Set the below value to false if you do not want to record outbound requests
          * executed in the console (jobs, commands, scheduled tasks).
          */
-        'ignore_console_requests' => env('LARITOR_RECORD_CONSOLE_OUTBOUND_REQUESTS', true),
+        'console' => env('LARITOR_RECORD_CONSOLE_OUTBOUND_REQUESTS', true),
 
         'ignore' => [
         ]

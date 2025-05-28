@@ -106,7 +106,7 @@ class OutboundRequestRecorder extends Recorder
      */
     public function shouldRecordOutboundRequest($request)
     {
-        if (app()->runningInConsole() &&  config('laritor.outbound_requests.ignore_console_requests') ) {
+        if (app()->runningInConsole() && ! config('laritor.outbound_requests.console') ) {
             return false;
         }
 

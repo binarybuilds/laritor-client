@@ -48,7 +48,7 @@ class Laritor
 
     public function started()
     {
-        $this->started = defined('LARAVEL_START') ? LARAVEL_START : $event->request->server('REQUEST_TIME_FLOAT');
+        $this->started = defined('LARAVEL_START') ? LARAVEL_START : request()->server('REQUEST_TIME_FLOAT');
     }
 
     public function booted()
