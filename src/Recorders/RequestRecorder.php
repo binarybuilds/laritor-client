@@ -31,8 +31,6 @@ class RequestRecorder extends Recorder
     {
         $request = $event->request;
 
-        dd($request->route());
-
         if ( ! $this->shouldRecordRequest($request)) {
             return;
         }
@@ -62,7 +60,7 @@ class RequestRecorder extends Recorder
             'route' => [
                 'name' => optional($request->route())->getName(),
                 'uri' => optional($request->route())->uri(),
-                'controller' => optional($request->route())->getController() ? get_class(optional($request->route())->getController()) : 'closure',
+                'controller' => optional($request->route())->isControllerAction() ? get_class(optional($request->route())->getController()) : 'closure',
                 'controller_method' => optional($request->route())->getActionMethod(),
                 'method' => $request->method(),
             ],
