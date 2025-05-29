@@ -3,6 +3,7 @@
 namespace BinaryBuilds\LaritorClient\Tests;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use Orchestra\Testbench\TestCase as Orchestra;
 use BinaryBuilds\LaritorClient\LaritorServiceProvider;
 use Illuminate\Support\Facades\File;
@@ -38,6 +39,10 @@ abstract class TestCase extends Orchestra
         }
 
         Http::fake(function ($request, $options) use ($path) {
+
+            if (Str::contains($request->url(),'ingest-exception')){
+                throw new \RuntimeException(json_encode($request->data(), JSON_PRETTY_PRINT));
+            }
 
             if (!File::exists(dirname($path))) {
                 File::makeDirectory(dirname($path), 0755, true);
