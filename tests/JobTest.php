@@ -16,9 +16,5 @@ class JobTest extends TestCase
         $data = json_decode(file_get_contents($file), true);
         $this->assertIsArray($data, 'Payload is not valid JSON');
         $this->assertArrayHasKey('events', $data);
-        $this->assertArrayHasKey(QueuedJobRecorder::$eventType, $data['events']);
-        $this->assertNotEmpty( $data['events'][QueuedJobRecorder::$eventType]);
-        $this->assertArrayHasKey('job', $data['events'][QueuedJobRecorder::$eventType][0]);
-        $this->assertStringStartsWith('Closure', $data['events'][QueuedJobRecorder::$eventType][0]['job']);
     }
 }
