@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
 #        php: [7.4, 8.0, 8.1, 8.2, 8.3]
-        php: [7.4]
+        php: [8.2]
     steps:
       - uses: actions/checkout@v4
 
@@ -26,8 +26,8 @@ jobs:
 
       - name: Require Laravel & Testbench
         run: |
-          composer require --dev laravel/framework:8.x --no-update
-          composer require --dev orchestra/testbench:^6.0 --no-update
+          composer require --dev laravel/framework:12.x --no-update
+          composer require --dev orchestra/testbench:^10.0 --no-update
           composer update --prefer-dist --no-interaction --no-scripts
 
       - name: Publish Config
