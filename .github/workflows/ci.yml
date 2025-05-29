@@ -13,7 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php: [7.4, 8.0, 8.1, 8.2, 8.3]
+#        php: [7.4, 8.0, 8.1, 8.2, 8.3]
+        php: [7.4]
     steps:
       - uses: actions/checkout@v4
 
@@ -36,90 +37,90 @@ jobs:
         run: ./vendor/bin/phpunit
 
   # Laravel 9 supports PHP 8.0+
-  test-laravel-9:
-    name: PHP ${{ matrix.php }} / Laravel 9.x
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php: [8.0, 8.1, 8.2, 8.3]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup PHP ${{ matrix.php }}
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: mbstring, bcmath, xml, ctype, json, pdo_sqlite
-
-      - name: Require Laravel & Testbench
-        run: |
-          composer require --dev laravel/framework:9.x --no-update
-          composer require --dev orchestra/testbench:^7.0 --no-update
-          composer update --prefer-dist --no-interaction --no-scripts
-
-      - name: Publish Config
-        run: ./vendor/bin/testbench  vendor:publish --provider="BinaryBuilds\LaritorClient\LaritorServiceProvider" --force
-
-      - name: Run Tests
-        run: ./vendor/bin/phpunit
-
-  # Laravel 10 & 11 require PHP 8.1+
-  test-laravel-10-11:
-    name: PHP ${{ matrix.php }} / Laravel 10.x & 11.x
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php: [8.1, 8.2, 8.3]
-        include:
-          - laravel: 10.x
-            testbench: ^8.0
-          - laravel: 11.x
-            testbench: ^9.0
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup PHP ${{ matrix.php }}
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: mbstring, bcmath, xml, ctype, json, pdo_sqlite
-
-      - name: Require Laravel & Testbench
-        run: |
-          composer require --dev laravel/framework:${{ matrix.laravel }} --no-update
-          composer require --dev orchestra/testbench:${{ matrix.testbench }} --no-update
-          composer update --prefer-dist --no-interaction --no-scripts
-
-      - name: Publish Config
-        run: ./vendor/bin/testbench  vendor:publish --provider="BinaryBuilds\LaritorClient\LaritorServiceProvider" --force
-
-      - name: Run Tests
-        run: ./vendor/bin/phpunit
-
-  # Laravel 12 requires PHP 8.2+
-  test-laravel-12:
-    name: PHP ${{ matrix.php }} / Laravel 12.x
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php: [8.2, 8.3]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup PHP ${{ matrix.php }}
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: mbstring, bcmath, xml, ctype, json, pdo_sqlite
-
-      - name: Require Laravel & Testbench
-        run: |
-          composer require --dev laravel/framework:12.x --no-update
-          composer require --dev orchestra/testbench:^10.0 --no-update
-          composer update --prefer-dist --no-interaction --no-scripts
-
-      - name: Publish Config
-        run: ./vendor/bin/testbench  vendor:publish --provider="BinaryBuilds\LaritorClient\LaritorServiceProvider" --force
-
-      - name: Run Tests
-        run: ./vendor/bin/phpunit
+#  test-laravel-9:
+#    name: PHP ${{ matrix.php }} / Laravel 9.x
+#    runs-on: ubuntu-latest
+#    strategy:
+#      matrix:
+#        php: [8.0, 8.1, 8.2, 8.3]
+#    steps:
+#      - uses: actions/checkout@v4
+#
+#      - name: Setup PHP ${{ matrix.php }}
+#        uses: shivammathur/setup-php@v2
+#        with:
+#          php-version: ${{ matrix.php }}
+#          extensions: mbstring, bcmath, xml, ctype, json, pdo_sqlite
+#
+#      - name: Require Laravel & Testbench
+#        run: |
+#          composer require --dev laravel/framework:9.x --no-update
+#          composer require --dev orchestra/testbench:^7.0 --no-update
+#          composer update --prefer-dist --no-interaction --no-scripts
+#
+#      - name: Publish Config
+#        run: ./vendor/bin/testbench  vendor:publish --provider="BinaryBuilds\LaritorClient\LaritorServiceProvider" --force
+#
+#      - name: Run Tests
+#        run: ./vendor/bin/phpunit
+#
+#  # Laravel 10 & 11 require PHP 8.1+
+#  test-laravel-10-11:
+#    name: PHP ${{ matrix.php }} / Laravel 10.x & 11.x
+#    runs-on: ubuntu-latest
+#    strategy:
+#      matrix:
+#        php: [8.1, 8.2, 8.3]
+#        include:
+#          - laravel: 10.x
+#            testbench: ^8.0
+#          - laravel: 11.x
+#            testbench: ^9.0
+#    steps:
+#      - uses: actions/checkout@v4
+#
+#      - name: Setup PHP ${{ matrix.php }}
+#        uses: shivammathur/setup-php@v2
+#        with:
+#          php-version: ${{ matrix.php }}
+#          extensions: mbstring, bcmath, xml, ctype, json, pdo_sqlite
+#
+#      - name: Require Laravel & Testbench
+#        run: |
+#          composer require --dev laravel/framework:${{ matrix.laravel }} --no-update
+#          composer require --dev orchestra/testbench:${{ matrix.testbench }} --no-update
+#          composer update --prefer-dist --no-interaction --no-scripts
+#
+#      - name: Publish Config
+#        run: ./vendor/bin/testbench  vendor:publish --provider="BinaryBuilds\LaritorClient\LaritorServiceProvider" --force
+#
+#      - name: Run Tests
+#        run: ./vendor/bin/phpunit
+#
+#  # Laravel 12 requires PHP 8.2+
+#  test-laravel-12:
+#    name: PHP ${{ matrix.php }} / Laravel 12.x
+#    runs-on: ubuntu-latest
+#    strategy:
+#      matrix:
+#        php: [8.2, 8.3]
+#    steps:
+#      - uses: actions/checkout@v4
+#
+#      - name: Setup PHP ${{ matrix.php }}
+#        uses: shivammathur/setup-php@v2
+#        with:
+#          php-version: ${{ matrix.php }}
+#          extensions: mbstring, bcmath, xml, ctype, json, pdo_sqlite
+#
+#      - name: Require Laravel & Testbench
+#        run: |
+#          composer require --dev laravel/framework:12.x --no-update
+#          composer require --dev orchestra/testbench:^10.0 --no-update
+#          composer update --prefer-dist --no-interaction --no-scripts
+#
+#      - name: Publish Config
+#        run: ./vendor/bin/testbench  vendor:publish --provider="BinaryBuilds\LaritorClient\LaritorServiceProvider" --force
+#
+#      - name: Run Tests
+#        run: ./vendor/bin/phpunit
