@@ -31,6 +31,8 @@ class RequestRecorder extends Recorder
     {
         $request = $event->request;
 
+        dd($request->route());
+
         if ( ! $this->shouldRecordRequest($request)) {
             return;
         }
