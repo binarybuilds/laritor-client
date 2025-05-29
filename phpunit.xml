@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="vendor/autoload.php"
-         colors="true"
-         displayDetailsOnTestsThatTriggerDeprecations="true"
->
+<phpunit bootstrap="vendor/autoload.php" colors="true">
     <testsuites>
         <testsuite name="Package Test Suite">
             <directory>./tests</directory>
