@@ -6,8 +6,7 @@ use BinaryBuilds\LaritorClient\Recorders\MailRecorder;
 
 class MailTest extends TestCase
 {
-    /** @test */
-    public function it_records_mails(): void
+    public function test_it_records_mails(): void
     {
         $this->get('/laritor-mail')->assertStatus(200);
 

@@ -6,8 +6,7 @@ use BinaryBuilds\LaritorClient\Recorders\QueuedJobRecorder;
 
 class JobTest extends TestCase
 {
-    /** @test */
-    public function it_records_jobs(): void
+    public function test_it_records_jobs(): void
     {
         $this->get('/laritor-job')->assertStatus(200);
 

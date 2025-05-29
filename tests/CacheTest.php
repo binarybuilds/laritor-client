@@ -6,8 +6,7 @@ use BinaryBuilds\LaritorClient\Recorders\CacheRecorder;
 
 class CacheTest extends TestCase
 {
-    /** @test */
-    public function it_records_cache_hits(): void
+    public function test_it_records_cache_hits(): void
     {
         $this->get('/laritor-cache')->assertStatus(200);
 

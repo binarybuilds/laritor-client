@@ -6,8 +6,7 @@ use BinaryBuilds\LaritorClient\Recorders\OutboundRequestRecorder;
 
 class ExternalHttpTest extends TestCase
 {
-    /** @test */
-    public function it_records_external_requests(): void
+    public function test_it_records_external_requests(): void
     {
         $this->get('/laritor-external-http')->assertStatus(200);
 

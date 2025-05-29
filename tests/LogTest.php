@@ -6,8 +6,7 @@ use BinaryBuilds\LaritorClient\Recorders\LogRecorder;
 
 class LogTest extends TestCase
 {
-    /** @test */
-    public function it_records_logs(): void
+    public function test_it_records_logs(): void
     {
         $this->get('/laritor-log')->assertStatus(200);
 

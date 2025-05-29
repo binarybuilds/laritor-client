@@ -6,8 +6,7 @@ use BinaryBuilds\LaritorClient\Recorders\RequestRecorder;
 
 class RequestTest extends TestCase
 {
-    /** @test */
-    public function it_records_requests(): void
+    public function test_it_records_requests(): void
     {
         $this->get('/laritor-test')
             ->assertStatus(200);

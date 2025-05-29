@@ -2,13 +2,11 @@
 
 namespace BinaryBuilds\LaritorClient\Tests;
 
-use BinaryBuilds\LaritorClient\Recorders\QueuedJobRecorder;
 use Illuminate\Support\Facades\DB;
 
 class SchemaTest extends TestCase
 {
-    /** @test */
-    public function it_records_database_schema(): void
+    public function test_it_records_database_schema(): void
     {
        $this->artisan('laritor:sync');
 

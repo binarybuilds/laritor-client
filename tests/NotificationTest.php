@@ -6,8 +6,7 @@ use BinaryBuilds\LaritorClient\Recorders\NotificationRecorder;
 
 class NotificationTest extends TestCase
 {
-    /** @test */
-    public function it_records_notifications(): void
+    public function test_it_records_notifications(): void
     {
         $this->get('/laritor-notification')->assertStatus(200);
 

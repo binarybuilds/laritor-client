@@ -6,8 +6,7 @@ use BinaryBuilds\LaritorClient\Laritor;
 
 class ServiceProviderTest extends TestCase
 {
-    /** @test */
-    public function it_registers_the_laritor_client_in_the_container()
+    public function test_it_registers_the_laritor_client_in_the_container()
     {
         $this->assertTrue(
             $this->app->bound(Laritor::class),
@@ -15,8 +14,7 @@ class ServiceProviderTest extends TestCase
         );
     }
 
-    /** @test */
-    public function it_resolves_the_laritor_client_instance()
+    public function test_it_resolves_the_laritor_client_instance()
     {
         $client = $this->app->make(Laritor::class);
         $this->assertInstanceOf(Laritor::class, $client);

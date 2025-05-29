@@ -6,8 +6,7 @@ use BinaryBuilds\LaritorClient\Recorders\ExceptionRecorder;
 
 class ExceptionTest extends TestCase
 {
-    /** @test */
-    public function it_records_exceptions(): void
+    public function test_it_records_exceptions(): void
     {
         try {
             $this->get('/laritor-exception');

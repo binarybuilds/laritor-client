@@ -6,8 +6,7 @@ use BinaryBuilds\LaritorClient\Recorders\QueryRecorder;
 
 class QueryTest extends TestCase
 {
-    /** @test */
-    public function it_records_database_queries(): void
+    public function test_it_records_database_queries(): void
     {
         $this->get('/laritor-query')->assertStatus(200);
 
