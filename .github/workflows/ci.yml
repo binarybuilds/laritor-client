@@ -53,7 +53,7 @@ jobs:
 
       - name: Require Laravel & Testbench
         run: |
-          composer require --dev laravel/framework:9.x --no-update
+          composer require laravel/framework:9.x --no-update
           composer require --dev orchestra/testbench:^7.0 --no-update
           composer update --prefer-dist --no-interaction --no-scripts
 
