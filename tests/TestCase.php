@@ -120,11 +120,6 @@ abstract class TestCase extends Orchestra
     {
         parent::setUp();
 
-        $this->artisan('vendor:publish', [
-            '--provider' => LaritorServiceProvider::class,
-            '--force'    => true
-        ])->run();
-
         $this->artisan('migrate:fresh', [
             '--path' => realpath(__DIR__ . '/../database/migrations'),
             '--database' => config('database.default'),
