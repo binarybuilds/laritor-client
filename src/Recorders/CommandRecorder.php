@@ -71,7 +71,7 @@ class CommandRecorder extends Recorder
 
         $this->laritor->pushEvent(static::$eventType,  [
             'command' => trim($arguments.' '.$options),
-            'started_at' => now(),
+            'started_at' => now()->toDateTimeString(),
             'completed_at' => null
         ]);
     }

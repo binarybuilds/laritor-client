@@ -98,6 +98,17 @@ abstract class TestCase extends Orchestra
 
             return response('OK', 200);
         });
+
+        $app['router']->get('/laritor-exception', function () {
+            throw new \RuntimeException('Test exception');
+        });
+
+        $app['router']->get('/laritor-job', function () {
+            dispatch(function (){
+                return 'OK';
+            });
+            return response('OK', 200);
+        });
     }
 
     protected function setUp(): void
@@ -107,6 +118,11 @@ abstract class TestCase extends Orchestra
         $this->artisan('vendor:publish', [
             '--provider' => LaritorServiceProvider::class,
             '--force'    => true
+        ])->run();
+
+        $this->artisan('migrate:fresh', [
+            '--path' => realpath(__DIR__ . '/../database/migrations'),
+            '--database' => config('database.default'),
         ])->run();
     }
 }

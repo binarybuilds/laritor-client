@@ -66,9 +66,9 @@ class QueuedJobRecorder extends Recorder
         $this->laritor->setContext('JOB');
         $this->laritor->pushEvent(static::$eventType, [
             'connection' => $event->connectionName,
-            'queue' => $event->job->queue ?? config("queue.connections.{$event->connectionName}.queue", 'default'),
+            'queue' => $event->job->getQueue() ?? config("queue.connections.{$event->connectionName}.queue", 'default'),
             'job' =>  isset($event->job->payload()['displayName']) ? $event->job->payload()['displayName'] : get_class($event->job),
-            'started_at' => now(),
+            'started_at' => now()->toDateTimeString(),
             'id' => $event->job->getJobId()
         ]);
     }

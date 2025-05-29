@@ -19,7 +19,7 @@ class QueryTest extends TestCase
         $this->assertArrayHasKey('events', $data);
         $this->assertArrayHasKey(QueryRecorder::$eventType, $data['events']);
         $this->assertNotEmpty( $data['events'][QueryRecorder::$eventType]);
-        $this->assertArrayHasKey('query', $data['events'][QueryRecorder::$eventType][0]);
-        $this->assertEquals('SELECT 1 as ok', $data['events'][QueryRecorder::$eventType][0]['query']);
+        $this->assertArrayHasKey('query', $data['events'][QueryRecorder::$eventType][count($data['events'][QueryRecorder::$eventType]) - 1]);
+        $this->assertEquals('SELECT 1 as ok', $data['events'][QueryRecorder::$eventType][count($data['events'][QueryRecorder::$eventType]) - 1]['query']);
     }
 }
