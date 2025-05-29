@@ -40,6 +40,11 @@ class Recorder
         try{
             $this->trackEvent($event);
         } catch (\Throwable $exception) {
+
+            if (app()->runningUnitTests()) {
+                throw $exception;
+            }
+
             // Exception occurred during ingest. Send the exception to laritor
             // and silently ignore so request continues.
             rescue(function () use ($exception) {

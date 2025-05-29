@@ -40,10 +40,6 @@ abstract class TestCase extends Orchestra
 
         Http::fake(function ($request, $options) use ($path) {
 
-            if (Str::contains($request->url(),'ingest-exception')){
-                throw new \RuntimeException(json_encode($request->data(), JSON_PRETTY_PRINT));
-            }
-
             if (!File::exists(dirname($path))) {
                 File::makeDirectory(dirname($path), 0755, true);
             }
