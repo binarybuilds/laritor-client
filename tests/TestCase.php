@@ -31,8 +31,6 @@ abstract class TestCase extends Orchestra
      */
     protected function getEnvironmentSetUp($app)
     {
-        dd($app->basePath('@testbench'));
-
         $path = __DIR__.'/payloads/events.json';
 
         if (File::exists($path)) {
