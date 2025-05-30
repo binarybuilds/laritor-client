@@ -23,14 +23,14 @@ jobs:
           php-version: ${{ matrix.php }}
           extensions: mbstring, bcmath, xml, ctype, json, pdo_sqlite
 
+      - name: Ensure bootstrap/cache exists
+        run: mkdir -p bootstrap/cache
+
       - name: Require Laravel & Testbench
         run: |
           composer require --dev laravel/framework:8.x --no-update
           composer require --dev orchestra/testbench:^6.0 --no-update
           composer update --prefer-dist --no-interaction --no-scripts
-
-      - name: Ensure bootstrap/cache exists
-        run: mkdir -p bootstrap/cache
 
       - name: Publish Config
         run: ./vendor/bin/testbench  vendor:publish --provider="BinaryBuilds\LaritorClient\LaritorServiceProvider" --force
