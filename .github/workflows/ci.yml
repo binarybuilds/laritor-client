@@ -32,7 +32,7 @@ jobs:
       - name: Ensure bootstrap/cache is writable
         run: |
           mkdir -p vendor/orchestra/testbench-core/laravel/bootstrap/cache
-          sudo chmod -R 0777 vendor/orchestra/testbench-core/laravel/bootstrap/cache/*
+          sudo chmod -R 0777 vendor/orchestra/testbench-core/laravel/bootstrap/cache/
           cd vendor/orchestra/testbench-core/laravel/bootstrap/
           ls -la
 
