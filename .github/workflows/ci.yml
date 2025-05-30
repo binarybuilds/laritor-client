@@ -30,8 +30,7 @@ jobs:
           composer update --prefer-dist --no-interaction --no-scripts
 
       - name: Ensure bootstrap/cache is writable
-        run: |
-          mkdir -p vendor/orchestra/workbench/bootstrap/cache
+        run: sudo chown -R $USER:$USER $GITHUB_WORKSPACE/vendor
 
       - name: Publish Config
         run: ./vendor/bin/testbench  vendor:publish --provider="BinaryBuilds\LaritorClient\LaritorServiceProvider" --force
