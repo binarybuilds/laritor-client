@@ -34,7 +34,7 @@ jobs:
           cd vendor/orchestra/testbench-core/laravel/bootstrap/
           ls -la
           mkdir -p vendor/orchestra/testbench-core/laravel/bootstrap/cache
-          sudo chmod -R 777 vendor/orchestra/testbench-core/laravel/bootstrap/cache/
+          sudo chmod -R 0777 vendor/orchestra/testbench-core/laravel/bootstrap/cache
           ls -la
 
       - name: Publish Config
