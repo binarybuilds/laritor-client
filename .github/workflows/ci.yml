@@ -30,7 +30,7 @@ jobs:
           composer update --prefer-dist --no-interaction --no-scripts
 
       - name: Ensure bootstrap/cache is writable
-        run: php show_testbench_path.php
+        run: php testbench_path.php
 
       - name: Publish Config
         run: ./vendor/bin/testbench  vendor:publish --provider="BinaryBuilds\LaritorClient\LaritorServiceProvider" --force
