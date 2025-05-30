@@ -30,7 +30,9 @@ jobs:
           composer update --prefer-dist --no-interaction --no-scripts
 
       - name: Ensure bootstrap/cache is writable
-        run: sudo chmod -R 755 vendor/orchestra/testbench-core/laravel/bootstrap/*
+        run: |
+          mkdir -p vendor/orchestra/testbench-core/laravel/bootstrap/cache
+          sudo chmod -R 777 vendor/orchestra/testbench-core/laravel/bootstrap/*
 
       - name: Publish Config
         run: ./vendor/bin/testbench  vendor:publish --provider="BinaryBuilds\LaritorClient\LaritorServiceProvider" --force
