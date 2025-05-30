@@ -35,6 +35,7 @@ jobs:
           ls -la
           mkdir -p vendor/orchestra/testbench-core/laravel/bootstrap/cache
           sudo chmod -R 777 vendor/orchestra/testbench-core/laravel/bootstrap/cache/
+          ls -la
 
 #      - name: Publish Config
 #        run: ./vendor/bin/testbench  vendor:publish --provider="BinaryBuilds\LaritorClient\LaritorServiceProvider" --force
