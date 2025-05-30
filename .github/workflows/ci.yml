@@ -7,45 +7,12 @@ on:
     branches: [main]
 
 jobs:
-  test-laravel-8:
-    name: PHP ${{ matrix.php }} / Laravel 8.x
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php: [7.4, 8.0, 8.1, 8.2, 8.3, 8.4]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup PHP ${{ matrix.php }}
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: mbstring, bcmath, xml, ctype, json, pdo_sqlite
-
-      - name: Require Laravel & Testbench
-        run: |
-          composer require --dev laravel/framework:8.x --no-update
-          composer require --dev orchestra/testbench:^6.0 --no-update
-          composer update --prefer-dist --no-interaction --no-scripts
-
-      - name: Ensure bootstrap/cache is writable
-        run: |
-          php testbench_path.php
-          cd vendor/orchestra/testbench-core/laravel/
-          ls -la
-
-      - name: Publish Config
-        run: ./vendor/bin/testbench  vendor:publish --provider="BinaryBuilds\LaritorClient\LaritorServiceProvider" --force
-
-      - name: Run Tests
-        run: ./vendor/bin/phpunit
-
-#  test-laravel-9:
-#    name: PHP ${{ matrix.php }} / Laravel 9.x
+#  test-laravel-8:
+#    name: PHP ${{ matrix.php }} / Laravel 8.x
 #    runs-on: ubuntu-latest
 #    strategy:
 #      matrix:
-#        php: [8.0]
+#        php: [7.4, 8.0, 8.1, 8.2, 8.3, 8.4]
 #    steps:
 #      - uses: actions/checkout@v4
 #
@@ -57,15 +24,48 @@ jobs:
 #
 #      - name: Require Laravel & Testbench
 #        run: |
-#          composer require laravel/framework:9.x --no-update
-#          composer require --dev orchestra/testbench:^7.0 --no-update
+#          composer require --dev laravel/framework:8.x --no-update
+#          composer require --dev orchestra/testbench:^6.0 --no-update
 #          composer update --prefer-dist --no-interaction --no-scripts
+#
+#      - name: Ensure bootstrap/cache is writable
+#        run: |
+#          php testbench_path.php
+#          cd vendor/orchestra/testbench-core/laravel/
+#          ls -la
 #
 #      - name: Publish Config
 #        run: ./vendor/bin/testbench  vendor:publish --provider="BinaryBuilds\LaritorClient\LaritorServiceProvider" --force
 #
 #      - name: Run Tests
 #        run: ./vendor/bin/phpunit
+
+  test-laravel-9:
+    name: PHP ${{ matrix.php }} / Laravel 9.x
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [8.0, 8.1, 8.2, 8.3, 8.4]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, bcmath, xml, ctype, json, pdo_sqlite
+
+      - name: Require Laravel & Testbench
+        run: |
+          composer require laravel/framework:9.x --no-update
+          composer require --dev orchestra/testbench:^7.0 --no-update
+          composer update --prefer-dist --no-interaction --no-scripts
+
+      - name: Publish Config
+        run: ./vendor/bin/testbench  vendor:publish --provider="BinaryBuilds\LaritorClient\LaritorServiceProvider" --force
+
+      - name: Run Tests
+        run: ./vendor/bin/phpunit
 
 
 #  test-laravel-10:
