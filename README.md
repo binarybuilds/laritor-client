@@ -1,6 +1,8 @@
-Laritor Client
+Official Laritor Client Package
 ------------------------------------------------
-[Laritor](https://laritor.com) is a performance monitoring and observability tool for laravel apps. 
+![Laritor Image](/art/laritor-og.png "Laritor Image")
+
+[Laritor](https://laritor.com) is a performance monitoring and observability tool for applications built using laravel. 
 
 This repository contains the official package for laritor which collects and sends metrics from your application to laritor.
 
