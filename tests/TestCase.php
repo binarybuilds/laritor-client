@@ -3,7 +3,6 @@
 namespace BinaryBuilds\LaritorClient\Tests;
 
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
 use Orchestra\Testbench\TestCase as Orchestra;
 use BinaryBuilds\LaritorClient\LaritorServiceProvider;
 use Illuminate\Support\Facades\File;
