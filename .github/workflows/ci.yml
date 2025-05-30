@@ -29,6 +29,9 @@ jobs:
           composer require --dev orchestra/testbench:^6.0 --no-update
           composer update --prefer-dist --no-interaction --no-scripts
 
+      - name: Ensure bootstrap/cache exists
+        run: mkdir -p bootstrap/cache
+
       - name: Publish Config
         run: ./vendor/bin/testbench  vendor:publish --provider="BinaryBuilds\LaritorClient\LaritorServiceProvider" --force
 
