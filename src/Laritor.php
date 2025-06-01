@@ -216,8 +216,18 @@ class Laritor
      */
     public function shouldSendEvents()
     {
-        //todo: remove after testing
-        return true;
+        $hasOccurrence = false;
+
+        foreach ($this->events as $type => $event) {
+            if (in_array($type, ['requests', 'commands', 'scheduler', 'scheduled_tasks', 'jobs','server_stats'])) {
+                $hasOccurrence = true;
+                break;
+            }
+        }
+
+        if (! $hasOccurrence) {
+            return false;
+        }
 
         if (app()->runningInConsole() || ! $this->isRateLimiterEnabled() ) {
             return true;
