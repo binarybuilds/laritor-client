@@ -33,6 +33,6 @@ class QueueHealthCheck implements ShouldQueue
 
     public function handle()
     {
-        Http::post(rtrim(config('laritor.ingest_url'),'/').'/queue-hc', [ 'check_id' => $this->checkId ]);
+        Http::post(rtrim(config('laritor.ingest_url'),'/').'/ack-hc', [ 'check_id' => $this->checkId ]);
     }
 }
