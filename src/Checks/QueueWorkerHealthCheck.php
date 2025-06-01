@@ -31,11 +31,11 @@ class QueueWorkerHealthCheck extends BaseHealthCheck
         $queue = QueueHealthCheck::dispatch($request->input('check_id'));
 
         if ($this->connection) {
-            $queue->onConnection($request->input('connection'));
+            $queue->onConnection($this->connection);
         }
 
         if ($this->queue) {
-            $queue->onQueue($request->input('queue'));
+            $queue->onQueue($this->queue);
         }
 
         return true;
