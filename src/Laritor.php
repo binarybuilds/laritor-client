@@ -132,6 +132,7 @@ class Laritor
     public function toArray()
     {
         return [
+            'app_key' => Str::afterLast(rtrim(config('laritor.ingest_url'), '/'), '/'),
             'app' => url('/'),
             'env' => config('app.env'),
             'event_at' => now()->toDateTimeString(),
@@ -194,6 +195,7 @@ class Laritor
             $app = app();
             Http::post(rtrim(config('laritor.ingest_url'),'/').'/sync', [
                 'env' => config('app.env'),
+                'app_key' => Str::afterLast(rtrim(config('laritor.ingest_url'), '/'), '/'),
                 'app' => url('/'),
                 'version' => $app->version(),
                 'php' => phpversion(),

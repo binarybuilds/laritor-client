@@ -5,6 +5,7 @@ namespace BinaryBuilds\LaritorClient\Recorders;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Http;
 use BinaryBuilds\LaritorClient\Laritor;
+use Illuminate\Support\Str;
 
 class Recorder
 {
@@ -50,6 +51,7 @@ class Recorder
             rescue(function () use ($exception) {
                 Http::post(rtrim(config('laritor.ingest_url'),'/').'/ingest-exception', [
                     'env' => config('app.env'),
+                    'app_key' => Str::afterLast(rtrim(config('laritor.ingest_url'), '/'), '/'),
                     'version' => app()->version(),
                     'php' => phpversion(),
                     'data' => [
