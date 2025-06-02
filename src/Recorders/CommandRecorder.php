@@ -104,6 +104,8 @@ class CommandRecorder extends Recorder
     public function ignore($command)
     {
         return in_array($command, [
+            'db:seed',
+            'migrate',
             'schedule:run',
             'schedule:finish',
             'package:discover',
