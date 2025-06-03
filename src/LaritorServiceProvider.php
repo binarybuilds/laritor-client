@@ -12,6 +12,7 @@ use BinaryBuilds\LaritorClient\Commands\SyncCommand;
 use BinaryBuilds\LaritorClient\Commands\HealthCheckMakeCommand;
 use BinaryBuilds\LaritorClient\Commands\QueueHealthCheckMakeCommand;
 use BinaryBuilds\LaritorClient\Commands\SendServerMetricsCommand;
+use Illuminate\Routing\Contracts\ControllerDispatcher as ControllerDispatcherContract;
 
 /**
  * Class LaritorServiceProvider
@@ -53,7 +54,7 @@ class LaritorServiceProvider extends ServiceProvider
 
         app(Laritor::class)->started();
 
-        app()->bind(ControllerDispatcher::class, function ($app) {
+        app()->bind(ControllerDispatcherContract::class, function ($app) {
             return new class($app) extends ControllerDispatcher {
                 public function dispatch($route, $controller, $method)
                 {
