@@ -32,7 +32,7 @@ return [
         \BinaryBuilds\LaritorClient\Recorders\LogRecorder::class,
         \BinaryBuilds\LaritorClient\Recorders\MailRecorder::class,
         \BinaryBuilds\LaritorClient\Recorders\NotificationRecorder::class,
-        \BinaryBuilds\LaritorClient\Recorders\DatabaseSchemaChangesRecorder::class,
+        \BinaryBuilds\LaritorClient\Recorders\DatabaseSchemaRecorder::class,
     ],
 
     'query' => [

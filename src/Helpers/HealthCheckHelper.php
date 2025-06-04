@@ -27,7 +27,7 @@ class HealthCheckHelper
                     Str::after($health_check->getPathname(), app_path('Laritor').DIRECTORY_SEPARATOR)
                 );
 
-                $class = app()->getNamespace().'BinaryBuilds\\'.$name;
+                $class = app()->getNamespace().'Laritor\\'.$name;
 
                 $health_checks[] = [
                     'name' => $class::$name,
