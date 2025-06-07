@@ -2,6 +2,7 @@
 
 namespace BinaryBuilds\LaritorClient\Recorders;
 
+use BinaryBuilds\LaritorClient\Jobs\QueueHealthCheck;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
@@ -93,6 +94,10 @@ class QueuedJobRecorder extends Recorder
 
     public function shouldReportJob($job)
     {
+        if ($job instanceof QueueHealthCheck ) {
+            return false;
+        }
+
         foreach ((array)config('laritor.jobs.ignore') as $ignore ) {
 
             if ($job instanceof $ignore ) {

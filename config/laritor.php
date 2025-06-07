@@ -47,11 +47,10 @@ return [
         'console' => env('LARITOR_RECORD_CONSOLE_QUERIES', true),
 
         /**
-         * By default, Laritor will not record the bindings of the query.
-         * This is to avoid sensitive data from being recorded. If you
-         * wish to record the bindings, set the below value to true.
+         *  If you wish to avoid recording query bindings,
+         * set the below value to true.
          */
-        'bindings' => env('LARITOR_RECORD_QUERY_BINDINGS', false),
+        'bindings' => env('LARITOR_RECORD_QUERY_BINDINGS', true),
     ],
 
     'requests' => [
@@ -110,9 +109,7 @@ return [
     ],
 
     'jobs' => [
-
         'ignore' => [
-            \BinaryBuilds\LaritorClient\Jobs\QueueHealthCheck::class
         ]
     ],
 ];
