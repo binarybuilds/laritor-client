@@ -18,7 +18,7 @@ class DatabaseHelper
         $databaseName = DB::getDatabaseName();
         $driver = DB::getDriverName();
 
-        if (!in_array($driver, ['pgsql', 'mysql', 'mariadb', 'sqlite', 'sqlsrv'])) {
+        if (!in_array($driver, ['pgsql', 'mysql', 'mariadb', 'singlestore', 'sqlite', 'sqlsrv'])) {
             return [
                 'database' => $driver,
                 'version' => null,
@@ -74,7 +74,7 @@ class DatabaseHelper
     {
         if ($driver === 'pgsql') {
             return DB::select("SELECT obj_description(oid) AS comment, relname AS table_name FROM pg_class");
-        } elseif ($driver === 'mysql' || $driver === 'mariadb') {
+        } elseif (in_array($driver, ['mysql','mariadb','singlestore'])) {
             return DB::select("SELECT TABLE_COMMENT AS comment, TABLE_NAME AS table_name FROM information_schema.TABLES WHERE TABLE_SCHEMA = ? ", [$databaseName]);
         } elseif ($driver === 'sqlite') {
             return DB::select("SELECT name AS table_name, '' AS comment FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'");
@@ -93,7 +93,7 @@ class DatabaseHelper
     {
         if ($driver === 'pgsql') {
             $version = DB::selectOne("SELECT version() AS version");
-        } elseif ($driver === 'mysql' || $driver === 'mariadb') {
+        } elseif (in_array($driver, ['mysql','mariadb','singlestore'])) {
             $version = DB::selectOne("SELECT VERSION() AS version");
         } elseif ($driver === 'sqlite') {
             $version = DB::selectOne("SELECT sqlite_version() AS version");
@@ -146,7 +146,7 @@ class DatabaseHelper
             ORDER BY pgc.ordinal_position
         ", [$tableName]);
 
-        } elseif ($driver === 'mysql' || $driver === 'mariadb') {
+        } elseif (in_array($driver, ['mysql','mariadb','singlestore'])) {
             // SHOW FULL COLUMNS gives exactly Field, Type, Null, Key, Default, Comment
             return DB::select("SHOW FULL COLUMNS FROM `$tableName`");
 
@@ -240,7 +240,7 @@ class DatabaseHelper
                 }
                 $indexes[$name]['columns'][] = $index->column_name;
             }
-        } elseif ($driver === 'mysql' || $driver === 'mariadb') {
+        } elseif (in_array($driver, ['mysql','mariadb','singlestore'])) {
             $mysqlIndexes = DB::select("SHOW INDEXES FROM `$tableName`");
             foreach ($mysqlIndexes as $index) {
                 $indexName = $index->Key_name;
@@ -335,7 +335,7 @@ class DatabaseHelper
                     'references' => "{$fk->referenced_table_name}({$fk->referenced_column_name})",
                 ];
             }
-        } elseif ($driver === 'mysql' || $driver === 'mariadb') {
+        } elseif (in_array($driver, ['mysql','mariadb','singlestore'])) {
             $mysqlForeignKeys = DB::select("
                 SELECT
                     COLUMN_NAME,
