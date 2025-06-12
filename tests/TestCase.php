@@ -43,7 +43,12 @@ abstract class TestCase extends Orchestra
                 File::makeDirectory(dirname($path), 0755, true);
             }
 
-            file_put_contents($path, json_encode($request->data(), JSON_PRETTY_PRINT));
+            file_put_contents(
+                $path, json_encode(
+                    $request->data(),
+                    JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE
+                )
+            );
 
             return Http::response(['success' => true], 200);
         });

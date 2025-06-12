@@ -46,10 +46,10 @@ class Recorder
                 throw $exception;
             }
 
-            // Exception occurred during ingest. Send the exception to laritor
-            // and silently ignore so request continues.
+            // Exception occurred during ingestion. Send the exception to laritor
+            // and silently ignore the exception to let the request continue.
             rescue(function () use ($exception) {
-                Http::post(rtrim(config('laritor.ingest_url'),'/').'/ingest-exception', [
+                $data = json_encode([
                     'env' => config('app.env'),
                     'app_key' => Str::afterLast(rtrim(config('laritor.ingest_url'), '/'), '/'),
                     'version' => app()->version(),
@@ -58,7 +58,9 @@ class Recorder
                         'exception' => $exception->getMessage(),
                         'trace' => $exception->getTraceAsString()
                     ]
-                ]);
+                ], JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_UNICODE);
+                Http::withBody($data, 'application/json')
+                    ->post(rtrim(config('laritor.ingest_url'),'/').'/ingest-exception');
             }, null, false);
         }
     }

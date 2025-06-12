@@ -152,7 +152,7 @@ class Laritor
      */
     public function toJson()
     {
-        return json_encode($this->toArray());
+        return json_encode($this->toArray(), JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_UNICODE);
     }
 
     /**
@@ -182,7 +182,8 @@ class Laritor
     public function callApi()
     {
         rescue(function () {
-            Http::post(  rtrim(config('laritor.ingest_url'),'/').'/events', $this->toArray());
+            Http::withBody($this->toJson(), 'application/json')
+                ->post(  rtrim(config('laritor.ingest_url'),'/').'/events');
         }, null, false);
     }
 
@@ -193,7 +194,8 @@ class Laritor
     {
         rescue(function () use ($data) {
             $app = app();
-            Http::post(rtrim(config('laritor.ingest_url'),'/').'/sync', [
+
+            $data = json_encode([
                 'env' => config('app.env'),
                 'app_key' => Str::afterLast(rtrim(config('laritor.ingest_url'), '/'), '/'),
                 'app' => url('/'),
@@ -209,7 +211,10 @@ class Laritor
                     'events' => $app->eventsAreCached()
                 ],
                 'data' => $data
-            ]);
+            ], JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_UNICODE);
+
+            Http::withBody($data, 'application/json')
+                ->post(rtrim(config('laritor.ingest_url'),'/').'/sync');
         }, null, false);
     }
 
