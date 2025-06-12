@@ -16,7 +16,7 @@ class Laritor
      */
     private $events = [];
 
-    private $order = 0;
+    private $order = 1;
 
     private $started = 0;
 
@@ -161,7 +161,7 @@ class Laritor
     public function reset()
     {
         $this->events = [];
-        $this->order = 0;
+        $this->order = 1;
     }
 
     /**
