@@ -56,7 +56,7 @@ class QueuedJobRecorder extends Recorder
             'job' =>  isset($event->payload()['displayName']) ? $event->payload()['displayName'] : get_class($event->job),
             'id' => $event->id,
             'delay' => $event->delay,
-            'queued_at' => now()->format('Y-m-d H:i:s'),
+            'queued_at' => now()->toDateTimeString(),
             'status' => 'queued',
             'context' => $this->laritor->getContext()
         ]);
