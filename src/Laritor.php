@@ -76,11 +76,22 @@ class Laritor
         }
     }
 
-    public function responseRenderCompleted()
+    public function responseRenderCompleted($exception)
     {
-        $this->response = $this->getDurationFrom($this->started) - (
-            $this->booted + $this->middleware + $this->controller
-            );
+        if ($exception) {
+            switch ($this->getContext()) {
+                case 'BOOT': $this->booted = $this->getDurationFrom($this->started);break;
+                case 'MIDDLEWARE': $this->middleware = $this->getDurationFrom($this->started) - $this->booted;break;
+                case 'CONTROLLER': $this->controller = $this->getDurationFrom($this->started) - ($this->booted + $this->middleware);break;
+                default: $this->response = $this->getDurationFrom($this->started) - (
+                        $this->booted + $this->middleware + $this->controller
+                    );break;
+            }
+        } else {
+            $this->response = $this->getDurationFrom($this->started) - (
+                $this->booted + $this->middleware + $this->controller
+                );
+        }
     }
 
     public function getDurationFrom($time)
