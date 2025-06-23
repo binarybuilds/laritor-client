@@ -54,6 +54,7 @@ class NotificationRecorder extends Recorder
             'notifiable' => $this->formatNotifiable($event->notifiable),
             'context' => $this->laritor->getContext(),
             'started_at' => now()->format('Y-m-d H:i:s'),
+            'completed_at' => null
         ] );
     }
 

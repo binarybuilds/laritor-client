@@ -79,6 +79,7 @@ class MailRecorder extends Recorder
         $eventData['mailable'] = $event->data['__laritor_mailable'] ?? '';
         $eventData['context'] = $this->laritor->getContext();
         $eventData['started_at'] = now()->format('Y-m-d H:i:s');
+        $eventData['completed_at'] = null;
 
         $this->laritor->pushEvent(static::$eventType, $eventData );
     }
