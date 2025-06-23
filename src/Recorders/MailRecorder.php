@@ -7,7 +7,6 @@ use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Mail\Events\MessageSent;
 use Illuminate\Mail\Mailable;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 
 class MailRecorder extends Recorder

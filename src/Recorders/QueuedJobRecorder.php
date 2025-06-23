@@ -3,6 +3,7 @@
 namespace BinaryBuilds\LaritorClient\Recorders;
 
 use BinaryBuilds\LaritorClient\Jobs\QueueHealthCheck;
+use Carbon\Carbon;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
@@ -69,7 +70,7 @@ class QueuedJobRecorder extends Recorder
             'connection' => $event->connectionName,
             'queue' => $event->job->getQueue() ?? config("queue.connections.{$event->connectionName}.queue", 'default'),
             'job' =>  isset($event->job->payload()['displayName']) ? $event->job->payload()['displayName'] : get_class($event->job),
-            'started_at' => now(),
+            'started_at' => now()->toDateTimeString(),
             'completed_at' => null,
             'duration' => 0,
             'status' => 'processing',
@@ -84,8 +85,9 @@ class QueuedJobRecorder extends Recorder
     public function complete($event)
     {
         $job = $this->laritor->getEvents(static::$eventType)[0];
-        $job['duration'] = $job['started_at']->diffInMilliseconds();
-        $job['started_at'] = $job['started_at']->toDateTimeString();
+        $start = Carbon::parse($job['started_at']);
+        $job['duration'] = $start->diffInMilliseconds();
+        $job['started_at'] = $start->toDateTimeString();
         $job['completed_at'] = now()->toDateTimeString();
         $job['id'] = $event->job->getJobId();
         $job['status'] = $event instanceof JobFailed ? 'failed' : 'processed';
