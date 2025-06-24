@@ -2,6 +2,7 @@
 
 namespace BinaryBuilds\LaritorClient\Recorders;
 
+use BinaryBuilds\LaritorClient\Helpers\DataHelper;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Str;
 use BinaryBuilds\LaritorClient\Helpers\FileHelper;
@@ -27,7 +28,7 @@ class ExceptionRecorder extends Recorder
         }
 
         $data = [
-            'message' => $throwable->getMessage(),
+            'message' => DataHelper::redactData($throwable->getMessage()),
             'level' => 'error',
             'exception_class' => get_class($throwable),
             'stacktrace' => [],

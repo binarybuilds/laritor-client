@@ -2,6 +2,7 @@
 
 namespace BinaryBuilds\LaritorClient\Recorders;
 
+use BinaryBuilds\LaritorClient\Helpers\DataHelper;
 use Illuminate\Log\Events\MessageLogged;
 
 class LogRecorder extends Recorder
@@ -26,7 +27,7 @@ class LogRecorder extends Recorder
     {
         $this->laritor->pushEvent(static::$eventType, [
             'level' => $event->level,
-            'message' => $event->message,
+            'message' => DataHelper::redactData($event->message),
             'log_context' => $event->context,
             'occurred_at' => now()->format('Y-m-d H:i:s'),
             'context' => $this->laritor->getContext()

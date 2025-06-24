@@ -53,15 +53,16 @@ return [
         'bindings' => env('LARITOR_RECORD_QUERY_BINDINGS', true),
     ],
 
+    'anonymize' => [
+        'ip' => env('LARITOR_ANONYMIZE_IP', false),
+        'user_agent' => env('LARITOR_ANONYMIZE_USER_AGENT', false),
+        'user' => env('LARITOR_ANONYMIZE_USER', false),
+        'pii' => env('LARITOR_ANONYMIZE_PII', false),
+    ],
+
     'requests' => [
 
         'query_string' => env('LARITOR_RECORD_QUERY_STRING', false),
-
-        'anonymize' => [
-            'ip' => env('LARITOR_ANONYMIZE_IP', false),
-            'user_agent' => env('LARITOR_ANONYMIZE_USER_AGENT', false),
-            'user' => env('LARITOR_ANONYMIZE_USER', false),
-        ],
 
         'rate_limit' => [
             'enabled' => env('LARITOR_RATE_LIMIT_REQUESTS', false),

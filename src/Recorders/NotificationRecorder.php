@@ -2,6 +2,7 @@
 
 namespace BinaryBuilds\LaritorClient\Recorders;
 
+use BinaryBuilds\LaritorClient\Helpers\DataHelper;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Mail\Events\MessageSending;
@@ -73,7 +74,7 @@ class NotificationRecorder extends Recorder
                 return is_array($route) ? implode(',', $route) : $route;
             }, $notifiable->routes);
 
-            return 'Anonymous: '.implode(',', $routes);
+            return DataHelper::redactData('Anonymous: '.implode(',', $routes));
         }
 
         return '';

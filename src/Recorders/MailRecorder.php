@@ -2,6 +2,7 @@
 
 namespace BinaryBuilds\LaritorClient\Recorders;
 
+use BinaryBuilds\LaritorClient\Helpers\DataHelper;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Mail\Events\MessageSending;
@@ -46,9 +47,9 @@ class MailRecorder extends Recorder
         $message = $event->message;
         if ($message instanceof \Swift_Message) {
             $eventData = [
-                'to' => $message->getTo(),
-                'cc' => $message->getCc(),
-                'bcc' => $message->getBcc(),
+                'to' => DataHelper::redactEmailAddress($message->getTo()),
+                'cc' => DataHelper::redactEmailAddress($message->getCc()),
+                'bcc' => DataHelper::redactEmailAddress($message->getBcc()),
                 'from' => $message->getFrom(),
                 'reply' => $message->getReplyTo(),
                 'subject' => $message->getSubject(),
@@ -56,13 +57,13 @@ class MailRecorder extends Recorder
         } else {
             $eventData = [
                 'to' => implode(',', array_map(function ($address) {
-                    return $address->getAddress();
+                    return DataHelper::redactEmailAddress($address->getAddress());
                 }, $message->getTo())),
                 'cc' => implode(',', array_map(function ($address) {
-                    return $address->getAddress();
+                    return DataHelper::redactEmailAddress($address->getAddress());
                 }, $message->getCc())),
                 'bcc' => implode(',', array_map(function ($address) {
-                    return $address->getAddress();
+                    return DataHelper::redactEmailAddress($address->getAddress());
                 }, $message->getBcc())),
                 'from' => implode(',', array_map(function ($address) {
                     return $address->getAddress();

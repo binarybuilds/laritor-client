@@ -2,6 +2,7 @@
 
 namespace BinaryBuilds\LaritorClient\Recorders;
 
+use BinaryBuilds\LaritorClient\Helpers\DataHelper;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Str;
 use BinaryBuilds\LaritorClient\Helpers\FileHelper;
@@ -31,7 +32,7 @@ class QueryRecorder extends Recorder
 
             $query = [
                 'query' => $event->sql,
-                'bindings' => config('laritor.query.bindings') ? $this->replaceBindings($event) : null,
+                'bindings' => config('laritor.query.bindings') ? DataHelper::redactData($this->replaceBindings($event)) : null,
                 'time' => $time,
                 'path' => FileHelper::parseFileName($caller['file']) .'@'.$caller['line'],
                 'completed_at' => now()->format('Y-m-d H:i:s'),
