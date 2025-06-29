@@ -36,7 +36,8 @@ class QueueHealthCheck implements ShouldQueue
         Http::withHeader('X-Api-Key', config('laritor.keys.backend'))
             ->withUserAgent('laritor-client')
             ->post(rtrim(config('laritor.ingest_endpoint'),'/').'/ack-hc', [
-            'check_id' => $this->checkId
-        ]);
+                'env' => !empty(config('laritor.env')) ? config('laritor.env') : config('app.env'),
+                'check_id' => $this->checkId
+            ]);
     }
 }

@@ -50,7 +50,7 @@ class Recorder
             // and silently ignore the exception to let the request continue.
             rescue(function () use ($exception) {
                 $data = json_encode([
-                    'env' => config('laritor.env', config('app.env')),
+                    'env' => !empty(config('laritor.env')) ? config('laritor.env') : config('app.env'),
                     'version' => app()->version(),
                     'php' => phpversion(),
                     'data' => [
