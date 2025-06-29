@@ -19,7 +19,8 @@ php artisan vendor:publish --provider="BinaryBuilds\LaritorClient\LaritorService
 ##### Step 3: Update Env Variables
 ```
 LARITOR_ENABLED=true
-LARITOR_INGEST_URL=your-ingest-url
+LARITOR_INGEST_ENDPOINT=your-ingest-endpoint
+LARITOR_BACKEND_KEY=laritor-key
 ```
 ##### Step 4: Run Laritor sync command after each deployment.
 

@@ -50,8 +50,7 @@ class Recorder
             // and silently ignore the exception to let the request continue.
             rescue(function () use ($exception) {
                 $data = json_encode([
-                    'env' => config('app.env'),
-                    'app_key' => Str::afterLast(rtrim(config('laritor.ingest_url'), '/'), '/'),
+                    'env' => config('laritor.env', config('app.env')),
                     'version' => app()->version(),
                     'php' => phpversion(),
                     'data' => [
@@ -60,7 +59,9 @@ class Recorder
                     ]
                 ], JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_UNICODE);
                 Http::withBody($data, 'application/json')
-                    ->post(rtrim(config('laritor.ingest_url'),'/').'/ingest-exception');
+                    ->withHeader('X-Api-Key', config('laritor.keys.backend'))
+                    ->withUserAgent('laritor-client')
+                    ->post(rtrim(config('laritor.ingest_endpoint'),'/').'/ingest-exception');
             }, null, false);
         }
     }

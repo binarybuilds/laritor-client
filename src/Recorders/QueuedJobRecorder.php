@@ -29,7 +29,7 @@ class QueuedJobRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if (!$this->shouldReportJob($event->job)) {
+        if (!$this->shouldRecordJob($event->job)) {
             return;
         }
 
@@ -84,7 +84,13 @@ class QueuedJobRecorder extends Recorder
      */
     public function complete($event)
     {
-        $job = $this->laritor->getEvents(static::$eventType)[0];
+        $events = $this->laritor->getEvents(static::$eventType);
+
+        if (!isset($events[0])) {
+            return;
+        }
+
+        $job = $events[0];
         $start = Carbon::parse($job['started_at']);
         $job['duration'] = $start->diffInMilliseconds();
         $job['started_at'] = $start->toDateTimeString();
@@ -97,13 +103,13 @@ class QueuedJobRecorder extends Recorder
         $this->laritor->sendEvents();
     }
 
-    public function shouldReportJob($job)
+    public function shouldRecordJob($job)
     {
         if ($job instanceof QueueHealthCheck ) {
             return false;
         }
 
-        foreach ((array)config('laritor.jobs.ignore') as $ignore ) {
+        foreach (config('laritor.jobs.ignore') as $ignore ) {
 
             if ($job instanceof $ignore ) {
                 return false;

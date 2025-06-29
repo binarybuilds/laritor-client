@@ -143,9 +143,8 @@ class Laritor
     public function toArray()
     {
         return [
-            'app_key' => Str::afterLast(rtrim(config('laritor.ingest_url'), '/'), '/'),
             'app' => url('/'),
-            'env' => config('app.env'),
+            'env' => config('laritor.env', config('app.env')),
             'event_at' => now()->toDateTimeString(),
             'server' => [
                 'host' => config('laritor.serverless') ? 'serverless' : config('laritor.server_name', gethostname()),
@@ -193,8 +192,10 @@ class Laritor
     public function callApi()
     {
         rescue(function () {
-            Http::withBody($this->toJson(), 'application/json')
-                ->post(  rtrim(config('laritor.ingest_url'),'/').'/events');
+            Http::withHeader('X-Api-Key', config('laritor.keys.backend'))
+                ->withUserAgent('laritor-client')
+                ->withBody($this->toJson(), 'application/json')
+                ->post(rtrim(config('laritor.ingest_endpoint'),'/').'/events');
         }, null, false);
     }
 
@@ -207,8 +208,7 @@ class Laritor
             $app = app();
 
             $data = json_encode([
-                'env' => config('app.env'),
-                'app_key' => Str::afterLast(rtrim(config('laritor.ingest_url'), '/'), '/'),
+                'env' => config('laritor.env', config('app.env')),
                 'app' => url('/'),
                 'version' => $app->version(),
                 'php' => phpversion(),
@@ -224,8 +224,10 @@ class Laritor
                 'data' => $data
             ], JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_UNICODE);
 
-            Http::withBody($data, 'application/json')
-                ->post(rtrim(config('laritor.ingest_url'),'/').'/sync');
+            Http::withHeader('X-Api-Key', config('laritor.keys.backend'))
+                ->withUserAgent('laritor-client')
+                ->withBody($data, 'application/json')
+                ->post(rtrim(config('laritor.ingest_endpoint'),'/').'/sync');
         }, null, false);
     }
 

@@ -4,8 +4,13 @@ return [
 
     'enabled' => env('LARITOR_ENABLED', true),
 
+    'env' => env('LARITOR_ENV'),
 
-    'ingest_url' => env('LARITOR_INGEST_URL'),
+    'ingest_endpoint' => env('LARITOR_INGEST_ENDPOINT'),
+
+    'keys' => [
+        'backend' => env('LARITOR_BACKEND_KEY')
+    ],
 
     'server_name' => env('LARITOR_SERVER_NAME'),
 

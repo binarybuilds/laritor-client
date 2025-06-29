@@ -31,7 +31,7 @@ class LaritorServiceProvider extends ServiceProvider
             __DIR__ . '/../config/laritor.php' => config_path('laritor.php'),
         ]);
 
-        if ( ! config('laritor.enabled') || !config('laritor.ingest_url') ) {
+        if ( ! config('laritor.enabled') || !config('laritor.keys.backend') ) {
             return;
         }
 

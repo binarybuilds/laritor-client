@@ -22,10 +22,7 @@ class HealthCheckController
      */
     public function check(Request $request, $check_type )
     {
-        if (
-            $request->input('token') !== Str::afterLast(rtrim(config('laritor.ingest_url'), '/'), '/')
-        )
-        {
+        if ( $request->input('token') !== config('laritor.keys.backend')) {
             return response()->json(['message' => 'unauthorized'], 401);
         }
 

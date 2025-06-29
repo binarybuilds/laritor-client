@@ -8,7 +8,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
 
 /**
  * Class QueueHealthCheck
@@ -34,9 +33,10 @@ class QueueHealthCheck implements ShouldQueue
 
     public function handle()
     {
-        Http::post(rtrim(config('laritor.ingest_url'),'/').'/ack-hc', [
-            'check_id' => $this->checkId,
-            'app_key' => Str::afterLast(rtrim(config('laritor.ingest_url'), '/'), '/'),
+        Http::withHeader('X-Api-Key', config('laritor.keys.backend'))
+            ->withUserAgent('laritor-client')
+            ->post(rtrim(config('laritor.ingest_endpoint'),'/').'/ack-hc', [
+            'check_id' => $this->checkId
         ]);
     }
 }
