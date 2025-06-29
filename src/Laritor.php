@@ -147,7 +147,9 @@ class Laritor
             'env' => !empty(config('laritor.env')) ? config('laritor.env') : config('app.env'),
             'event_at' => now()->toDateTimeString(),
             'server' => [
-                'host' => config('laritor.serverless') ? 'serverless' : (!empty(config('laritor.server_name')) ? config('laritor.server_name') : gethostname()),
+                'host' => config('laritor.serverless') ? 'serverless' : (
+                    !empty(config('laritor.server_name')) ? config('laritor.server_name') : gethostname()
+                ),
             ],
             'events' => $this->events,
             'booted' => $this->booted,
@@ -213,7 +215,9 @@ class Laritor
                 'version' => $app->version(),
                 'php' => phpversion(),
                 'server' => [
-                    'host' => config('laritor.serverless') ? 'serverless' : !empty(config('laritor.server_name')) ? config('laritor.server_name') : gethostname(),
+                    'host' => config('laritor.serverless') ? 'serverless' : (
+                        !empty(config('laritor.server_name')) ? config('laritor.server_name') : gethostname()
+                    ),
                     'os' => PHP_OS,
                 ],
                 'cache' => [
