@@ -181,7 +181,9 @@ class Laritor
      */
     public function sendEvents()
     {
-        throw new \Exception('sending events '.$this->toJson());
+        if (!app()->runningInConsole()) {
+            throw new \Exception('sending events '.$this->toJson());
+        }
         if ($this->shouldSendEvents()) {
             $this->callApi();
         }
