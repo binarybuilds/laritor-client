@@ -29,13 +29,16 @@ class RequestRecorder extends Recorder
      */
     public function trackEvent($event)
     {
+        echo "tracking request \n";
         $request = $event->request;
 
         if ( ! $this->shouldRecordRequest($request)) {
             return;
         }
 
-        $this->laritor->responseRenderCompleted($event->response->exception);
+        echo "tracked request \n";
+//        $this->laritor->responseRenderCompleted($event->response->exception);
+        $this->laritor->responseRenderCompleted(null);
 
         $startTime = defined('LARAVEL_START') ? LARAVEL_START : $event->request->server('REQUEST_TIME_FLOAT');
         $duration =  $startTime ? floor((microtime(true) - $startTime) * 1000) : null;
@@ -66,6 +69,8 @@ class RequestRecorder extends Recorder
                 'method' => $request->method(),
             ],
         ]);
+
+        echo "event added \n";
     }
 
     private function getAuthenticatedUser()
