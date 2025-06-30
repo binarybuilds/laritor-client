@@ -193,14 +193,13 @@ class Laritor
      */
     public function callApi()
     {
-        file_put_contents(__DIR__.'/../tests/payloads/events.json', $this->toJson());
-        return;
-        rescue(function () {
-            Http::withHeader('X-Api-Key', config('laritor.keys.backend'))
-                ->withUserAgent('laritor-client')
-                ->withBody($this->toJson(), 'application/json')
-                ->post(rtrim(config('laritor.ingest_endpoint'),'/').'/events');
-        }, null, false);
+        Http::withHeader('X-Api-Key', config('laritor.keys.backend'))
+            ->withUserAgent('laritor-client')
+            ->withBody($this->toJson(), 'application/json')
+            ->post(rtrim(config('laritor.ingest_endpoint'),'/').'/events');
+//        rescue(function () {
+//
+//        }, null, false);
     }
 
     /**
