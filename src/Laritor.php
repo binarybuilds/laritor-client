@@ -240,6 +240,7 @@ class Laritor
      */
     public function shouldSendEvents()
     {
+        return true;
         $hasOccurrence = false;
 
         foreach ($this->events as $type => $event) {
