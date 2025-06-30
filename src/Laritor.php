@@ -181,6 +181,7 @@ class Laritor
      */
     public function sendEvents()
     {
+        throw new \Exception('sending events');
         if ($this->shouldSendEvents()) {
             $this->callApi();
         }

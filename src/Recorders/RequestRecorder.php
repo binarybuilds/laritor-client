@@ -29,14 +29,12 @@ class RequestRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        echo "tracking request \n";
         $request = $event->request;
 
         if ( ! $this->shouldRecordRequest($request)) {
             return;
         }
 
-        echo "tracked request \n";
 //        $this->laritor->responseRenderCompleted($event->response->exception);
         $this->laritor->responseRenderCompleted(null);
 
@@ -69,8 +67,6 @@ class RequestRecorder extends Recorder
                 'method' => $request->method(),
             ],
         ]);
-
-        echo "event added \n";
     }
 
     private function getAuthenticatedUser()
