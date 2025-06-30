@@ -8,7 +8,7 @@ class MailTest extends TestCase
 {
     public function test_it_records_mails(): void
     {
-        $this->get('/laritor-mail')->assertStatus(200);
+        $this->get('/mail-test')->assertStatus(200);
 
         $file = __DIR__.'/payloads/events.json';
         $this->assertFileExists($file);

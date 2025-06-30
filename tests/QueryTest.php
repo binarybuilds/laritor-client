@@ -8,7 +8,7 @@ class QueryTest extends TestCase
 {
     public function test_it_records_database_queries(): void
     {
-        $this->get('/laritor-query')->assertStatus(200);
+        $this->get('/query-test')->assertStatus(200);
 
         $file = __DIR__.'/payloads/events.json';
         $this->assertFileExists($file);

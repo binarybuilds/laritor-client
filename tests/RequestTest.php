@@ -8,7 +8,7 @@ class RequestTest extends TestCase
 {
     public function test_it_records_requests(): void
     {
-        $this->get('/laritor-test')
+        $this->get('/test')
             ->assertStatus(200);
 
         $path = __DIR__ . '/payloads/events.json';
@@ -24,6 +24,6 @@ class RequestTest extends TestCase
         $this->assertArrayHasKey(RequestRecorder::$eventType, $data['events']);
         $this->assertArrayHasKey('request', $data['events'][RequestRecorder::$eventType][0]);
         $this->assertArrayHasKey('url', $data['events'][RequestRecorder::$eventType][0]['request']);
-        $this->assertEquals('laritor-test', $data['events'][RequestRecorder::$eventType][0]['request']['url']);
+        $this->assertEquals('test', $data['events'][RequestRecorder::$eventType][0]['request']['url']);
     }
 }

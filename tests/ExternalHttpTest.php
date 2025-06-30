@@ -8,7 +8,7 @@ class ExternalHttpTest extends TestCase
 {
     public function test_it_records_external_requests(): void
     {
-        $this->get('/laritor-external-http')->assertStatus(200);
+        $this->get('/external-http-test')->assertStatus(200);
 
         $file = __DIR__.'/payloads/events.json';
         $this->assertFileExists($file);

@@ -8,7 +8,7 @@ class NotificationTest extends TestCase
 {
     public function test_it_records_notifications(): void
     {
-        $this->get('/laritor-notification')->assertStatus(200);
+        $this->get('/notification-test')->assertStatus(200);
 
         $file = __DIR__.'/payloads/events.json';
         $this->assertFileExists($file);

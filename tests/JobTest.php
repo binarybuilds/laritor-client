@@ -8,7 +8,7 @@ class JobTest extends TestCase
 {
     public function test_it_records_jobs(): void
     {
-        $this->get('/laritor-job')->assertStatus(200);
+        $this->get('/job-test')->assertStatus(200);
 
         $file = __DIR__.'/payloads/events.json';
         $this->assertFileExists($file);

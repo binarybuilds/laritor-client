@@ -8,7 +8,7 @@ class CacheTest extends TestCase
 {
     public function test_it_records_cache_hits(): void
     {
-        $this->get('/laritor-cache')->assertStatus(200);
+        $this->get('/cache-test')->assertStatus(200);
 
         $file = __DIR__.'/payloads/events.json';
         $this->assertFileExists($file);

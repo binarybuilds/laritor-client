@@ -9,7 +9,7 @@ class ExceptionTest extends TestCase
     public function test_it_records_exceptions(): void
     {
         try {
-            $this->get('/laritor-exception');
+            $this->get('/exception-test');
         } catch (\RuntimeException $e) {
             $this->assertEquals('Test exception', $e->getMessage());
         }

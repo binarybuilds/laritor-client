@@ -8,7 +8,7 @@ class LogTest extends TestCase
 {
     public function test_it_records_logs(): void
     {
-        $this->get('/laritor-log')->assertStatus(200);
+        $this->get('/log-test')->assertStatus(200);
 
         $file = __DIR__.'/payloads/events.json';
         $this->assertFileExists($file);

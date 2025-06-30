@@ -53,24 +53,24 @@ abstract class TestCase extends Orchestra
             return Http::response(['success' => true], 200);
         });
 
-        $app['router']->get('/laritor-test', function () {
+        $app['router']->get('/test', function () {
 
             return response('OK', 200);
         });
 
-        $app['router']->get('/laritor-query', function () {
+        $app['router']->get('/query-test', function () {
             \Illuminate\Support\Facades\DB::select('SELECT 1 as ok');
 
             return response('OK', 200);
         });
 
-        $app['router']->get('/laritor-external-http', function () {
+        $app['router']->get('/external-http-test', function () {
             \Illuminate\Support\Facades\Http::get('https://example.com');
 
             return response('OK', 200);
         });
 
-        $app['router']->get('/laritor-mail', function () {
+        $app['router']->get('/mail-test', function () {
             \Illuminate\Support\Facades\Mail::raw('Test mail body', function ($msg) {
                 $msg->to('test@example.com')->subject('Test');
             });
@@ -78,7 +78,7 @@ abstract class TestCase extends Orchestra
             return response('OK', 200);
         });
 
-        $app['router']->get('/laritor-notification', function () {
+        $app['router']->get('/notification-test', function () {
             \Illuminate\Support\Facades\Notification::route('mail', 'test@example.com')
                 ->notify(new class extends \Illuminate\Notifications\Notification {
                     public function via($notifiable) { return ['mail']; }
@@ -91,24 +91,24 @@ abstract class TestCase extends Orchestra
             return response('OK', 200);
         });
 
-        $app['router']->get('/laritor-log', function () {
+        $app['router']->get('/log-test', function () {
             \Illuminate\Support\Facades\Log::info('This is a test log');
 
             return response('OK', 200);
         });
 
-        $app['router']->get('/laritor-cache', function () {
+        $app['router']->get('/cache-test', function () {
             \Illuminate\Support\Facades\Cache::put('foo', 'bar', 10);
             \Illuminate\Support\Facades\Cache::get('foo');
 
             return response('OK', 200);
         });
 
-        $app['router']->get('/laritor-exception', function () {
+        $app['router']->get('/exception-test', function () {
             throw new \RuntimeException('Test exception');
         });
 
-        $app['router']->get('/laritor-job', function () {
+        $app['router']->get('/job-test', function () {
             dispatch(function (){
                 return 'OK';
             });
