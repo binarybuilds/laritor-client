@@ -199,7 +199,6 @@ class Laritor
         ])
             ->withUserAgent('laritor-client')
             ->withBody($this->toJson(), 'application/json')
-            ->asJson()
             ->post(rtrim(config('laritor.ingest_endpoint'),'/').'/events');
 //        rescue(function () {
 //
@@ -239,7 +238,6 @@ class Laritor
             ])
                 ->withUserAgent('laritor-client')
                 ->withBody($data, 'application/json')
-                ->asJson()
                 ->post(rtrim(config('laritor.ingest_endpoint'),'/').'/sync');
         }, null, false);
     }

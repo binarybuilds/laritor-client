@@ -62,7 +62,6 @@ class Recorder
                     ->withHeaders([
                         'X-Api-Key' => config('laritor.keys.backend')
                     ])
-                    ->asJson()
                     ->withUserAgent('laritor-client')
                     ->post(rtrim(config('laritor.ingest_endpoint'),'/').'/ingest-exception');
             }, null, false);
