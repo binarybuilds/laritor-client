@@ -231,7 +231,9 @@ class Laritor
                 'data' => $data
             ], JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_UNICODE);
 
-            Http::withHeader('X-Api-Key', config('laritor.keys.backend'))
+            Http::withHeaders([
+                'X-Api-Key' => config('laritor.keys.backend')
+            ])
                 ->withUserAgent('laritor-client')
                 ->withBody($data, 'application/json')
                 ->post(rtrim(config('laritor.ingest_endpoint'),'/').'/sync');
