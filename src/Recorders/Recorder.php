@@ -58,7 +58,7 @@ class Recorder
                         'trace' => $exception->getTraceAsString()
                     ]
                 ], JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_UNICODE);
-                Http::withBody($data, 'application/json')
+                Http::withBody($data)
                     ->withHeaders([
                         'X-Api-Key' => config('laritor.keys.backend')
                     ])

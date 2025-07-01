@@ -194,10 +194,11 @@ class Laritor
     public function callApi()
     {
         Http::withHeaders([
-            'X-Api-Key' => config('laritor.keys.backend')
+            'X-Api-Key' => config('laritor.keys.backend'),
+            'Content-Type' => 'application/json',
         ])
             ->withUserAgent('laritor-client')
-            ->withBody($this->toJson(), 'application/json')
+            ->withBody($this->toJson())
             ->post(rtrim(config('laritor.ingest_endpoint'),'/').'/events');
 //        rescue(function () {
 //
@@ -232,10 +233,11 @@ class Laritor
             ], JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_UNICODE);
 
             Http::withHeaders([
-                'X-Api-Key' => config('laritor.keys.backend')
+                'X-Api-Key' => config('laritor.keys.backend'),
+                'Content-Type' => 'application/json',
             ])
                 ->withUserAgent('laritor-client')
-                ->withBody($data, 'application/json')
+                ->withBody($data)
                 ->post(rtrim(config('laritor.ingest_endpoint'),'/').'/sync');
         }, null, false);
     }
