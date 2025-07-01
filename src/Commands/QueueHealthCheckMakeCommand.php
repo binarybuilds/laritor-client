@@ -24,4 +24,9 @@ class QueueHealthCheckMakeCommand extends HealthCheckMakeCommand
      * @var string
      */
     protected $type = 'QueueWorkerHealthCheck';
+
+    protected function getStub()
+    {
+        return __DIR__.'/../../stubs/QueueWorkerHealthCheck.stub';
+    }
 }

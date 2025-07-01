@@ -3,7 +3,6 @@
 namespace BinaryBuilds\LaritorClient\Helpers;
 
 use Illuminate\Support\Str;
-use BinaryBuilds\LaritorClient\Recorders\SchedulerRecorder;
 use Symfony\Component\Finder\Finder;
 
 /**
