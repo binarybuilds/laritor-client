@@ -43,6 +43,8 @@ abstract class TestCase extends Orchestra
                 File::makeDirectory(dirname($path), 0755, true);
             }
 
+            echo $request->data();
+
             $data = is_array($request->data()) ? json_encode(
                 $request->data(),
                 JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE
