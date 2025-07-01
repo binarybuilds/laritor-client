@@ -13,6 +13,8 @@ class CacheTest extends TestCase
         $file = __DIR__.'/payloads/events.json';
         $this->assertFileExists($file);
 
+        echo file_get_contents($file);
+
         $data = json_decode(file_get_contents($file), true);
         $this->assertIsArray($data, 'Payload is not valid JSON');
         $this->assertArrayHasKey('events', $data);
