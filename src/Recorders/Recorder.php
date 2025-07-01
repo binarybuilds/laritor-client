@@ -59,7 +59,9 @@ class Recorder
                     ]
                 ], JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_UNICODE);
                 Http::withBody($data, 'application/json')
-                    ->withHeader('X-Api-Key', config('laritor.keys.backend'))
+                    ->withHeaders([
+                        'X-Api-Key' => config('laritor.keys.backend')
+                    ])
                     ->withUserAgent('laritor-client')
                     ->post(rtrim(config('laritor.ingest_endpoint'),'/').'/ingest-exception');
             }, null, false);

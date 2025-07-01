@@ -2,9 +2,11 @@ Official Laritor Client Package
 ------------------------------------------------
 ![Laritor Image](/art/laritor-og.png "Laritor Image")
 
-[Laritor](https://laritor.com) is a performance monitoring and observability tool for applications built using laravel. 
+[Laritor](https://laritor.com) is a performance monitoring and observability tool for applications built using laravel php framework.
 
-This repository contains the official package for laritor which collects and sends metrics from your application to laritor.
+This repository contains the ingest package for laritor which collects and sends metrics from your application to laritor.
+
+##### [Laritor's Documentation](https://laritor.com/docs/)
 
 ### QuickStart
 
@@ -22,10 +24,10 @@ LARITOR_ENABLED=true
 LARITOR_INGEST_ENDPOINT=your-ingest-endpoint
 LARITOR_BACKEND_KEY=laritor-key
 ```
-##### Step 4: Run Laritor sync command after each deployment.
+##### Step 4: Run Laritor's sync command after each deployment.
 
-Run the below command after each deployment; so important code changes like scheduled tasks, database schema, 
-custom health checks and server changes are synchronized with Laritor.
+Run the below command after each deployment to sync scheduled tasks, database schema,
+custom health checks and server changes with Laritor.
 ```
 php artisan laritor:sync
 ```
@@ -38,13 +40,17 @@ php artisan laritor:send-metrics
 
 ### Customization
 
-You can customize and restrict what information is shared with Laritor. For details check out
-our [official documentation](https://docs.laritor.com).
+You can customize and restrict what information is shared with Laritor. For details, check
+our [customization guide](https://laritor.com/docs/customization/).
 
 ## Security Vulnerabilities
 
-If you found a security vulnerability with in this package, Please do not use the issue tracker. Instead, 
+If you find a security vulnerability with in this package, Please do not use the issue tracker. Instead,
 email  `support@laritor.com`. All security vulnerabilities will be addressed promptly.
+
+## Support
+
+For Laritor's support, email `support@laritor.com` or join our [discord](https://discord.laritor.com/).
 
 ## License
 
