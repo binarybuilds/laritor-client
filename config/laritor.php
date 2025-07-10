@@ -14,6 +14,8 @@ return [
 
     'server_name' => env('LARITOR_SERVER_NAME'),
 
+    'log_level' => env('LARITOR_LOG_LEVEL', 'debug'),
+
     /**
      * If your application is running on a serverless environment,
      * Set the below value to true
