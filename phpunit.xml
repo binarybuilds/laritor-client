@@ -13,6 +13,15 @@
         <env name="LARITOR_ENABLED" value="true"/>
         <env name="LARITOR_INGEST_ENDPOINT" value="https://example.com"/>
         <env name="LARITOR_BACKEND_KEY" value="test"/>
+        <env name="LARITOR_RECORD_OUTBOUND_REQUEST_RESPONSE_BODY" value="true"/>
+        <env name="LARITOR_RECORD_OUTBOUND_REQUEST_RESPONSE_HEADERS" value="true"/>
+        <env name="LARITOR_RECORD_OUTBOUND_REQUEST_HEADERS" value="true"/>
+        <env name="LARITOR_RECORD_OUTBOUND_REQUEST_BODY" value="true"/>
+        <env name="LARITOR_RECORD_REQUEST_RESPONSE_BODY" value="true"/>
+        <env name="LARITOR_RECORD_REQUEST_RESPONSE_HEADERS" value="true"/>
+        <env name="LARITOR_RECORD_REQUEST_HEADERS" value="true"/>
+        <env name="LARITOR_RECORD_REQUEST_BODY" value="true"/>
+        <env name="LARITOR_RECORD_QUERY_STRING" value="true"/>
 
         <!-- avoid caches/sessions/queues side effects -->
         <env name="CACHE_DRIVER" value="array"/>

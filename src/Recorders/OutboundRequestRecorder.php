@@ -90,7 +90,15 @@ class OutboundRequestRecorder extends Recorder
                     'method' => $outboundRequestEvent->request->method(),
                     'status' => 'completed',
                     'order' => $request['order'],
-                    'context' => $request['context']
+                    'context' => $request['context'],
+                    'request' => [
+                        'body' => config('laritor.outbound_requests.body') ? $outboundRequestEvent->request->body() : null,
+                        'headers' => config('laritor.outbound_requests.headers') ? $outboundRequestEvent->request->headers() : [],
+                    ],
+                    'response' => [
+                        'body' => config('laritor.outbound_requests.response_body') ? $outboundRequestEvent->response->body() : null,
+                        'headers' =>  config('laritor.outbound_requests.response_headers') ? $outboundRequestEvent->response->headers() : [],
+                    ]
                 ];
             }
 
