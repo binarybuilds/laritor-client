@@ -49,11 +49,15 @@ class RequestRecorder extends Recorder
                 'duration' => $duration,
                 'memory' => round(memory_get_peak_usage(true) / 1024 / 1024, 1),
                 'url' => $this->getUrl($request),
-                'size' => strlen($request->getContent())
+                'size' => strlen($request->getContent()),
+                'headers' => config('laritor.requests.headers') ? $request->headers->all() : [],
+                'body' => config('laritor.requests.body') ? $request->getContent() : null,
             ],
             'response' => [
                 'status_code' => $event->response->status(),
-                'size' => strlen($event->response->getContent())
+                'size' => strlen($event->response->getContent()),
+                'headers' => config('laritor.requests.response_headers') ? $event->response->headers->all() : [],
+                'body' => config('laritor.requests.response_body') ? $event->response->getContent() : null,
             ],
             'user' => [
                 'authenticated' => $this->getAuthenticatedUser(),
