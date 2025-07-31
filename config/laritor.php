@@ -2,7 +2,12 @@
 
 return [
 
-    'enabled' => env('LARITOR_ENABLED', true),
+    /**
+     * We have a detailed guide explaining how to update these values
+     * on https://laritor.com/docs/customization
+     */
+
+    'enabled' => env('LARITOR_ENABLED', false),
 
     'env' => env('LARITOR_ENV'),
 
