@@ -120,4 +120,16 @@ return [
         'ignore' => [
         ]
     ],
+
+    'bots' => [
+        'ignore' => env('LARITOR_IGNORE_BOT_REQUESTS', false),
+
+        'whitelist' => [
+            'user_agents' => [
+            ],
+
+            'ips' => [
+            ]
+        ]
+    ]
 ];
