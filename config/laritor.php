@@ -76,6 +76,14 @@ return [
 
         'query_string' => env('LARITOR_RECORD_QUERY_STRING', false),
 
+        'body' => env('LARITOR_RECORD_REQUEST_BODY', false),
+
+        'headers' => env('LARITOR_RECORD_REQUEST_HEADERS', false),
+
+        'response_headers' => env('LARITOR_RECORD_REQUEST_RESPONSE_HEADERS', false),
+
+        'response_body' => env('LARITOR_RECORD_REQUEST_RESPONSE_BODY', false),
+
         'rate_limit' => [
             'enabled' => env('LARITOR_RATE_LIMIT_REQUESTS', false),
 
