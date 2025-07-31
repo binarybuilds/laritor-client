@@ -5,7 +5,7 @@ namespace BinaryBuilds\LaritorClient\Recorders;
 use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
+use Jaybizzle\CrawlerDetect\CrawlerDetect;
 
 class RequestRecorder extends Recorder
 {
@@ -31,7 +31,9 @@ class RequestRecorder extends Recorder
     {
         $request = $event->request;
 
-        if ( ! $this->shouldRecordRequest($request)) {
+        $isBot = $this->isBot($request);
+
+        if ( ! $this->shouldRecordRequest($request, $isBot)) {
             return;
         }
 
@@ -57,6 +59,7 @@ class RequestRecorder extends Recorder
                 'authenticated' => $this->getAuthenticatedUser(),
                 'ip' => config('laritor.anonymize.ip') ? '127.0.0.1' : $request->getClientIp(),
                 'user_agent' => config('laritor.anonymize.user_agent') ? 'anonymous-agent' : $request->userAgent(),
+                'is_bot' => $isBot,
             ],
             'route' => [
                 'name' => optional($request->route())->getName(),
@@ -66,6 +69,17 @@ class RequestRecorder extends Recorder
                 'method' => $request->method(),
             ],
         ]);
+    }
+
+    private function isBot(Request $request)
+    {
+        $userAgent = $request->userAgent();
+        $crawler = new CrawlerDetect();
+        $isBot = $crawler->isCrawler($userAgent);
+
+        return $isBot &&
+            ! in_array($request->userAgent(), (array)config('laritor.bots.whitelist.user_agents') ) &&
+           ! in_array($request->ip(), (array)config('laritor.bots.whitelist.ips') );
     }
 
     private function getAuthenticatedUser()
@@ -92,12 +106,16 @@ class RequestRecorder extends Recorder
         return $request->path();
     }
 
-    public function shouldRecordRequest(Request $request)
+    public function shouldRecordRequest(Request $request, $isBot)
     {
         foreach ((array)config('laritor.requests.ignore') as $ignore) {
             if ($request->is($ignore)) {
                 return false;
             }
+        }
+
+        if ($isBot && config('laritor.bots.ignore')) {
+            return false;
         }
 
         return true;
