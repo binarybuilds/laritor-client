@@ -115,7 +115,15 @@ return [
         'console' => env('LARITOR_RECORD_CONSOLE_OUTBOUND_REQUESTS', true),
 
         'ignore' => [
-        ]
+        ],
+
+        'body' => env('LARITOR_RECORD_OUTBOUND_REQUEST_BODY', false),
+
+        'headers' => env('LARITOR_RECORD_OUTBOUND_REQUEST_HEADERS', false),
+
+        'response_headers' => env('LARITOR_RECORD_OUTBOUND_REQUEST_RESPONSE_HEADERS', false),
+
+        'response_body' => env('LARITOR_RECORD_OUTBOUND_REQUEST_RESPONSE_BODY', false),
     ],
 
     'exceptions' => [
