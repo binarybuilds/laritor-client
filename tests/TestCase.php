@@ -2,6 +2,8 @@
 
 namespace BinaryBuilds\LaritorClient\Tests;
 
+use BinaryBuilds\LaritorClient\Redactor\DataRedactor;
+use BinaryBuilds\LaritorClient\Redactor\TestRedactor;
 use Illuminate\Support\Facades\Http;
 use Orchestra\Testbench\TestCase as Orchestra;
 use BinaryBuilds\LaritorClient\LaritorServiceProvider;
@@ -127,5 +129,8 @@ abstract class TestCase extends Orchestra
             '--path' => realpath(__DIR__ . '/../database/migrations'),
             '--database' => config('database.default'),
         ])->run();
+
+        $this->app->bind(DataRedactor::class, TestRedactor::class );
+
     }
 }
