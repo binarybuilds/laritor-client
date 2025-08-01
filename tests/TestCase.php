@@ -48,9 +48,9 @@ abstract class TestCase extends Orchestra
             return Http::response(['success' => true], 200);
         });
 
-        $app['router']->get('/laritor-test', function () {
+        $app['router']->post('/laritor-test', function () {
 
-            return response('OK', 200);
+            return response(['laravel' => 'For Ever'], 200, ['php' => 'For Ever']);
         });
 
         $app['router']->get('/laritor-query', function () {
