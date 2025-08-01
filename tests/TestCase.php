@@ -60,7 +60,9 @@ abstract class TestCase extends Orchestra
         });
 
         $app['router']->get('/laritor-external-http', function () {
-            \Illuminate\Support\Facades\Http::get('https://example.com');
+            \Illuminate\Support\Facades\Http::post('https://example.com', [
+                'hello' => 'world',
+            ]);
 
             return response('OK', 200);
         });
