@@ -27,6 +27,12 @@ return [
      */
     'serverless' => env('LARITOR_SERVERLESS', false),
 
+
+    /**
+     * Set the max events to ingest per occurrence
+     */
+    'max_events' => env('LARITOR_MAX_EVENTS', 5000),
+
     /**
      * If you do not wish a specific recorder to send events to laritor,
      * You can comment it out below.

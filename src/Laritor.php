@@ -18,6 +18,8 @@ class Laritor
 
     private $order = 1;
 
+    private $eventsCount = 0;
+
     private $started = 0;
 
     private $booted = 0;
@@ -106,9 +108,13 @@ class Laritor
      */
     public function pushEvent($name, $event)
     {
-        $event['order'] = $this->order;
-        $this->order++;
-        $this->events[ $name ][] = $event;
+        if ($this->eventsCount <= config('laritor.max_events')) {
+            $event['order'] = $this->order;
+            $this->order++;
+            $this->events[ $name ][] = $event;
+            $this->eventsCount++;
+        }
+
         return $this;
     }
 
@@ -174,6 +180,7 @@ class Laritor
     {
         $this->events = [];
         $this->order = 1;
+        $this->eventsCount = 0;
     }
 
     /**
