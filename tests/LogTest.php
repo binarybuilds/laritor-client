@@ -36,6 +36,6 @@ class LogTest extends TestCase
         $this->assertNotEmpty( $data['events'][LogRecorder::$eventType]);
         $this->assertArrayHasKey('message', $data['events'][LogRecorder::$eventType][0]);
         $this->assertStringNotContainsString('378282246310005', $data['events'][LogRecorder::$eventType][0]['message']);
-        $this->assertNotEquals('sensitive key',$data['events'][LogRecorder::$eventType][0]['message']['log_context']['Authorization']);
+        $this->assertNotEquals('sensitive key',$data['events'][LogRecorder::$eventType][0]['log_context']['Authorization']);
     }
 }
