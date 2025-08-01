@@ -107,7 +107,7 @@ class DefaultRedactor implements DataRedactor
         ];
 
         if (in_array(strtolower($key), $sensitiveKeys)) {
-         return '*****';
+            return '*****';
         }
 
         return $this->redactString($text);

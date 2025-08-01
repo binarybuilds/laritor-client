@@ -87,7 +87,9 @@ abstract class TestCase extends Orchestra
         });
 
         $app['router']->get('/laritor-log', function () {
-            \Illuminate\Support\Facades\Log::info('This is a test log');
+            \Illuminate\Support\Facades\Log::info('This is a test log 378282246310005', [
+                'Authorization' => 'sensitive key'
+            ]);
 
             return response('OK', 200);
         });
