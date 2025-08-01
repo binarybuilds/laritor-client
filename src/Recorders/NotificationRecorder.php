@@ -5,8 +5,6 @@ namespace BinaryBuilds\LaritorClient\Recorders;
 use BinaryBuilds\LaritorClient\Helpers\DataHelper;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Log\Events\MessageLogged;
-use Illuminate\Mail\Events\MessageSending;
-use Illuminate\Mail\Events\MessageSent;
 use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Notifications\Events\NotificationSending;
 use Illuminate\Notifications\Events\NotificationSent;

@@ -52,7 +52,7 @@ class MailRecorder extends Recorder
                 'bcc' => DataHelper::redactEmailAddress($message->getBcc()),
                 'from' => $message->getFrom(),
                 'reply' => $message->getReplyTo(),
-                'subject' => $message->getSubject(),
+                'subject' => DataHelper::redactData($message->getSubject()),
             ];
         } else {
             $eventData = [
@@ -71,7 +71,7 @@ class MailRecorder extends Recorder
                 'reply' => implode(',', array_map(function ($address) {
                     return $address->getAddress();
                 }, $message->getReplyTo())),
-                'subject' => $message->getSubject(),
+                'subject' => DataHelper::redactData($message->getSubject()),
             ];
         }
 

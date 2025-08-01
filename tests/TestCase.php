@@ -48,9 +48,9 @@ abstract class TestCase extends Orchestra
             return Http::response(['success' => true], 200);
         });
 
-        $app['router']->get('/laritor-test', function () {
+        $app['router']->post('/laritor-test', function () {
 
-            return response('OK', 200);
+            return response(['laravel' => 'For Ever'], 200, ['php' => 'For Ever']);
         });
 
         $app['router']->get('/laritor-query', function () {
@@ -60,7 +60,13 @@ abstract class TestCase extends Orchestra
         });
 
         $app['router']->get('/laritor-external-http', function () {
-            \Illuminate\Support\Facades\Http::get('https://example.com');
+            \Illuminate\Support\Facades\Http::withHeaders([
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'custom-header' => 'hello'
+            ])->post('https://example.com', [
+                'hello' => 'world',
+            ]);
 
             return response('OK', 200);
         });
@@ -87,7 +93,9 @@ abstract class TestCase extends Orchestra
         });
 
         $app['router']->get('/laritor-log', function () {
-            \Illuminate\Support\Facades\Log::info('This is a test log');
+            \Illuminate\Support\Facades\Log::info('This is a test log 378282246310005', [
+                'Authorization' => 'sensitive key'
+            ]);
 
             return response('OK', 200);
         });
