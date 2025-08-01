@@ -8,11 +8,11 @@ class RequestTest extends TestCase
 {
     public function test_it_records_requests(): void
     {
-        $this->post('/laritor-test', [
-            'hello' => 'world',
-        ])->withHeaders([
+        $this->withHeaders([
             'custom-header' => 'i am here'
-        ]);
+        ])->post('/laritor-test', [
+            'hello' => 'world',
+        ])->assertStatus(200);
 
         $path = __DIR__ . '/payloads/events.json';
 
@@ -29,6 +29,9 @@ class RequestTest extends TestCase
         $this->assertArrayHasKey('url', $data['events'][RequestRecorder::$eventType][0]['request']);
         $this->assertEquals('laritor-test', $data['events'][RequestRecorder::$eventType][0]['request']['url']);
         $this->assertArrayHasKey('hello', $data['events'][RequestRecorder::$eventType][0]['request']['body']);
+
+        dump($data['events'][RequestRecorder::$eventType][0]['request']['headers']);
+
         $this->assertArrayHasKey('custom-header', $data['events'][RequestRecorder::$eventType][0]['request']['headers']);
         $this->assertArrayHasKey('laravel', $data['events'][RequestRecorder::$eventType][0]['response']['body']);
         $this->assertArrayHasKey('php', $data['events'][RequestRecorder::$eventType][0]['response']['headers']);
