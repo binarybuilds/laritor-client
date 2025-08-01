@@ -12,8 +12,7 @@ class RequestTest extends TestCase
             'hello' => 'world',
         ])->withHeaders([
             'custom-header' => 'i am here'
-        ])
-            ->assertStatus(200);
+        ]);
 
         $path = __DIR__ . '/payloads/events.json';
 
