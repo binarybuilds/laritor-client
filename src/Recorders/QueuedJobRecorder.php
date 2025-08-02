@@ -4,6 +4,7 @@ namespace BinaryBuilds\LaritorClient\Recorders;
 
 use BinaryBuilds\LaritorClient\Jobs\QueueHealthCheck;
 use Carbon\Carbon;
+use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
@@ -20,7 +21,8 @@ class QueuedJobRecorder extends Recorder
         JobQueued::class,
         JobProcessing::class,
         JobFailed::class,
-        JobProcessed::class
+        JobProcessed::class,
+        JobExceptionOccurred::class,
     ];
 
     /**
@@ -38,7 +40,11 @@ class QueuedJobRecorder extends Recorder
         }
         elseif ($event instanceof JobProcessing ) {
             $this->processing($event);
-        } elseif ($event instanceof JobFailed ) {
+        } elseif (
+            $event instanceof JobFailed ||
+            $event instanceof JobExceptionOccurred
+        ) {
+            app(ExceptionRecorder::class)->handle($event->exception);
             $this->complete($event);
         } elseif ($event instanceof JobProcessed ) {
             $this->complete($event);

@@ -119,6 +119,13 @@ abstract class TestCase extends Orchestra
             });
             return response('OK', 200);
         });
+
+        $app['router']->get('/laritor-failed-job', function () {
+            dispatch(function (){
+                return $invalid;
+            });
+            return response('OK', 200);
+        });
     }
 
     protected function setUp(): void
@@ -131,6 +138,10 @@ abstract class TestCase extends Orchestra
         ])->run();
 
         $this->app->bind(DataRedactor::class, TestRedactor::class );
+
+        config()->set('laritor.requests.ignore', [
+            'laritor-job', 'laritor-failed-job'
+        ]);
 
     }
 }
