@@ -125,7 +125,7 @@ class OutboundRequestRecorder extends Recorder
     protected function getRequestHeaders(Request $request)
     {
         if (config('laritor.outbound_requests.headers')) {
-            return DataHelper::redactArray($request->headers());
+            return DataHelper::redactHeaders($request->headers());
         }
 
         return [];
@@ -149,7 +149,7 @@ class OutboundRequestRecorder extends Recorder
     protected function getResponseHeaders(Response $response)
     {
         if (config('laritor.outbound_requests.response_headers')) {
-            return DataHelper::redactArray($response->headers());
+            return DataHelper::redactHeaders($response->headers());
         }
 
         return [];

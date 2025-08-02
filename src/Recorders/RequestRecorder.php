@@ -90,7 +90,7 @@ class RequestRecorder extends Recorder
     protected function getRequestHeaders($request)
     {
         if (config('laritor.requests.headers')) {
-            return DataHelper::redactArray($request->headers->all());
+            return DataHelper::redactHeaders($request->headers->all());
         }
 
         return [];
@@ -117,7 +117,7 @@ class RequestRecorder extends Recorder
     protected function getResponseHeaders($response)
     {
         if (config('laritor.requests.response_headers')) {
-            return DataHelper::redactArray($response->headers->all());
+            return DataHelper::redactHeaders($response->headers->all());
         }
 
         return [];

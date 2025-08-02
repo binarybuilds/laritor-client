@@ -15,6 +15,15 @@ class DataHelper
         }, true);
     }
 
+    public static function redactHeaders(array $array): array
+    {
+        $array = array_map(function ($value) {
+            return is_array($value) ? implode(', ', $value) : $value;
+        }, $array);
+
+        return self::redactArray( $array );
+    }
+
     public static function redactArray(array $array): array
     {
         return rescue(function () use ($array) {
