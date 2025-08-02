@@ -4,8 +4,6 @@ namespace BinaryBuilds\LaritorClient\Recorders;
 
 use BinaryBuilds\LaritorClient\Helpers\DataHelper;
 use Illuminate\Contracts\Debug\ExceptionHandler;
-use Illuminate\Queue\Events\JobExceptionOccurred;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use BinaryBuilds\LaritorClient\Helpers\FileHelper;
 
@@ -24,11 +22,7 @@ class ExceptionRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if ($event instanceof JobExceptionOccurred) {
-            $throwable = $event->exception;
-        } else {
-            $throwable = $event;
-        }
+        $throwable = $event;
 
         if (!$this->shouldReportException(get_class($throwable))) {
             return;
@@ -91,8 +85,6 @@ class ExceptionRecorder extends Recorder
 
     public static function registerRecorder()
     {
-        Event::listen( JobExceptionOccurred::class, [static::class, 'handle'] );
-
         app()->afterResolving(ExceptionHandler::class, function (ExceptionHandler $handler){
             $handler->reportable(function (\Throwable $exception){
                 app(ExceptionRecorder::class)->handle($exception);
