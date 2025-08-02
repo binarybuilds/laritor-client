@@ -139,5 +139,9 @@ abstract class TestCase extends Orchestra
 
         $this->app->bind(DataRedactor::class, TestRedactor::class );
 
+        config()->set('laritor.requests.ignore', [
+            'laritor-job', 'laritor-failed-job'
+        ]);
+
     }
 }
