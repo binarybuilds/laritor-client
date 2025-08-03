@@ -84,7 +84,7 @@ class RequestRecorder extends Recorder
                 DataHelper::redactData(trim($request->getContent()));
         }
 
-        return null;
+        return false;
     }
 
     protected function getRequestHeaders($request)
@@ -93,7 +93,7 @@ class RequestRecorder extends Recorder
             return DataHelper::redactHeaders($request->headers->all());
         }
 
-        return [];
+        return false;
     }
 
     protected function getResponseBody($response)
@@ -111,7 +111,7 @@ class RequestRecorder extends Recorder
             return DataHelper::redactData($body);
         }
 
-        return null;
+        return false;
     }
 
     protected function getResponseHeaders($response)
@@ -120,7 +120,7 @@ class RequestRecorder extends Recorder
             return DataHelper::redactHeaders($response->headers->all());
         }
 
-        return [];
+        return false;
     }
 
     private function isBot($request)
