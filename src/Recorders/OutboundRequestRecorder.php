@@ -119,7 +119,7 @@ class OutboundRequestRecorder extends Recorder
                 DataHelper::redactData($request->body());
         }
 
-        return null;
+        return false;
     }
 
     protected function getRequestHeaders(Request $request)
@@ -128,7 +128,7 @@ class OutboundRequestRecorder extends Recorder
             return DataHelper::redactHeaders($request->headers());
         }
 
-        return [];
+        return false;
     }
 
     protected function getResponseBody(Response $response)
@@ -143,7 +143,7 @@ class OutboundRequestRecorder extends Recorder
             return DataHelper::redactData($response->body());
         }
 
-        return null;
+        return false;
     }
 
     protected function getResponseHeaders(Response $response)
@@ -152,7 +152,7 @@ class OutboundRequestRecorder extends Recorder
             return DataHelper::redactHeaders($response->headers());
         }
 
-        return [];
+        return false;
     }
 
 
