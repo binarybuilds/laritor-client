@@ -99,8 +99,8 @@ class OutboundRequestRecorder extends Recorder
                         'headers' => $this->getRequestHeaders($outboundRequestEvent->request),
                     ],
                     'response' => [
-                        'body' => $this->getResponseBody($outboundRequestEvent->response),
-                        'headers' =>  $this->getResponseHeaders($outboundRequestEvent->response),
+                        'body' => $outboundRequestEvent instanceof ConnectionFailed ? false : $this->getResponseBody($outboundRequestEvent->response),
+                        'headers' => $outboundRequestEvent instanceof ConnectionFailed ? false : $this->getResponseHeaders($outboundRequestEvent->response),
                     ]
                 ];
             }
