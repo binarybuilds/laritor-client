@@ -2,6 +2,7 @@
 
 namespace BinaryBuilds\LaritorClient\Recorders;
 
+use BinaryBuilds\LaritorClient\Helpers\DataHelper;
 use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
@@ -98,7 +99,8 @@ class ScheduledTaskRecorder extends Recorder
             'expression' => $event->expression,
             'timezone' => $event->timezone,
             'user' => $event->user,
-            'status' => 'skipped'
+            'status' => 'skipped',
+            'custom_context' => DataHelper::getRedactedContext()
         ]);
 
         $this->sendEvents();
@@ -126,6 +128,7 @@ class ScheduledTaskRecorder extends Recorder
                     $task['duration'] = $task['started_at']->diffInMilliseconds();
                     $task['completed_at'] = now()->format('Y-m-d H:i:s');
                     $task['started_at'] = $task['started_at']->format('Y-m-d H:i:s');
+                    $task['custom_context'] = DataHelper::getRedactedContext();
                 }
 
                 return $task;

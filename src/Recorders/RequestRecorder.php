@@ -72,6 +72,7 @@ class RequestRecorder extends Recorder
                 'controller_method' => isset($controller[1]) ? $controller[1] : 'closure',
                 'method' => $request->method(),
             ],
+            'custom_context' => DataHelper::getRedactedContext(),
         ]);
     }
 

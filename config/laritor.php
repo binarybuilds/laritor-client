@@ -33,6 +33,8 @@ return [
      */
     'max_events' => env('LARITOR_MAX_EVENTS', 5000),
 
+    'context' => env('LARITOR_RECORD_CONTEXT', true),
+
     /**
      * If you do not wish a specific recorder to send events to laritor,
      * You can comment it out below.
