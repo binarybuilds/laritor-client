@@ -42,6 +42,17 @@ class DataHelper
         }, true);
     }
 
+    public static function getRedactedContext()
+    {
+        if (config('laritor.context') && class_exists(\Illuminate\Support\Facades\Context::class)) {
+            return app(DataRedactor::class)->redactArray(
+                \Illuminate\Support\Facades\Context::all()
+            );
+        }
+
+        return [];
+    }
+
     public static function getRedactedUser()
     {
         return rescue(function () {

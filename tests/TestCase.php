@@ -4,6 +4,7 @@ namespace BinaryBuilds\LaritorClient\Tests;
 
 use BinaryBuilds\LaritorClient\Redactor\DataRedactor;
 use BinaryBuilds\LaritorClient\Redactor\TestRedactor;
+use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\Http;
 use Orchestra\Testbench\TestCase as Orchestra;
 use BinaryBuilds\LaritorClient\LaritorServiceProvider;
@@ -51,6 +52,10 @@ abstract class TestCase extends Orchestra
         });
 
         $app['router']->post('/laritor-test', function () {
+
+            if (class_exists(Context::class)) {
+                Context::add('added_context', 'custom context added');
+            }
 
             return response(['laravel' => 'For Ever'], 200, ['php' => 'For Ever']);
         });

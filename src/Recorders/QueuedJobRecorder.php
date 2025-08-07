@@ -2,6 +2,7 @@
 
 namespace BinaryBuilds\LaritorClient\Recorders;
 
+use BinaryBuilds\LaritorClient\Helpers\DataHelper;
 use BinaryBuilds\LaritorClient\Jobs\QueueHealthCheck;
 use Carbon\Carbon;
 use Illuminate\Queue\Events\JobExceptionOccurred;
@@ -65,7 +66,8 @@ class QueuedJobRecorder extends Recorder
             'delay' => $event->delay,
             'queued_at' => now()->toDateTimeString(),
             'status' => 'queued',
-            'context' => $this->laritor->getContext()
+            'context' => $this->laritor->getContext(),
+            'custom_context' =>DataHelper::getRedactedContext(),
         ]);
     }
 
@@ -103,6 +105,7 @@ class QueuedJobRecorder extends Recorder
         $job['completed_at'] = now()->toDateTimeString();
         $job['id'] = $event->job->getJobId();
         $job['status'] = $event instanceof JobFailed ? 'failed' : 'processed';
+        $job['custom_context'] = DataHelper::getRedactedContext();
 
         $this->laritor->addEvents('jobs', [$job]);
 
