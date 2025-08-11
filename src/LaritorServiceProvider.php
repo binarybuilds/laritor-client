@@ -41,8 +41,12 @@ class LaritorServiceProvider extends ServiceProvider
             $this->app->scoped(Laritor::class, function () {
                 return new Laritor();
             });
+
+            $this->app->scoped(CommandOutput::class, function () {
+                return new CommandOutput();
+            });
         } else {
-            $this->app->singleton(Laritor::class);
+            $this->app->singleton(CommandOutput::class);
         }
 
         $this->registerRecorders();
