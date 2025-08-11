@@ -46,6 +46,7 @@ class LaritorServiceProvider extends ServiceProvider
                 return new CommandOutput();
             });
         } else {
+            $this->app->singleton(Laritor::class);
             $this->app->singleton(CommandOutput::class);
         }
 
