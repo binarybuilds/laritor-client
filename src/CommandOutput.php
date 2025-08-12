@@ -10,7 +10,7 @@ class CommandOutput
 
     public function addLine($line, $type)
     {
-        $this->lines[] = ['type' => $type, 'text' => DataHelper::redactData($line)];
+        $this->lines[] = ['type' => $type, 'timestamp' => now()->toDateTimeString(), 'text' => DataHelper::redactData($line)];
     }
 
     public function addTable($headers, $rows)
@@ -21,6 +21,7 @@ class CommandOutput
 
         $this->lines[] = [
             'type' => 'table',
+            'timestamp' => now()->toDateTimeString(),
             'headers' => array_values($headers),
             'rows' => $rows
         ];
