@@ -2,6 +2,8 @@
 
 namespace BinaryBuilds\LaritorClient;
 
+use BinaryBuilds\LaritorClient\Redactor\DataRedactor;
+use BinaryBuilds\LaritorClient\Redactor\DefaultRedactor;
 use Illuminate\Routing\Contracts\CallableDispatcher;
 use Illuminate\Routing\ControllerDispatcher;
 use Illuminate\Routing\Events\PreparingResponse;
@@ -39,8 +41,13 @@ class LaritorServiceProvider extends ServiceProvider
             $this->app->scoped(Laritor::class, function () {
                 return new Laritor();
             });
+
+            $this->app->scoped(CommandOutput::class, function () {
+                return new CommandOutput();
+            });
         } else {
             $this->app->singleton(Laritor::class);
+            $this->app->singleton(CommandOutput::class);
         }
 
         $this->registerRecorders();
@@ -85,6 +92,11 @@ class LaritorServiceProvider extends ServiceProvider
             app(Laritor::class)->booted();
 
         });
+    }
+
+    public function register()
+    {
+        $this->app->bind(DataRedactor::class, DefaultRedactor::class);
     }
 
     protected function routes()

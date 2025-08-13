@@ -2,6 +2,9 @@
 
 namespace BinaryBuilds\LaritorClient\Tests;
 
+use BinaryBuilds\LaritorClient\Redactor\DataRedactor;
+use BinaryBuilds\LaritorClient\Redactor\TestRedactor;
+use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\Http;
 use Orchestra\Testbench\TestCase as Orchestra;
 use BinaryBuilds\LaritorClient\LaritorServiceProvider;
@@ -48,9 +51,13 @@ abstract class TestCase extends Orchestra
             return Http::response(['success' => true], 200);
         });
 
-        $app['router']->get('/laritor-test', function () {
+        $app['router']->post('/laritor-test', function () {
 
-            return response('OK', 200);
+            if (class_exists(Context::class)) {
+                Context::add('added_context', 'custom context added');
+            }
+
+            return response(['laravel' => 'For Ever'], 200, ['php' => 'For Ever']);
         });
 
         $app['router']->get('/laritor-query', function () {
@@ -60,7 +67,13 @@ abstract class TestCase extends Orchestra
         });
 
         $app['router']->get('/laritor-external-http', function () {
-            \Illuminate\Support\Facades\Http::get('https://example.com');
+            \Illuminate\Support\Facades\Http::withHeaders([
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'custom-header' => 'hello'
+            ])->post('https://example.com', [
+                'hello' => 'world',
+            ]);
 
             return response('OK', 200);
         });
@@ -87,7 +100,9 @@ abstract class TestCase extends Orchestra
         });
 
         $app['router']->get('/laritor-log', function () {
-            \Illuminate\Support\Facades\Log::info('This is a test log');
+            \Illuminate\Support\Facades\Log::info('This is a test log 378282246310005', [
+                'Authorization' => 'sensitive key'
+            ]);
 
             return response('OK', 200);
         });
@@ -109,6 +124,13 @@ abstract class TestCase extends Orchestra
             });
             return response('OK', 200);
         });
+
+        $app['router']->get('/laritor-failed-job', function () {
+            dispatch(function (){
+                return $invalid;
+            });
+            return response('OK', 200);
+        });
     }
 
     protected function setUp(): void
@@ -119,5 +141,12 @@ abstract class TestCase extends Orchestra
             '--path' => realpath(__DIR__ . '/../database/migrations'),
             '--database' => config('database.default'),
         ])->run();
+
+        $this->app->bind(DataRedactor::class, TestRedactor::class );
+
+        config()->set('laritor.requests.ignore', [
+            'laritor-job', 'laritor-failed-job'
+        ]);
+
     }
 }

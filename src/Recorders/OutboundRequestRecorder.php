@@ -2,9 +2,12 @@
 
 namespace BinaryBuilds\LaritorClient\Recorders;
 
+use BinaryBuilds\LaritorClient\Helpers\DataHelper;
 use Illuminate\Http\Client\Events\ConnectionFailed;
 use Illuminate\Http\Client\Events\RequestSending;
 use Illuminate\Http\Client\Events\ResponseReceived;
+use Illuminate\Http\Client\Request;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Str;
 
 
@@ -90,7 +93,15 @@ class OutboundRequestRecorder extends Recorder
                     'method' => $outboundRequestEvent->request->method(),
                     'status' => 'completed',
                     'order' => $request['order'],
-                    'context' => $request['context']
+                    'context' => $request['context'],
+                    'request' => [
+                        'body' => $this->getRequestBody($outboundRequestEvent->request),
+                        'headers' => $this->getRequestHeaders($outboundRequestEvent->request),
+                    ],
+                    'response' => [
+                        'body' => $outboundRequestEvent instanceof ConnectionFailed ? false : $this->getResponseBody($outboundRequestEvent->response),
+                        'headers' => $outboundRequestEvent instanceof ConnectionFailed ? false : $this->getResponseHeaders($outboundRequestEvent->response),
+                    ]
                 ];
             }
 
@@ -99,6 +110,51 @@ class OutboundRequestRecorder extends Recorder
 
         $this->laritor->addEvents(static::$eventType, $outboundRequests);
     }
+
+    protected function getRequestBody(Request $request)
+    {
+        if (config('laritor.outbound_requests.body')) {
+            return $request->isJson() ?
+                DataHelper::redactArray(json_decode($request->body(), true)) :
+                DataHelper::redactData($request->body());
+        }
+
+        return false;
+    }
+
+    protected function getRequestHeaders(Request $request)
+    {
+        if (config('laritor.outbound_requests.headers')) {
+            return DataHelper::redactHeaders($request->headers());
+        }
+
+        return false;
+    }
+
+    protected function getResponseBody(Response $response)
+    {
+        if (config('laritor.outbound_requests.response_body')) {
+            $body = $response->json();
+
+            if (is_array($body)) {
+                return DataHelper::redactArray($body);
+            }
+
+            return DataHelper::redactData($response->body());
+        }
+
+        return false;
+    }
+
+    protected function getResponseHeaders(Response $response)
+    {
+        if (config('laritor.outbound_requests.response_headers')) {
+            return DataHelper::redactHeaders($response->headers());
+        }
+
+        return false;
+    }
+
 
     /**
      * @param $request

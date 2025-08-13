@@ -20,5 +20,9 @@ class ExternalHttpTest extends TestCase
         $this->assertNotEmpty( $data['events'][OutboundRequestRecorder::$eventType]);
         $this->assertArrayHasKey('url', $data['events'][OutboundRequestRecorder::$eventType][0]);
         $this->assertEquals('https://example.com', $data['events'][OutboundRequestRecorder::$eventType][0]['url']);
+        $this->assertArrayHasKey('hello', $data['events'][OutboundRequestRecorder::$eventType][0]['request']['body']);
+        $this->assertArrayHasKey('custom-header', $data['events'][OutboundRequestRecorder::$eventType][0]['request']['headers']);
+        $this->assertNotEmpty($data['events'][OutboundRequestRecorder::$eventType][0]['response']['body']);
+        $this->assertNotEmpty($data['events'][OutboundRequestRecorder::$eventType][0]['response']['headers']);
     }
 }

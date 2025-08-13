@@ -1,4 +1,4 @@
-Official Laritor Client Package
+Laritor Client Package
 ------------------------------------------------
 ![Laritor Image](/art/laritor-og.png "Laritor Image")
 
@@ -6,7 +6,7 @@ Official Laritor Client Package
 
 This repository contains the ingest package for laritor which collects and sends metrics from your application to laritor.
 
-##### [Laritor's Documentation](https://laritor.com/docs/)
+##### [Laritor's Documentation](https://laritor.com/docs)
 
 ### QuickStart
 
@@ -41,16 +41,16 @@ php artisan laritor:send-metrics
 ### Customization
 
 You can customize and restrict what information is shared with Laritor. For details, check
-our [customization guide](https://laritor.com/docs/customization/).
+our [customization guide](https://laritor.com/docs/customization).
 
 ## Security Vulnerabilities
 
-If you find a security vulnerability with in this package, Please do not use the issue tracker. Instead,
-email  `support@laritor.com`. All security vulnerabilities will be addressed promptly.
+If you find a security vulnerability with in this package, Please do not use the issue tracker or disclose publicly. 
+See our [Security Policy](https://github.com/binarybuilds/laritor-client/security/policy)
 
 ## Support
 
-For Laritor's support, email `support@laritor.com` or join our [discord](https://discord.laritor.com/).
+For Laritor's support, email `support@laritor.com` or join our [discord](https://discord.laritor.com).
 
 ## License
 

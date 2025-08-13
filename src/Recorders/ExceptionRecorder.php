@@ -23,6 +23,7 @@ class ExceptionRecorder extends Recorder
     public function trackEvent($event)
     {
         $throwable = $event;
+
         if (!$this->shouldReportException(get_class($throwable))) {
             return;
         }

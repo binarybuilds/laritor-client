@@ -2,6 +2,8 @@
 
 namespace BinaryBuilds\LaritorClient\Recorders;
 
+use BinaryBuilds\LaritorClient\CommandOutput;
+use BinaryBuilds\LaritorClient\Helpers\DataHelper;
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Console\Events\CommandStarting;
 
@@ -92,6 +94,10 @@ class CommandRecorder extends Recorder
             $command['completed_at'] = now()->format('Y-m-d H:i:s');
             $command['started_at'] = $command['started_at']->format('Y-m-d H:i:s');
             $command['code'] = $event->exitCode;
+            $command['custom_context'] = DataHelper::getRedactedContext();
+            $command['output'] = app(CommandOutput::class)->getLines();
+
+            app(CommandOutput::class)->resetLines();
 
             $this->laritor->addEvents(static::$eventType, [$command]);
         }
