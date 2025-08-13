@@ -3,6 +3,7 @@
 namespace BinaryBuilds\LaritorClient\Recorders;
 
 use BinaryBuilds\LaritorClient\Helpers\DataHelper;
+use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Support\Str;
 use BinaryBuilds\LaritorClient\Helpers\FileHelper;
@@ -23,7 +24,7 @@ class QueryRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if (!$this->shouldRecordQuery($event->sql)) {
+        if (!FilterHelper::recordQuery($event->sql, $event->time)) {
             return;
         }
 
@@ -32,7 +33,7 @@ class QueryRecorder extends Recorder
 
             $query = [
                 'query' => $event->sql,
-                'bindings' => config('laritor.query.bindings') ? DataHelper::redactData($this->replaceBindings($event)) : null,
+                'bindings' => config('laritor.query_bindings') ? DataHelper::redactData($this->replaceBindings($event)) : null,
                 'time' => $time,
                 'path' => FileHelper::parseFileName($caller['file']) .'@'.$caller['line'],
                 'completed_at' => now()->format('Y-m-d H:i:s'),
@@ -41,37 +42,6 @@ class QueryRecorder extends Recorder
 
             $this->laritor->pushEvent(static::$eventType, $query);
         }
-    }
-
-    /**
-     * @param $query
-     * @return bool
-     */
-    public function shouldRecordQuery($query)
-    {
-        if ($this->isReadQuery($query) && ! config('laritor.query.read')) {
-            return false;
-        }
-
-        if ( $this->isWriteQuery($query) && ! config('laritor.query.write')) {
-            return false;
-        }
-
-        if (app()->runningInConsole() && ! config('laritor.query.console') ) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public function isReadQuery($query)
-    {
-        return Str::startsWith(strtoupper(trim($query)), ['SELECT', 'SHOW', 'DESCRIBE', 'EXPLAIN'] );
-    }
-
-    public function isWriteQuery($query)
-    {
-        return ! $this->isReadQuery($query);
     }
 
     /**

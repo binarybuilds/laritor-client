@@ -3,6 +3,7 @@
 namespace BinaryBuilds\LaritorClient\Recorders;
 
 use BinaryBuilds\LaritorClient\Helpers\DataHelper;
+use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Str;
 use BinaryBuilds\LaritorClient\Helpers\FileHelper;
@@ -24,7 +25,7 @@ class ExceptionRecorder extends Recorder
     {
         $throwable = $event;
 
-        if (!$this->shouldReportException(get_class($throwable))) {
+        if (!FilterHelper::recordException($throwable)) {
             return;
         }
 
@@ -56,18 +57,6 @@ class ExceptionRecorder extends Recorder
         }
 
         $this->laritor->pushEvent(static::$eventType, $data);
-    }
-
-    public function shouldReportException($exception)
-    {
-        foreach ((array)config('laritor.exceptions.ignore') as $ignore ) {
-
-            if ($exception instanceof $ignore ) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     private function getFileContents(string $filePath, int $line, int $before = 10, int $after = 10 )

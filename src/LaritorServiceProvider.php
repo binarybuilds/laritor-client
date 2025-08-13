@@ -2,6 +2,8 @@
 
 namespace BinaryBuilds\LaritorClient;
 
+use BinaryBuilds\LaritorClient\Override\DefaultOverride;
+use BinaryBuilds\LaritorClient\Override\LaritorOverride;
 use BinaryBuilds\LaritorClient\Redactor\DataRedactor;
 use BinaryBuilds\LaritorClient\Redactor\DefaultRedactor;
 use Illuminate\Routing\Contracts\CallableDispatcher;
@@ -29,10 +31,6 @@ class LaritorServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->publishes([
-            __DIR__ . '/../config/laritor.php' => config_path('laritor.php'),
-        ]);
-
         if ( ! config('laritor.enabled') || !config('laritor.keys.backend') ) {
             return;
         }
@@ -96,7 +94,10 @@ class LaritorServiceProvider extends ServiceProvider
 
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__ . '/../config/laritor.php', 'laritor');
+
         $this->app->bind(DataRedactor::class, DefaultRedactor::class);
+        $this->app->bind(LaritorOverride::class, DefaultOverride::class);
     }
 
     protected function routes()
@@ -114,7 +115,22 @@ class LaritorServiceProvider extends ServiceProvider
      */
     public function registerRecorders()
     {
-        foreach ((array)config('laritor.recorders') as $recorder) {
+        $recorders = [
+            \BinaryBuilds\LaritorClient\Recorders\CacheRecorder::class,
+            \BinaryBuilds\LaritorClient\Recorders\ExceptionRecorder::class,
+            \BinaryBuilds\LaritorClient\Recorders\OutboundRequestRecorder::class,
+            \BinaryBuilds\LaritorClient\Recorders\QueryRecorder::class,
+            \BinaryBuilds\LaritorClient\Recorders\QueuedJobRecorder::class,
+            \BinaryBuilds\LaritorClient\Recorders\RequestRecorder::class,
+            \BinaryBuilds\LaritorClient\Recorders\CommandRecorder::class,
+            \BinaryBuilds\LaritorClient\Recorders\ScheduledTaskRecorder::class,
+            \BinaryBuilds\LaritorClient\Recorders\SchedulerRecorder::class,
+            \BinaryBuilds\LaritorClient\Recorders\LogRecorder::class,
+            \BinaryBuilds\LaritorClient\Recorders\MailRecorder::class,
+            \BinaryBuilds\LaritorClient\Recorders\NotificationRecorder::class,
+        ];
+
+        foreach ($recorders as $recorder) {
             $recorder::registerRecorder();
         }
 

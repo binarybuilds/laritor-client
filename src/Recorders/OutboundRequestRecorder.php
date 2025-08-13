@@ -3,6 +3,7 @@
 namespace BinaryBuilds\LaritorClient\Recorders;
 
 use BinaryBuilds\LaritorClient\Helpers\DataHelper;
+use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Http\Client\Events\ConnectionFailed;
 use Illuminate\Http\Client\Events\RequestSending;
 use Illuminate\Http\Client\Events\ResponseReceived;
@@ -45,15 +46,17 @@ class OutboundRequestRecorder extends Recorder
      */
     public function sending(RequestSending $event)
     {
-        if ($this->shouldRecordOutboundRequest($event->request->url())) {
-            $this->laritor->pushEvent(static::$eventType, [
-                'started_at' => now(),
-                'url' => $event->request->url(),
-                'method' => $event->request->method(),
-                'status' => 'sent',
-                'context' => $this->laritor->getContext()
-            ]);
+        if (!FilterHelper::recordOutboundRequest($event->request->url())) {
+            return;
         }
+
+        $this->laritor->pushEvent(static::$eventType, [
+            'started_at' => now(),
+            'url' => $event->request->url(),
+            'method' => $event->request->method(),
+            'status' => 'sent',
+            'context' => $this->laritor->getContext()
+        ]);
     }
 
     /**
@@ -153,25 +156,5 @@ class OutboundRequestRecorder extends Recorder
         }
 
         return false;
-    }
-
-
-    /**
-     * @param $request
-     * @return bool
-     */
-    public function shouldRecordOutboundRequest($request)
-    {
-        if (app()->runningInConsole() && ! config('laritor.outbound_requests.console') ) {
-            return false;
-        }
-
-        foreach ((array)config('laritor.outbound_requests.ignore') as $ignore) {
-            if (Str::startsWith(rtrim($request, "/*"), $ignore) ) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace BinaryBuilds\LaritorClient\Recorders;
 
+use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Cache\Events\CacheHit;
 use Illuminate\Cache\Events\CacheMissed;
 
@@ -26,7 +27,7 @@ class CacheRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if ($event->key === 'laritor_check') {
+        if ($event->key === 'laritor_check' || !FilterHelper::recordCacheHit($event->key)) {
             return;
         }
 

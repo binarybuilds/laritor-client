@@ -2,6 +2,7 @@
 
 namespace BinaryBuilds\LaritorClient\Recorders;
 
+use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Console\Events\CommandStarting;
 
@@ -26,7 +27,7 @@ class SchedulerRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if (!$this->isSchedulerCommand($event)) {
+        if (!FilterHelper::recordTaskScheduler() || !$this->isSchedulerCommand($event)) {
             return;
         }
 

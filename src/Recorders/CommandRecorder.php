@@ -4,6 +4,7 @@ namespace BinaryBuilds\LaritorClient\Recorders;
 
 use BinaryBuilds\LaritorClient\CommandOutput;
 use BinaryBuilds\LaritorClient\Helpers\DataHelper;
+use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Console\Events\CommandStarting;
 
@@ -31,7 +32,7 @@ class CommandRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if ($this->ignore($event->command)) {
+        if ($this->ignore($event->command) || !FilterHelper::recordCommandOrScheduledTask($event->command)) {
             return;
         }
 

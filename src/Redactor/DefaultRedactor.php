@@ -3,16 +3,11 @@
 namespace BinaryBuilds\LaritorClient\Redactor;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 
 class DefaultRedactor implements DataRedactor
 {
     public function redactEmailAddress(string $address): string
     {
-        if (config('laritor.anonymize.pii')) {
-            return 'redacted-'.Str::random(4).'@redacted.com';
-        }
-
         return $address;
     }
 
@@ -65,16 +60,6 @@ class DefaultRedactor implements DataRedactor
             '/(CVV|CVC|CVV2)\s*[:=]?\s*\d{3,4}/i' => '$1: ***',
         ];
 
-        if (config('laritor.anonymize.pii')) {
-            $patterns = array_merge($patterns, [
-                // Email Addresses
-                '/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i' => '***',
-
-                // Phone Numbers (basic international)
-                '/\+?\d{1,3}[ \-]?\(?\d{1,4}\)?[ \-]?\d{3,5}[ \-]?\d{3,5}/' => '***',
-            ]);
-        }
-
         return preg_replace(array_keys($patterns), array_values($patterns), $text);
     }
 
@@ -119,8 +104,18 @@ class DefaultRedactor implements DataRedactor
 
         return [
             'id' => $user ? $user->id : null,
-            'name' => $user ? ( config('laritor.anonymize.user') ? 'User '.$user->id : $user->name) : '',
-            'email' => $user ? ( config('laritor.anonymize.user') ? 'user'.$user->id.'@redacted.com' : $user->email) : '',
+            'name' => $user ? $user->name : '',
+            'email' => $user ? $user->email : '',
         ];
+    }
+
+    public function redactIPAddress($ip): string
+    {
+        return $ip;
+    }
+
+    public function redactUserAgent($userAgent): string
+    {
+        return $userAgent;
     }
 }

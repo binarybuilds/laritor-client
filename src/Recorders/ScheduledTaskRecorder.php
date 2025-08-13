@@ -3,6 +3,7 @@
 namespace BinaryBuilds\LaritorClient\Recorders;
 
 use BinaryBuilds\LaritorClient\Helpers\DataHelper;
+use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
@@ -30,8 +31,11 @@ class ScheduledTaskRecorder extends Recorder
             Str::position(Str::replace("'",'', $event->task->command), 'artisan')
         );
 
-        if (in_array($task, ['artisan laritor:send-metrics'])) {
-           return;
+        if (
+            in_array($task, ['artisan laritor:send-metrics']) ||
+            !FilterHelper::recordCommandOrScheduledTask($event->task->command)
+        ) {
+            return;
         }
 
         if ($event instanceof ScheduledTaskStarting ) {
