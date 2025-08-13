@@ -56,7 +56,7 @@ class DefaultOverride implements LaritorOverride
         ];
 
         foreach ($ignore as $ignored ) {
-            if ($request>is($ignored)) {
+            if ($request->is($ignored)) {
                 return false;
             }
         }
