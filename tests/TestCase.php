@@ -2,6 +2,8 @@
 
 namespace BinaryBuilds\LaritorClient\Tests;
 
+use BinaryBuilds\LaritorClient\Override\LaritorOverride;
+use BinaryBuilds\LaritorClient\Override\TestOverride;
 use BinaryBuilds\LaritorClient\Redactor\DataRedactor;
 use BinaryBuilds\LaritorClient\Redactor\TestRedactor;
 use Illuminate\Support\Facades\Context;
@@ -143,10 +145,7 @@ abstract class TestCase extends Orchestra
         ])->run();
 
         $this->app->bind(DataRedactor::class, TestRedactor::class );
-
-        config()->set('laritor.requests.ignore', [
-            'laritor-job', 'laritor-failed-job'
-        ]);
+        $this->app->bind(LaritorOverride::class, TestOverride::class );
 
     }
 }

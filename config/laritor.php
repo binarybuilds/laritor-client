@@ -21,7 +21,7 @@ return [
 
     'log_level' => env('LARITOR_LOG_LEVEL', 'debug'),
 
-    'max_events' => env('LARITOR_MAX_EVENTS', 5000),
+    'max_events' => env('LARITOR_MAX_EVENTS_PER_OCCURRENCE', 5000),
 
     'context' => env('LARITOR_RECORD_CONTEXT', true),
 
