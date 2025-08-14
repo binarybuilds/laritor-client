@@ -73,7 +73,7 @@ class LaritorServiceProvider extends ServiceProvider
         if ((int)$this->app->version() >= 9) {
             /** @phpstan-ignore class.notFound */
             app()->bind(CallableDispatcher::class, function ($app) {
-                /** @phpstan-ignore new.noConstructor */
+                /** @phpstan-ignore-next-line  */
                 return new class($app) extends \Illuminate\Routing\CallableDispatcher {
                     public function dispatch($route, $callable)
                     {
