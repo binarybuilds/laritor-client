@@ -19,9 +19,7 @@ class SchemaTest extends TestCase
         $this->assertArrayHasKey('db_schema', $data['data']);
         $this->assertNotEmpty( $data['data']['db_schema']);
         $this->assertArrayHasKey('database', $data['data']['db_schema']);
-        /** @phpstan-ignore staticMethod.notFound */
-        $driver =  (int)app()->version() >= 9 ? DB::getDriverName() : config('database.connections.'.config('database.default').'.driver');
-        $this->assertSame($driver, $data['data']['db_schema']['database']);
+        $this->assertSame(DB::getDriverName(), $data['data']['db_schema']['database']);
         $this->assertArrayHasKey('version', $data['data']['db_schema']);
         $this->assertArrayHasKey('tables', $data['data']['db_schema']);
         $this->assertNotEmpty($data['data']['db_schema']['tables']);

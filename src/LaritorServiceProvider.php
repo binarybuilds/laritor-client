@@ -70,20 +70,15 @@ class LaritorServiceProvider extends ServiceProvider
             };
         });
 
-        if ((int)$this->app->version() >= 9) {
-            /** @phpstan-ignore class.notFound */
-            app()->bind(CallableDispatcher::class, function ($app) {
-                /** @phpstan-ignore-next-line  */
-                return new class($app) extends \Illuminate\Routing\CallableDispatcher {
-                    public function dispatch($route, $callable)
-                    {
-                        app(Laritor::class)->controllerStarted();
-                        /** @phpstan-ignore class.noParent */
-                        return parent::dispatch($route, $callable);
-                    }
-                };
-            });
-        }
+        app()->bind(CallableDispatcher::class, function ($app) {
+            return new class($app) extends \Illuminate\Routing\CallableDispatcher {
+                public function dispatch($route, $callable)
+                {
+                    app(Laritor::class)->controllerStarted();
+                    return parent::dispatch($route, $callable);
+                }
+            };
+        });
 
         if ((int)$this->app->version() >= 10) {
             /** @phpstan-ignore-next-line  */
@@ -161,7 +156,6 @@ class LaritorServiceProvider extends ServiceProvider
             } );
         }
 
-        /** @phpstan-ignore method.notFound */
         $this->app->terminating(function (){
             app(Laritor::class)->sendEvents();
         });
