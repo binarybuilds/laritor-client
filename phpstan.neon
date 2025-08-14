@@ -4,4 +4,4 @@ parameters:
     reportUnmatchedIgnoredErrors: false
 
     excludePaths:
-        - %rootDir%/vendor/laravel/framework/src/Illuminate/Routing/CallableDispatcher.php
+        - %rootDir%/../../../vendor/laravel/framework/src/Illuminate/Routing/CallableDispatcher.php
