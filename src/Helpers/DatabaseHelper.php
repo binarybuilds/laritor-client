@@ -15,7 +15,9 @@ class DatabaseHelper
      */
     public function getSchema()
     {
+        /** @phpstan-ignore staticMethod.notFound */
         $databaseName = (int)app()->version() >= 9 ? DB::getDatabaseName() : config('database.connections.'.config('database.default').'.database');
+        /** @phpstan-ignore staticMethod.notFound */
         $driver =  (int)app()->version() >= 9 ? DB::getDriverName() : config('database.connections.'.config('database.default').'.driver');
 
         if (!in_array($driver, ['pgsql', 'mysql', 'mariadb', 'singlestore', 'sqlite', 'sqlsrv'])) {

@@ -161,6 +161,7 @@ class LaritorServiceProvider extends ServiceProvider
             } );
         }
 
+        /** @phpstan-ignore method.notFound */
         $this->app->terminating(function (){
             app(Laritor::class)->sendEvents();
         });

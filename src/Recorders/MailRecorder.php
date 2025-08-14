@@ -74,7 +74,8 @@ class MailRecorder extends Recorder
                     return $address->getAddress();
                 }, $message->getFrom())),
                 'reply' => implode(',', array_map(function ($address) {
-                    return $address->getAddress();
+                    return is_string($address) ? $address : $address->getAddress();
+                    /** @phpstan-ignore function.alreadyNarrowedType */
                 }, is_array($message->getReplyTo()) ? $message->getReplyTo() : [$message->getReplyTo()])),
                 'subject' => DataHelper::redactData($message->getSubject()),
             ];

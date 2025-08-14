@@ -2,3 +2,6 @@ parameters:
     level: 5
     treatPhpDocTypesAsCertain: false
     reportUnmatchedIgnoredErrors: false
+
+    ignoreErrors:
+        - '#Anonymous class extends unknown class Illuminate\\Routing\\CallableDispatcher#'
