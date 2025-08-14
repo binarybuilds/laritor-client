@@ -41,7 +41,8 @@ class RequestRecorder extends Recorder
         $startTime = defined('LARAVEL_START') ? LARAVEL_START : $event->request->server('REQUEST_TIME_FLOAT');
         $duration =  $startTime ? floor((microtime(true) - $startTime) * 1000) : null;
 
-        $controller = $request->route() ? explode('@', $request->route()->getActionName()) : [];
+        /** @phpstan-ignore-next-line */
+        $controller = $request->route() ? explode('@', optional($request->route())->getActionName()) : [];
         $this->laritor->pushEvent(static::$eventType, [
             'request' => [
                 'completed_at' => now()->format('Y-m-d H:i:s'),
@@ -65,8 +66,10 @@ class RequestRecorder extends Recorder
                 'is_bot' => $isBot,
             ],
             'route' => [
-                'name' => $request->route() ? $request->route()->getName() : null,
-                'uri' => $request->route() ? $request->route()->uri() : null,
+                /** @phpstan-ignore-next-line */
+                'name' => optional($request->route())->getName(),
+                /** @phpstan-ignore-next-line */
+                'uri' => optional($request->route())->uri(),
                 'controller' => isset($controller[0]) ? $controller[0] : 'closure',
                 'controller_method' => isset($controller[1]) ? $controller[1] : 'closure',
                 'method' => $request->method(),

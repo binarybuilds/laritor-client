@@ -80,9 +80,11 @@ class LaritorServiceProvider extends ServiceProvider
             };
         });
 
-        Event::listen(function (PreparingResponse $event) {
-            app(Laritor::class)->responseRenderStarted();
-        });
+        if (class_exists(PreparingResponse::class)) {
+            Event::listen(function (PreparingResponse $event) {
+                app(Laritor::class)->responseRenderStarted();
+            });
+        }
 
 
         $this->app->booted(function () {

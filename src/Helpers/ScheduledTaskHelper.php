@@ -22,7 +22,7 @@ class ScheduledTaskHelper
         foreach (app()->make(\Illuminate\Console\Scheduling\Schedule::class)->events() as $event) {
             $task = Str::substr(
                 Str::replace("'",'', $event->command),
-                Str::position(Str::replace("'",'', $event->command), 'artisan')
+                mb_strpos(Str::replace("'",'', $event->command), 'artisan')
             );
 
             if (in_array($task, ['artisan laritor:send-metrics']) || !FilterHelper::recordCommandOrScheduledTask($event->command)) {
