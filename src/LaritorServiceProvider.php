@@ -80,12 +80,11 @@ class LaritorServiceProvider extends ServiceProvider
             };
         });
 
-        if (class_exists('\Illuminate\Routing\Events\PreparingResponse')) {
+        if ((int)$this->app->version() >= 10) {
             Event::listen(function (PreparingResponse $event) {
                 app(Laritor::class)->responseRenderStarted();
             });
         }
-
 
         $this->app->booted(function () {
             $this->routes();
