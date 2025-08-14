@@ -1,3 +1,7 @@
 parameters:
     level: 5
     treatPhpDocTypesAsCertain: false
+
+    ignoreErrors:
+        # Ignores errors when calling methods on result of optional()
+        - message: '#Call to an undefined method Illuminate\\Support\\Optional::*#'

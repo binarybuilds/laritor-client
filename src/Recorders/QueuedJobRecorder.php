@@ -61,6 +61,7 @@ class QueuedJobRecorder extends Recorder
     {
         $jobPayload = [];
 
+        /** @phpstan-ignore-next-line  */
         if (method_exists($event, 'payload')) {
             $jobPayload = $event->payload();
         }
