@@ -3,6 +3,7 @@
 namespace BinaryBuilds\LaritorClient\Recorders;
 
 use BinaryBuilds\LaritorClient\Helpers\DataHelper;
+use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Notifications\AnonymousNotifiable;
@@ -29,11 +30,15 @@ class NotificationRecorder extends Recorder
     ];
 
     /**
-     * @param MessageLogged $event
+     * @param $event
      * @return void
      */
     public function trackEvent($event)
     {
+        if (!FilterHelper::recordNotification($event->notifiable, $event->notification)) {
+            return;
+        }
+
         if ($event instanceof NotificationSending ) {
             $this->sending($event);
         }

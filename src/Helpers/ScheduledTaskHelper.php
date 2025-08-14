@@ -25,7 +25,7 @@ class ScheduledTaskHelper
                 Str::position(Str::replace("'",'', $event->command), 'artisan')
             );
 
-            if (in_array($task, ['artisan laritor:send-metrics'])) {
+            if (in_array($task, ['artisan laritor:send-metrics']) || !FilterHelper::recordCommandOrScheduledTask($event->command)) {
                 continue;
             }
 

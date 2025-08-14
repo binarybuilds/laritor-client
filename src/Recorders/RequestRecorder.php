@@ -3,9 +3,8 @@
 namespace BinaryBuilds\LaritorClient\Recorders;
 
 use BinaryBuilds\LaritorClient\Helpers\DataHelper;
+use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Foundation\Http\Events\RequestHandled;
-use Illuminate\Support\Facades\Auth;
-use Jaybizzle\CrawlerDetect\CrawlerDetect;
 
 class RequestRecorder extends Recorder
 {
@@ -31,11 +30,11 @@ class RequestRecorder extends Recorder
     {
         $request = $event->request;
 
-        $isBot = $this->isBot($request);
-
-        if ( ! $this->shouldRecordRequest($request, $isBot)) {
+        if ($request->is('laritor/*') || !FilterHelper::recordRequest($request)) {
             return;
         }
+
+        $isBot = FilterHelper::isBot($request);
 
         $this->laritor->responseRenderCompleted($event->response->exception);
 
@@ -61,8 +60,8 @@ class RequestRecorder extends Recorder
             ],
             'user' => [
                 'authenticated' => $this->getAuthenticatedUser(),
-                'ip' => config('laritor.anonymize.ip') ? '127.0.0.1' : $request->getClientIp(),
-                'user_agent' => config('laritor.anonymize.user_agent') ? 'anonymous-agent' : $request->userAgent(),
+                'ip' => DataHelper::redactIPAddress($request->getClientIp()),
+                'user_agent' => DataHelper::redactUserAgent($request->userAgent()),
                 'is_bot' => $isBot,
             ],
             'route' => [
@@ -124,17 +123,6 @@ class RequestRecorder extends Recorder
         return false;
     }
 
-    private function isBot($request)
-    {
-        $userAgent = $request->userAgent();
-        $crawler = new CrawlerDetect();
-        $isBot = $crawler->isCrawler($userAgent);
-
-        return $isBot &&
-            ! in_array($request->userAgent(), (array)config('laritor.bots.whitelist.user_agents') ) &&
-           ! in_array($request->ip(), (array)config('laritor.bots.whitelist.ips') );
-    }
-
     private function getAuthenticatedUser()
     {
         $user = DataHelper::getRedactedUser();
@@ -156,20 +144,5 @@ class RequestRecorder extends Recorder
         }
 
         return $request->path().$query;
-    }
-
-    public function shouldRecordRequest($request, $isBot)
-    {
-        foreach ((array)config('laritor.requests.ignore') as $ignore) {
-            if ($request->is($ignore)) {
-                return false;
-            }
-        }
-
-        if ($isBot && config('laritor.bots.ignore')) {
-            return false;
-        }
-
-        return true;
     }
 }

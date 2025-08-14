@@ -10,9 +10,7 @@ class DataHelper
     {
         return rescue(function () use ($address) {
             return app(DataRedactor::class)->redactEmailAddress($address);
-        }, function () use ($address){
-            return $address;
-        }, true);
+        }, $address);
     }
 
     public static function redactHeaders(array $array): array
@@ -28,18 +26,14 @@ class DataHelper
     {
         return rescue(function () use ($array) {
             return app(DataRedactor::class)->redactArray($array);
-        }, function () use ($array){
-            return $array;
-        }, true);
+        }, $array);
     }
 
     public static function redactData($text)
     {
         return rescue(function () use ($text) {
             return  app(DataRedactor::class)->redactString((string)$text);
-        }, function () use ($text){
-            return $text;
-        }, true);
+        }, $text);
     }
 
     public static function getRedactedContext()
@@ -57,12 +51,24 @@ class DataHelper
     {
         return rescue(function () {
             return  app(DataRedactor::class)->redactAuthenticatedUser();
-        }, function () {
-            return [
-                'id' => null,
-                'name' => null,
-                'email' => null
-            ];
-        }, true);
+        }, [
+            'id' => null,
+            'name' => null,
+            'email' => null
+        ]);
+    }
+
+    public static function redactIPAddress($ip)
+    {
+        return rescue(function () use ($ip) {
+            return  app(DataRedactor::class)->redactIPAddress($ip);
+        }, $ip);
+    }
+
+    public static function redactUserAgent($userAgent)
+    {
+        return rescue(function () use ($userAgent) {
+            return  app(DataRedactor::class)->redactUserAgent($userAgent);
+        }, $userAgent);
     }
 }

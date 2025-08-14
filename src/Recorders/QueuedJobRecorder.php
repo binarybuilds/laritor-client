@@ -3,6 +3,7 @@
 namespace BinaryBuilds\LaritorClient\Recorders;
 
 use BinaryBuilds\LaritorClient\Helpers\DataHelper;
+use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use BinaryBuilds\LaritorClient\Jobs\QueueHealthCheck;
 use Carbon\Carbon;
 use Illuminate\Queue\Events\JobExceptionOccurred;
@@ -32,7 +33,7 @@ class QueuedJobRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if (!$this->shouldRecordJob($event->job)) {
+        if ($event->job instanceof QueueHealthCheck || !FilterHelper::recordQueuedJob($event->job)) {
             return;
         }
 
@@ -110,21 +111,5 @@ class QueuedJobRecorder extends Recorder
         $this->laritor->addEvents('jobs', [$job]);
 
         $this->laritor->sendEvents();
-    }
-
-    public function shouldRecordJob($job)
-    {
-        if ($job instanceof QueueHealthCheck ) {
-            return false;
-        }
-
-        foreach (config('laritor.jobs.ignore') as $ignore ) {
-
-            if ($job instanceof $ignore ) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

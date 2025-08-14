@@ -7,7 +7,6 @@ use BinaryBuilds\LaritorClient\Helpers\DatabaseHelper;
 use BinaryBuilds\LaritorClient\Helpers\HealthCheckHelper;
 use BinaryBuilds\LaritorClient\Helpers\ScheduledTaskHelper;
 use BinaryBuilds\LaritorClient\Laritor;
-use BinaryBuilds\LaritorClient\Recorders\DatabaseSchemaRecorder;
 use BinaryBuilds\LaritorClient\Recorders\ScheduledTaskRecorder;
 
 class SyncCommand extends Command
@@ -41,15 +40,13 @@ class SyncCommand extends Command
         Laritor $laritor
     )
     {
-        $scheduled_tasks = [];
-        if (in_array(ScheduledTaskRecorder::class, config('laritor.recorders'))) {
-            $scheduled_tasks = $scheduledTaskHelper->getScheduledTasks();
-        }
+        $scheduled_tasks = $scheduledTaskHelper->getScheduledTasks();;
 
         $health_checks = $healthCheckHelper->getHealthChecks();
 
         $schema = [];
-        if (in_array(DatabaseSchemaRecorder::class, config('laritor.recorders'))) {
+
+        if ( config('laritor.db_schema') ) {
             $schema = $databaseHelper->getSchema();
         }
 
