@@ -118,6 +118,7 @@ trait SendOutputToLaritor
     public function alert($string, $verbosity = null)
     {
         $this->addLine($string, 'alert');
+        /** @phpstan-ignore arguments.count */
         parent::alert($string, $verbosity);
     }
 
@@ -126,14 +127,14 @@ trait SendOutputToLaritor
      *
      * @param  int  $count
      * @return $this
-     * @phpstan-ignore return.type  */
+     * @phpstan-ignore staticMethod.void  */
     public function newLine($count = 1)
     {
         for ($i = 0; $i < $count; $i++) {
             $this->addLine('', 'plain');
         }
 
-        /** @phpstan-ignore staticMethod.void */
+        /** @phpstan-ignore return.type */
         return parent::newLine($count);
     }
 }

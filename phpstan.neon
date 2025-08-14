@@ -3,5 +3,5 @@ parameters:
     treatPhpDocTypesAsCertain: false
     reportUnmatchedIgnoredErrors: false
 
-    ignoreErrors:
-        - '#Anonymous class extends unknown class Illuminate\\Routing\\CallableDispatcher#'
+    excludePaths:
+        - %rootDir%/vendor/laravel/framework/src/Illuminate/Routing/CallableDispatcher.php
