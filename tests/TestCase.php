@@ -129,6 +129,9 @@ abstract class TestCase extends Orchestra
 
         $app['router']->get('/laritor-failed-job', function () {
             dispatch(function (){
+                /**
+                 * @phpstan-ignore-next-line
+                 */
                 return $invalid;
             });
             return response('OK', 200);

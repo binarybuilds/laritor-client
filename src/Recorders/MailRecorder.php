@@ -50,7 +50,7 @@ class MailRecorder extends Recorder
     public function sending(MessageSending $event)
     {
         $message = $event->message;
-        if ($message instanceof \Swift_Message) {
+        if (class_exists('\Swift_Message') && $message instanceof \Swift_Message) {
             $eventData = [
                 'to' => DataHelper::redactEmailAddress($message->getTo()),
                 'cc' => DataHelper::redactEmailAddress($message->getCc()),

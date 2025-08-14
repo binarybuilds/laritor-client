@@ -52,7 +52,7 @@ class ScheduledTaskRecorder extends Recorder
     /**
      * Handle the event.
      *
-     * @param  object  $event
+     * @param  ScheduledTaskStarting $event
      * @return void
      */
     public function start(ScheduledTaskStarting $event)
@@ -75,7 +75,7 @@ class ScheduledTaskRecorder extends Recorder
     /**
      * Handle the event.
      *
-     * @param  object  $event
+     * @param  ScheduledTaskFinished  $event
      * @return void
      */
     public function finish(ScheduledTaskFinished $event)

@@ -6,6 +6,7 @@ use BinaryBuilds\LaritorClient\Override\DefaultOverride;
 use BinaryBuilds\LaritorClient\Override\LaritorOverride;
 use BinaryBuilds\LaritorClient\Redactor\DataRedactor;
 use BinaryBuilds\LaritorClient\Redactor\DefaultRedactor;
+use Illuminate\Foundation\Application;
 use Illuminate\Routing\Contracts\CallableDispatcher;
 use Illuminate\Routing\ControllerDispatcher;
 use Illuminate\Routing\Events\PreparingResponse;
@@ -102,7 +103,12 @@ class LaritorServiceProvider extends ServiceProvider
 
     protected function routes()
     {
-        if ($this->app->routesAreCached()) {
+        /**
+         * @var Application $app
+         */
+        $app = $this->app;
+
+        if ($app->routesAreCached()) {
             return;
         }
 
@@ -134,8 +140,12 @@ class LaritorServiceProvider extends ServiceProvider
             $recorder::registerRecorder();
         }
 
-        if (class_exists(\Laravel\Octane\Events\RequestReceived::class)) {
-            Event::listen( [
+        if (
+            class_exists(\Laravel\Octane\Events\RequestReceived::class) &&
+            class_exists(\Laravel\Octane\Events\TaskReceived::class) &&
+            class_exists(\Laravel\Octane\Events\TickReceived::class)
+        ) {
+            Event::listen([
                 \Laravel\Octane\Events\RequestReceived::class,
                 \Laravel\Octane\Events\TaskReceived::class,
                 \Laravel\Octane\Events\TickReceived::class

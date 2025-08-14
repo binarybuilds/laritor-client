@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 class DatabaseHelper
 {
     /**
-     * @return array|array[]
+     * @return array
      */
     public function getSchema()
     {
