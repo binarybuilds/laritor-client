@@ -15,8 +15,8 @@ class DatabaseHelper
      */
     public function getSchema()
     {
-        $databaseName = DB::getDatabaseName();
-        $driver = DB::getDriverName();
+        $databaseName = (int)app()->version() >= 9 ? DB::getDatabaseName() : config('database.connections.'.config('database.default').'database');
+        $driver =  (int)app()->version() >= 9 ? DB::getDriverName() : config('database.connections.'.config('database.default').'driver');
 
         if (!in_array($driver, ['pgsql', 'mysql', 'mariadb', 'singlestore', 'sqlite', 'sqlsrv'])) {
             return [

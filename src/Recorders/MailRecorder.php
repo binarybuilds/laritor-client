@@ -75,7 +75,7 @@ class MailRecorder extends Recorder
                 }, $message->getFrom())),
                 'reply' => implode(',', array_map(function ($address) {
                     return $address->getAddress();
-                }, $message->getReplyTo())),
+                }, is_array($message->getReplyTo()) ? $message->getReplyTo() : [$message->getReplyTo()])),
                 'subject' => DataHelper::redactData($message->getSubject()),
             ];
         }
