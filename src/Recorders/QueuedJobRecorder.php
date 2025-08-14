@@ -33,7 +33,7 @@ class QueuedJobRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if (!FilterHelper::recordQueuedJob($event->job)) {
+        if ($event->job instanceof QueueHealthCheck || !FilterHelper::recordQueuedJob($event->job)) {
             return;
         }
 

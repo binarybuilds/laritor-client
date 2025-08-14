@@ -113,6 +113,10 @@ class CommandRecorder extends Recorder
         return in_array($command, [
             'db:seed',
             'migrate',
+            'optimize',
+            'migrate:fresh',
+            'migrate:refresh',
+            'schedule:work',
             'schedule:run',
             'schedule:finish',
             'package:discover',

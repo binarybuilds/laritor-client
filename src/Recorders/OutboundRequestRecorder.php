@@ -46,7 +46,8 @@ class OutboundRequestRecorder extends Recorder
      */
     public function sending(RequestSending $event)
     {
-        if (!FilterHelper::recordOutboundRequest($event->request->url())) {
+        if ( Str::contains($event->request->url(), 'laritor.net') ||
+            !FilterHelper::recordOutboundRequest($event->request->url())) {
             return;
         }
 

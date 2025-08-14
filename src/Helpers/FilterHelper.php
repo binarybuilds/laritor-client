@@ -3,12 +3,15 @@
 namespace BinaryBuilds\LaritorClient\Helpers;
 
 use BinaryBuilds\LaritorClient\Override\LaritorOverride;
+use Illuminate\Support\Facades\Event;
 
 class FilterHelper
 {
     public static function recordEvent(callable $callable, $default = true)
     {
-        return rescue($callable, $default);
+        return rescue(function () use ($callable){
+            return Event::fakeFor($callable);
+        }, $default);
     }
 
     public static function recordCacheHit($cacheKey): bool

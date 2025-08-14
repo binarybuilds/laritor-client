@@ -5,6 +5,7 @@ namespace BinaryBuilds\LaritorClient\Recorders;
 use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Cache\Events\CacheHit;
 use Illuminate\Cache\Events\CacheMissed;
+use Illuminate\Support\Str;
 
 class CacheRecorder extends Recorder
 {
@@ -27,7 +28,7 @@ class CacheRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if ($event->key === 'laritor_check' || !FilterHelper::recordCacheHit($event->key)) {
+        if ( Str::startsWith($event->key, 'laritor') || !FilterHelper::recordCacheHit($event->key)) {
             return;
         }
 

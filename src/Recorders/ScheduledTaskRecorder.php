@@ -32,7 +32,7 @@ class ScheduledTaskRecorder extends Recorder
         );
 
         if (
-            in_array($task, ['artisan laritor:send-metrics']) ||
+            in_array($task, ['artisan laritor:send-metrics', 'artisan laritor:sync']) ||
             !FilterHelper::recordCommandOrScheduledTask($event->task->command)
         ) {
             return;
