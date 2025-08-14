@@ -14,8 +14,16 @@ interface DataRedactor
 
     public function redactAuthenticatedUser(): array;
 
+    /**
+     * @param string|null $ip
+     * @return string
+     */
     public function redactIPAddress($ip): string;
 
+    /**
+     * @param string|null $userAgent
+     * @return string
+     */
     public function redactUserAgent($userAgent): string;
 
 }
