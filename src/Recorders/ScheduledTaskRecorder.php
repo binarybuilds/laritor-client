@@ -28,7 +28,7 @@ class ScheduledTaskRecorder extends Recorder
     {
         $task = Str::substr(
             Str::replace("'",'', $event->task->command),
-            Str::position(Str::replace("'",'', $event->task->command), 'artisan')
+            mb_strpos(Str::replace("'",'', $event->task->command), 'artisan')
         );
 
         if (
@@ -52,7 +52,7 @@ class ScheduledTaskRecorder extends Recorder
     /**
      * Handle the event.
      *
-     * @param  object  $event
+     * @param  ScheduledTaskStarting $event
      * @return void
      */
     public function start(ScheduledTaskStarting $event)
@@ -75,7 +75,7 @@ class ScheduledTaskRecorder extends Recorder
     /**
      * Handle the event.
      *
-     * @param  object  $event
+     * @param  ScheduledTaskFinished  $event
      * @return void
      */
     public function finish(ScheduledTaskFinished $event)

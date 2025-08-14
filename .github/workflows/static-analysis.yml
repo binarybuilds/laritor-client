@@ -1,9 +1,10 @@
-name: Run tests
+name: Run Static Analysis
 
 on:
   pull_request:
 
 jobs:
+
   test-laravel-9:
     name: PHP ${{ matrix.php }} / Laravel 9.x
     runs-on: ubuntu-latest
@@ -25,11 +26,8 @@ jobs:
           composer require --dev orchestra/testbench:^7.0 --no-update
           composer update --prefer-dist --no-interaction --no-scripts
 
-      - name: Publish Config
-        run: ./vendor/bin/testbench  vendor:publish --provider="BinaryBuilds\LaritorClient\LaritorServiceProvider" --force
-
-      - name: Run Tests
-        run: ./vendor/bin/phpunit
+      - name: Run Analysis
+        run:  php -d memory_limit=-1 ./vendor/bin/phpstan analyse src tests
 
 
   test-laravel-10:
@@ -53,11 +51,8 @@ jobs:
           composer require --dev orchestra/testbench:^8.0 --no-update
           composer update --prefer-dist --no-interaction --no-scripts
 
-      - name: Publish Config
-        run: ./vendor/bin/testbench  vendor:publish --provider="BinaryBuilds\LaritorClient\LaritorServiceProvider" --force
-
-      - name: Run Tests
-        run: ./vendor/bin/phpunit
+      - name: Run Analysis
+        run:  php -d memory_limit=-1 ./vendor/bin/phpstan analyse src tests
 
   test-laravel-11:
     name: PHP ${{ matrix.php }} / Laravel 11.x
@@ -83,11 +78,8 @@ jobs:
           composer require --dev orchestra/testbench:^9.0 --no-update
           composer update --prefer-dist --no-interaction --no-scripts
 
-      - name: Publish Config
-        run: ./vendor/bin/testbench  vendor:publish --provider="BinaryBuilds\LaritorClient\LaritorServiceProvider" --force
-
-      - name: Run Tests
-        run: ./vendor/bin/phpunit
+      - name: Run Analysis
+        run:  php -d memory_limit=-1 ./vendor/bin/phpstan analyse src tests
 
   test-laravel-12:
     name: PHP ${{ matrix.php }} / Laravel 12.x
@@ -110,8 +102,5 @@ jobs:
           composer require --dev orchestra/testbench:^10.0 --no-update
           composer update --prefer-dist --no-interaction --no-scripts
 
-      - name: Publish Config
-        run: ./vendor/bin/testbench  vendor:publish --provider="BinaryBuilds\LaritorClient\LaritorServiceProvider" --force
-
-      - name: Run Tests
-        run: ./vendor/bin/phpunit
+      - name: Run Analysis
+        run:  php -d memory_limit=-1 ./vendor/bin/phpstan analyse src tests

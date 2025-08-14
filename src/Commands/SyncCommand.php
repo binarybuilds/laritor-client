@@ -2,15 +2,17 @@
 
 namespace BinaryBuilds\LaritorClient\Commands;
 
+use BinaryBuilds\LaritorClient\SendOutputToLaritor;
 use Illuminate\Console\Command;
 use BinaryBuilds\LaritorClient\Helpers\DatabaseHelper;
 use BinaryBuilds\LaritorClient\Helpers\HealthCheckHelper;
 use BinaryBuilds\LaritorClient\Helpers\ScheduledTaskHelper;
 use BinaryBuilds\LaritorClient\Laritor;
-use BinaryBuilds\LaritorClient\Recorders\ScheduledTaskRecorder;
 
 class SyncCommand extends Command
 {
+    use SendOutputToLaritor;
+
     /**
      * The console command name.
      *

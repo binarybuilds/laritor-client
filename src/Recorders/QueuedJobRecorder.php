@@ -59,12 +59,19 @@ class QueuedJobRecorder extends Recorder
      */
     public function queued(JobQueued $event)
     {
+        $jobPayload = [];
+
+        /** @phpstan-ignore-next-line  */
+        if (method_exists($event, 'payload')) {
+            $jobPayload = $event->payload();
+        }
+
         $this->laritor->pushEvent(static::$eventType, [
             'connection' => $event->connectionName,
             'queue' => $event->job->queue ?? config("queue.connections.{$event->connectionName}.queue", 'default'),
-            'job' =>  isset($event->payload()['displayName']) ? $event->payload()['displayName'] : get_class($event->job),
+            'job' =>  isset($jobPayload['displayName']) ? $jobPayload['displayName'] : get_class($event->job),
             'id' => $event->id,
-            'delay' => $event->delay,
+            'delay' => isset($event->delay) ? $event->delay : ( isset($jobPayload['delay']) ? $jobPayload['delay'] : 0 ),
             'queued_at' => now()->toDateTimeString(),
             'status' => 'queued',
             'context' => $this->laritor->getContext(),

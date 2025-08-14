@@ -50,7 +50,7 @@ class MailRecorder extends Recorder
     public function sending(MessageSending $event)
     {
         $message = $event->message;
-        if ($message instanceof \Swift_Message) {
+        if (class_exists('\Swift_Message') && $message instanceof \Swift_Message) {
             $eventData = [
                 'to' => DataHelper::redactEmailAddress($message->getTo()),
                 'cc' => DataHelper::redactEmailAddress($message->getCc()),
@@ -74,8 +74,10 @@ class MailRecorder extends Recorder
                     return $address->getAddress();
                 }, $message->getFrom())),
                 'reply' => implode(',', array_map(function ($address) {
-                    return $address->getAddress();
-                }, $message->getReplyTo())),
+                    /** @phpstan-ignore function.impossibleType */
+                    return is_string($address) ? $address : $address->getAddress();
+                    /** @phpstan-ignore function.alreadyNarrowedType */
+                }, is_array($message->getReplyTo()) ? $message->getReplyTo() : [$message->getReplyTo()])),
                 'subject' => DataHelper::redactData($message->getSubject()),
             ];
         }

@@ -58,7 +58,7 @@ interface LaritorOverride
     public function recordTaskScheduler(): bool;
 
     /**
-     * @param \Swift_Message|Email $message
+     * @param Email $message
      * @return bool
      */
     public function recordMail($message): bool;

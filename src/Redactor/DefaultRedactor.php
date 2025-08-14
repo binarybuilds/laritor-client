@@ -103,9 +103,9 @@ class DefaultRedactor implements DataRedactor
         $user = Auth::user();
 
         return [
-            'id' => $user ? $user->id : null,
-            'name' => $user ? $user->name : '',
-            'email' => $user ? $user->email : '',
+            'id' => !empty($user->id) ? $user->id : null,
+            'name' => !empty($user->name) ? $user->name : '',
+            'email' => !empty($user->email) ? $user->email : '',
         ];
     }
 

@@ -7,9 +7,9 @@ use Illuminate\Support\Str;
 trait FetchesStackTrace
 {
     /**
-     * Find the first frame in the stack trace outside of Telescope/Laravel.
+     * Find the first frame in the stack.
      *
-     * @param  string|array  $forgetLines
+     * @param int $forgetLines
      * @return array|null
      */
     protected function getCallerFromStackTrace($forgetLines = 0)
@@ -35,11 +35,6 @@ trait FetchesStackTrace
         return [
             'artisan','laritor/', base_path('vendor'.DIRECTORY_SEPARATOR.$this->ignoredVendorPath())
         ];
-
-        return array_merge(
-            [base_path('vendor'.DIRECTORY_SEPARATOR.$this->ignoredVendorPath())],
-            $this->options['ignore_paths'] ?? []
-        );
     }
 
     /**
@@ -52,5 +47,7 @@ trait FetchesStackTrace
         if (! ($this->options['ignore_packages'] ?? true)) {
             return 'laravel';
         }
+
+        return '';
     }
 }

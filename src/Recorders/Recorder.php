@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 class Recorder
 {
     /**
-     * @var
+     * @var string
      */
     public static $eventType;
 

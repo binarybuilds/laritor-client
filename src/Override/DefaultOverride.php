@@ -111,7 +111,7 @@ class DefaultOverride implements LaritorOverride
     }
 
     /**
-     * @param \Swift_Message|Email $message
+     * @param Email $message
      * @return bool
      */
     public function recordMail($message): bool
