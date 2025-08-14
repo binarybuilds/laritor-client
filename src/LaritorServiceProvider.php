@@ -70,17 +70,21 @@ class LaritorServiceProvider extends ServiceProvider
             };
         });
 
-        app()->bind(CallableDispatcher::class, function ($app) {
-            return new class($app) extends \Illuminate\Routing\CallableDispatcher {
-                public function dispatch($route, $callable)
-                {
-                    app(Laritor::class)->controllerStarted();
-                    return parent::dispatch($route, $callable);
-                }
-            };
-        });
+        if ((int)$this->app->version() >= 9) {
+            /** @phpstan-ignore class.notFound */
+            app()->bind(CallableDispatcher::class, function ($app) {
+                return new class($app) extends \Illuminate\Routing\CallableDispatcher {
+                    public function dispatch($route, $callable)
+                    {
+                        app(Laritor::class)->controllerStarted();
+                        return parent::dispatch($route, $callable);
+                    }
+                };
+            });
+        }
 
         if ((int)$this->app->version() >= 10) {
+            /** @phpstan-ignore-next-line  */
             Event::listen(function (PreparingResponse $event) {
                 app(Laritor::class)->responseRenderStarted();
             });
