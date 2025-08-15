@@ -58,6 +58,7 @@ Please refer to our [Security Policy](https://github.com/binarybuilds/laritor-cl
 
 ## 💬 Support
 📧 Email: [support@laritor.com](mailto:support@laritor.com)
+
 💬 Join: [Laritor Discord](https://discord.laritor.com)
 
 ## 📜 License
