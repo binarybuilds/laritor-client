@@ -2,8 +2,8 @@
 
 namespace BinaryBuilds\LaritorClient;
 
-use Illuminate\Container\Container;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
@@ -186,11 +186,15 @@ class Laritor
      */
     public function sendEvents()
     {
-        if ($this->shouldSendEvents()) {
-            $this->callApi();
-        }
+        rescue(function () {
+            Event::fakeFor(function (){
+                if ($this->shouldSendEvents()) {
+                    $this->callApi();
+                }
 
-        $this->reset();
+                $this->reset();
+            });
+        }, null, false);
     }
 
     /**
@@ -198,15 +202,20 @@ class Laritor
      */
     public function callApi()
     {
-        rescue(function () {
-            Http::withHeaders([
-                'X-Api-Key' => config('laritor.keys.backend'),
-                'Content-Type' => 'application/json',
-            ])
-                ->withUserAgent('laritor-client')
-                ->withBody($this->toJson(), 'application/json')
-                ->post(rtrim(config('laritor.ingest_endpoint'),'/').'/events');
-        }, null, false);
+        $response = Http::withHeaders([
+            'X-Api-Key' => config('laritor.keys.backend'),
+            'Content-Type' => 'application/json',
+        ])
+            ->withUserAgent('laritor-client')
+            ->withBody($this->toJson(), 'application/json')
+            ->post(rtrim(config('laritor.ingest_endpoint'),'/').'/events');
+
+        if ($response->status() === 429) {
+            $timeout = (int)$response->header('Retry-After');
+            file_put_contents(
+                storage_path('laritor-timeout.txt'), now()->addSeconds($timeout)->toISOString()
+            );
+        }
     }
 
     /**
@@ -249,6 +258,15 @@ class Laritor
      */
     public function shouldSendEvents()
     {
+        try {
+            $timeout = trim(file_get_contents(storage_path('laritor-timeout.txt')));
+
+            if (now()->parse($timeout)->isFuture()) {
+                return false;
+            }
+
+        } catch (\Throwable $exception) {}
+
         $hasOccurrence = false;
 
         foreach ($this->events as $type => $event) {
