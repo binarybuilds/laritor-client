@@ -32,7 +32,10 @@ class DataHelper
     public static function redactData($text)
     {
         return rescue(function () use ($text) {
-            return  app(DataRedactor::class)->redactString((string)$text);
+            if (is_string($text) || is_numeric($text) || is_bool($text)) {
+                return app(DataRedactor::class)->redactString((string)$text);
+            }
+            return '';
         }, $text);
     }
 

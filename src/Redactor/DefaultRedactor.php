@@ -67,7 +67,10 @@ class DefaultRedactor implements DataRedactor
     {
         $redacted = [];
         foreach ($array as $key => $value) {
-            $redacted[$key] = is_array($value) ? $this->redactArray($value) : $this->redactArrayValue($key, (string)$value);
+
+            if (is_array($value) || is_string($value) || is_numeric($value) || is_bool($value)) {
+                $redacted[$key] = is_array($value) ? $this->redactArray($value) : $this->redactArrayValue($key, (string)$value);
+            }
         }
 
         return $redacted;
