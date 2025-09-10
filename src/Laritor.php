@@ -179,6 +179,12 @@ class Laritor
         $this->events = [];
         $this->order = 1;
         $this->eventsCount = 0;
+        $this->started = 0;
+        $this->booted = 0;
+        $this->middleware = 0;
+        $this->controller = 0;
+        $this->response = 0;
+        $this->context = 'BOOT';
     }
 
     /**
