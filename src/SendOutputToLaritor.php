@@ -126,7 +126,6 @@ trait SendOutputToLaritor
      * Write a blank line.
      *
      * @param  int  $count
-     * @return $this
      * @phpstan-ignore staticMethod.void  */
     public function newLine($count = 1)
     {
@@ -135,6 +134,6 @@ trait SendOutputToLaritor
         }
 
         /** @phpstan-ignore return.type */
-        return parent::newLine($count);
+        parent::newLine($count);
     }
 }

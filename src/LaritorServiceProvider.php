@@ -60,26 +60,6 @@ class LaritorServiceProvider extends ServiceProvider
 
         app(Laritor::class)->started();
 
-        app()->bind(ControllerDispatcherContract::class, function ($app) {
-            return new class($app) extends ControllerDispatcher {
-                public function dispatch($route, $controller, $method)
-                {
-                    app(Laritor::class)->controllerStarted();
-                    return parent::dispatch($route, $controller, $method);
-                }
-            };
-        });
-
-        app()->bind(CallableDispatcher::class, function ($app) {
-            return new class($app) extends \Illuminate\Routing\CallableDispatcher {
-                public function dispatch($route, $callable)
-                {
-                    app(Laritor::class)->controllerStarted();
-                    return parent::dispatch($route, $callable);
-                }
-            };
-        });
-
         if ((int)$this->app->version() >= 10) {
             /** @phpstan-ignore-next-line  */
             Event::listen(function (PreparingResponse $event) {
@@ -156,8 +136,7 @@ class LaritorServiceProvider extends ServiceProvider
             } );
         }
 
-        $this->app->terminating(function (){
-            app(Laritor::class)->sendEvents();
-        });
+        $kernel = $this->app->make( \Illuminate\Contracts\Http\Kernel::class);
+        $kernel->pushMiddleware(SendEventsMiddleware::class);
     }
 }
