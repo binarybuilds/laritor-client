@@ -36,7 +36,7 @@ class RequestRecorder extends Recorder
 
         $isBot = FilterHelper::isBot($request);
 
-        $this->laritor->responseRenderCompleted($event->response->exception);
+        $this->laritor->responseRenderCompleted(isset($event->response->exception) ? $event->response->exception : null);
 
         $startTime = defined('LARAVEL_START') ? LARAVEL_START : $event->request->server('REQUEST_TIME_FLOAT');
         $duration =  $startTime ? floor((microtime(true) - $startTime) * 1000) : null;
