@@ -1,7 +1,7 @@
 name: Run Static Analysis
 
 on:
-  pull_request:
+  push:
 
 jobs:
 
