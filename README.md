@@ -1,3 +1,6 @@
+> [!WARNING]
+> This branch is only meant to be used with laravel 8.x. Please use the latest stable branch for all other versions.
+
 Laritor Client Package
 ------------------------------------------------
 ![Laritor Image](/art/laritor-og.png "Laritor Image")
