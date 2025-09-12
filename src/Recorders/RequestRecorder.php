@@ -81,11 +81,11 @@ class RequestRecorder extends Recorder
 
     private function getStatusCode($response)
     {
-        if ($response instanceof \Symfony\Component\HttpFoundation\Response) {
-            return $response->getStatusCode();
+        if (method_exists($response, 'status')) {
+            return $response->status();
         }
 
-        return $response->status();
+        return $response->getStatusCode();
     }
 
     private function getContext($request)
