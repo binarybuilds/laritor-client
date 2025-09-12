@@ -5,7 +5,6 @@ namespace BinaryBuilds\LaritorClient\Recorders;
 use BinaryBuilds\LaritorClient\Helpers\DataHelper;
 use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Foundation\Http\Events\RequestHandled;
-use Illuminate\Support\Str;
 
 class RequestRecorder extends Recorder
 {
@@ -30,6 +29,7 @@ class RequestRecorder extends Recorder
     public function trackEvent($event)
     {
         $request = $event->request;
+        $response = $event->response;
 
         if ($request->is('laritor/*') || !FilterHelper::recordRequest($request)) {
             return;
@@ -55,10 +55,10 @@ class RequestRecorder extends Recorder
                 'body' => $this->getRequestBody($request),
             ],
             'response' => [
-                'status_code' => $event->response->status(),
-                'size' => strlen($event->response->getContent()),
-                'headers' => $this->getResponseHeaders($event->response),
-                'body' => $this->getResponseBody($event->response),
+                'status_code' => $this->getStatusCode($response),
+                'size' => strlen($response->getContent()),
+                'headers' => $this->getResponseHeaders($response),
+                'body' => $this->getResponseBody($response),
             ],
             'user' => [
                 'authenticated' => $this->getAuthenticatedUser(),
@@ -77,6 +77,15 @@ class RequestRecorder extends Recorder
             ],
             'custom_context' => $this->getContext($request),
         ]);
+    }
+
+    private function getStatusCode($response)
+    {
+        if ($response instanceof \Symfony\Component\HttpFoundation\Response) {
+            return $response->getStatusCode();
+        }
+
+        return $response->status();
     }
 
     private function getContext($request)
