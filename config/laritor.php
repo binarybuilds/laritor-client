@@ -31,7 +31,7 @@ return [
 
     'requests' => [
 
-        'query_string' => env('LARITOR_RECORD_QUERY_STRING', false),
+        'query_string' => env('LARITOR_RECORD_QUERY_STRING', true),
 
         'body' => env('LARITOR_RECORD_REQUEST_BODY', false),
 
