@@ -5,6 +5,7 @@ namespace BinaryBuilds\LaritorClient\Recorders;
 use BinaryBuilds\LaritorClient\Helpers\DataHelper;
 use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Foundation\Http\Events\RequestHandled;
+use Illuminate\Support\Str;
 
 class RequestRecorder extends Recorder
 {
@@ -74,8 +75,27 @@ class RequestRecorder extends Recorder
                 'controller_method' => isset($controller[1]) ? $controller[1] : 'closure',
                 'method' => $request->method(),
             ],
-            'custom_context' => DataHelper::getRedactedContext(),
+            'custom_context' => $this->getContext($request),
         ]);
+    }
+
+    private function getContext($request)
+    {
+        $context = [];
+
+        if (ltrim($request->path(), '/') === 'livewire/update') {
+            $components = $request->input('components', []);
+            if (is_array($components)) {
+                foreach ($components as $component) {
+                    if (isset($component['snapshot'])) {
+                        $snapshot = json_decode($component['snapshot'], true);
+                        $context['livewire-components'][] = isset($snapshot['memo']['name']) ? $snapshot['memo']['name'] : '';
+                    }
+                }
+            }
+        }
+
+        return array_merge($context, DataHelper::getRedactedContext());
     }
 
     protected function getRequestBody($request)
@@ -139,6 +159,22 @@ class RequestRecorder extends Recorder
 
     private function getUrl($request)
     {
+        if (ltrim($request->path(), '/') === 'livewire/update') {
+            $url = '';
+            $fragments = parse_url($request->headers->get('referer'));
+            if (isset($fragments['path'])) {
+                $url = rtrim($fragments['path'], '/');
+            }
+
+            if (config('laritor.requests.query_string') && isset($fragments['query'])) {
+                $url .= '?' . $fragments['query'];
+            }
+
+            if ($url) {
+                return $url;
+            }
+        }
+
         $query = '';
         if (config('laritor.requests.query_string')) {
             $query = $request->getQueryString();
