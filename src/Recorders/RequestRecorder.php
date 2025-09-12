@@ -83,7 +83,7 @@ class RequestRecorder extends Recorder
     {
         $context = [];
 
-        if (Str::ltrim($request->path(), '/') === 'livewire/update') {
+        if (ltrim($request->path(), '/') === 'livewire/update') {
             $components = $request->input('components', []);
             if (is_array($components)) {
                 foreach ($components as $component) {
@@ -159,7 +159,7 @@ class RequestRecorder extends Recorder
 
     private function getUrl($request)
     {
-        if (Str::ltrim($request->path(), '/') === 'livewire/update') {
+        if (ltrim($request->path(), '/') === 'livewire/update') {
             $url = '';
             $fragments = parse_url($request->headers->get('referer'));
             if (isset($fragments['path'])) {
