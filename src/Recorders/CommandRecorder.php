@@ -84,8 +84,9 @@ class CommandRecorder extends Recorder
      */
     public function finish(CommandFinished $event)
     {
-        $command = $this->laritor->getEvents(static::$eventType);
-        $command = isset($command[0]) ? $command[0] : null;
+        $command = collect(
+            $this->laritor->getEvents(static::$eventType)
+        )->firstWhere('completed_at', '=',null);
 
         if ($command) {
             $startTime = defined('LARAVEL_START') ? LARAVEL_START : 0;

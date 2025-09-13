@@ -11,6 +11,8 @@ use BinaryBuilds\LaritorClient\Recorders\SchedulerRecorder;
 
 class Laritor
 {
+    public const VERSION = '2.2.6';
+
     /**
      * @var array
      */
@@ -138,9 +140,13 @@ class Laritor
      * @param $name
      * @return array|mixed
      */
-    public function getEvents($name)
+    public function getEvents($name = null)
     {
-        return isset($this->events[$name]) ? $this->events[$name] : [];
+        if ($name) {
+            return isset($this->events[$name]) ? $this->events[$name] : [];
+        }
+
+        return $this->events;
     }
 
     /**
