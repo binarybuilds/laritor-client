@@ -53,6 +53,7 @@ class Recorder
                     'env' => !empty(config('laritor.env')) ? config('laritor.env') : config('app.env'),
                     'version' => app()->version(),
                     'php' => phpversion(),
+                    'client' => Laritor::VERSION,
                     'data' => [
                         'exception' => $exception->getMessage(),
                         'trace' => $exception->getTraceAsString()
