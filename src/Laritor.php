@@ -55,6 +55,13 @@ class Laritor
         $this->started = defined('LARAVEL_START') ? LARAVEL_START : request()->server('REQUEST_TIME_FLOAT');
     }
 
+    public function octaneRequestStarted()
+    {
+        $this->reset();
+        $this->context = 'MIDDLEWARE';
+        $this->started = microtime(true);
+    }
+
     public function booted()
     {
         $this->booted = $this->started ? $this->getDurationFrom($this->started) : 0;
