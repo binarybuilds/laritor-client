@@ -36,18 +36,8 @@ class LaritorServiceProvider extends ServiceProvider
             return;
         }
 
-        if (method_exists($this->app, 'scoped')) {
-            $this->app->scoped(Laritor::class, function () {
-                return new Laritor();
-            });
-
-            $this->app->scoped(CommandOutput::class, function () {
-                return new CommandOutput();
-            });
-        } else {
-            $this->app->singleton(Laritor::class);
-            $this->app->singleton(CommandOutput::class);
-        }
+        $this->app->singleton(Laritor::class);
+        $this->app->singleton(CommandOutput::class);
 
         $this->registerRecorders();
 
@@ -143,17 +133,13 @@ class LaritorServiceProvider extends ServiceProvider
         }
 
         if (
-            class_exists(\Laravel\Octane\Events\RequestReceived::class) &&
-            class_exists(\Laravel\Octane\Events\TaskReceived::class) &&
-            class_exists(\Laravel\Octane\Events\TickReceived::class)
+            class_exists(\Laravel\Octane\Events\RequestReceived::class)
         ) {
             Event::listen([
-                \Laravel\Octane\Events\RequestReceived::class,
-                \Laravel\Octane\Events\TaskReceived::class,
-                \Laravel\Octane\Events\TickReceived::class
+                \Laravel\Octane\Events\RequestReceived::class
             ], function (){
-                app(Laritor::class)->sendEvents();
-            } );
+                app(Laritor::class)->octaneRequestStarted();
+            });
         }
 
         $this->app->terminating(function (){

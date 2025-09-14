@@ -11,7 +11,7 @@ use BinaryBuilds\LaritorClient\Recorders\SchedulerRecorder;
 
 class Laritor
 {
-    public const VERSION = '2.2.6';
+    public const VERSION = '2.3.0';
 
     /**
      * @var array
@@ -53,6 +53,13 @@ class Laritor
     public function started()
     {
         $this->started = defined('LARAVEL_START') ? LARAVEL_START : request()->server('REQUEST_TIME_FLOAT');
+    }
+
+    public function octaneRequestStarted()
+    {
+        $this->reset();
+        $this->context = 'MIDDLEWARE';
+        $this->started = microtime(true);
     }
 
     public function booted()
