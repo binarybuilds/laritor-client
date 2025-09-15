@@ -7,6 +7,7 @@ use BinaryBuilds\LaritorClient\Helpers\DataHelper;
 use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Console\Events\CommandStarting;
+use Illuminate\Support\Str;
 
 /**
  * Class CommandRecorder
@@ -111,7 +112,7 @@ class CommandRecorder extends Recorder
      */
     public function ignore($command)
     {
-        return in_array($command, [
+        return Str::startsWith($command, 'horizon') || in_array($command, [
             'db:seed',
             'optimize',
             'schedule:work',
