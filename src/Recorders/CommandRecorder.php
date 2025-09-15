@@ -112,7 +112,7 @@ class CommandRecorder extends Recorder
      */
     public function ignore($command)
     {
-        return Str::startsWith($command, 'horizon') || in_array($command, [
+        return Str::startsWith($command, ['horizon','pulse:']) || in_array($command, [
             'db:seed',
             'optimize',
             'schedule:work',
