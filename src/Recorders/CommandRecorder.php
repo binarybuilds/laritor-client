@@ -124,6 +124,7 @@ class CommandRecorder extends Recorder
             'config:cache',
             'queue:work',
             'queue:listen',
+            'octane:install',
             'laritor:sync',
             'laritor:send-metrics'
         ]);
