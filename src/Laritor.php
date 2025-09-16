@@ -11,7 +11,7 @@ use BinaryBuilds\LaritorClient\Recorders\SchedulerRecorder;
 
 class Laritor
 {
-    public const VERSION = '2.3.1';
+    public const VERSION = '2.3.2';
 
     /**
      * @var array
@@ -165,6 +165,9 @@ class Laritor
             'app' => url('/'),
             'env' => !empty(config('laritor.env')) ? config('laritor.env') : config('app.env'),
             'event_at' => now()->toDateTimeString(),
+            'version' => app()->version(),
+            'php' => phpversion(),
+            'client_version' => self::VERSION,
             'server' => [
                 'host' => !empty(config('laritor.server_name')) ? config('laritor.server_name') : gethostname(),
             ],
@@ -207,6 +210,7 @@ class Laritor
     {
         rescue(function () {
             Event::fakeFor(function (){
+                $this->cleanupEvents();
                 if ($this->shouldSendEvents()) {
                     $this->callApi();
                 }
@@ -214,6 +218,13 @@ class Laritor
                 $this->reset();
             });
         }, null, false);
+    }
+
+    public function cleanupEvents()
+    {
+        $this->events['outbound_requests'] = array_filter($this->events['outbound_requests'], function ($event) {
+            return !empty($event['completed_at']);
+        });
     }
 
     /**
@@ -250,6 +261,7 @@ class Laritor
                 'app' => url('/'),
                 'version' => $app->version(),
                 'php' => phpversion(),
+                'client_version' => self::VERSION,
                 'server' => [
                     'host' => !empty(config('laritor.server_name')) ? config('laritor.server_name') : gethostname(),
                     'os' => PHP_OS,
