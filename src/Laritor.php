@@ -222,9 +222,11 @@ class Laritor
 
     public function cleanupEvents()
     {
-        $this->events['outbound_requests'] = array_filter($this->events['outbound_requests'], function ($event) {
-            return !empty($event['completed_at']);
-        });
+        if (isset($this->events['outbound_requests'])) {
+            $this->events['outbound_requests'] = array_filter($this->events['outbound_requests'], function ($event) {
+                return !empty($event['completed_at']);
+            });
+        }
     }
 
     /**
