@@ -7,7 +7,6 @@ use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Str;
 use BinaryBuilds\LaritorClient\Helpers\FileHelper;
-use Illuminate\Foundation\Exceptions\Handler as LaravelExceptionHandler;
 
 class ExceptionRecorder extends Recorder
 {
@@ -75,7 +74,7 @@ class ExceptionRecorder extends Recorder
 
     public static function registerRecorder()
     {
-        app()->afterResolving(ExceptionHandler::class, function (LaravelExceptionHandler $handler){
+        app()->afterResolving(ExceptionHandler::class, function ($handler){
             $handler->reportable(function (\Throwable $exception){
                 app(ExceptionRecorder::class)->handle($exception);
             });

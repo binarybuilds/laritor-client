@@ -29,6 +29,7 @@ class RequestRecorder extends Recorder
     public function trackEvent($event)
     {
         $request = $event->request;
+        $response = $event->response;
 
         if ($request->is('laritor/*') || !FilterHelper::recordRequest($request)) {
             return;
@@ -38,7 +39,7 @@ class RequestRecorder extends Recorder
 
         $this->laritor->responseRenderCompleted(isset($event->response->exception) ? $event->response->exception : null);
 
-        $startTime = defined('LARAVEL_START') ? LARAVEL_START : $event->request->server('REQUEST_TIME_FLOAT');
+        $startTime = $this->laritor->getDurationFromStart();
         $duration =  $startTime ? floor((microtime(true) - $startTime) * 1000) : null;
 
         /** @phpstan-ignore-next-line  */
@@ -54,10 +55,10 @@ class RequestRecorder extends Recorder
                 'body' => $this->getRequestBody($request),
             ],
             'response' => [
-                'status_code' => $event->response->status(),
-                'size' => strlen($event->response->getContent()),
-                'headers' => $this->getResponseHeaders($event->response),
-                'body' => $this->getResponseBody($event->response),
+                'status_code' => $this->getStatusCode($response),
+                'size' => strlen($response->getContent()),
+                'headers' => $this->getResponseHeaders($response),
+                'body' => $this->getResponseBody($response),
             ],
             'user' => [
                 'authenticated' => $this->getAuthenticatedUser(),
@@ -74,8 +75,36 @@ class RequestRecorder extends Recorder
                 'controller_method' => isset($controller[1]) ? $controller[1] : 'closure',
                 'method' => $request->method(),
             ],
-            'custom_context' => DataHelper::getRedactedContext(),
+            'custom_context' => $this->getContext($request),
         ]);
+    }
+
+    private function getStatusCode($response)
+    {
+        if (method_exists($response, 'status')) {
+            return $response->status();
+        }
+
+        return $response->getStatusCode();
+    }
+
+    private function getContext($request)
+    {
+        $context = [];
+
+        if (ltrim($request->path(), '/') === 'livewire/update') {
+            $components = $request->input('components', []);
+            if (is_array($components)) {
+                foreach ($components as $component) {
+                    if (isset($component['snapshot'])) {
+                        $snapshot = json_decode($component['snapshot'], true);
+                        $context['livewire-components'][] = isset($snapshot['memo']['name']) ? $snapshot['memo']['name'] : '';
+                    }
+                }
+            }
+        }
+
+        return array_merge($context, DataHelper::getRedactedContext());
     }
 
     protected function getRequestBody($request)
@@ -139,6 +168,22 @@ class RequestRecorder extends Recorder
 
     private function getUrl($request)
     {
+        if (ltrim($request->path(), '/') === 'livewire/update') {
+            $url = '';
+            $fragments = parse_url($request->headers->get('referer'));
+            if (isset($fragments['path'])) {
+                $url = rtrim($fragments['path'], '/');
+            }
+
+            if (config('laritor.requests.query_string') && isset($fragments['query'])) {
+                $url .= '?' . $fragments['query'];
+            }
+
+            if ($url) {
+                return $url;
+            }
+        }
+
         $query = '';
         if (config('laritor.requests.query_string')) {
             $query = $request->getQueryString();

@@ -11,7 +11,7 @@ class FileHelper
     /**
      * @var \SplFileObject
      */
-    private $file;
+    private $file = null;
 
     /** @var int */
     private $offset = 1;
@@ -78,6 +78,10 @@ class FileHelper
 
     public function getLastLineNumber()
     {
+        if (!$this->file) {
+            return 0;
+        }
+
         $this->file->seek(PHP_INT_MAX);
 
         return $this->file->key() + 1;
@@ -116,6 +120,10 @@ class FileHelper
 
     public function getLine($lineNumber)
     {
+        if (!$this->file) {
+            return '';
+        }
+
         $this->file->seek($lineNumber);
         return $this->file->current();
     }

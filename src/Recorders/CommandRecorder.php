@@ -7,6 +7,7 @@ use BinaryBuilds\LaritorClient\Helpers\DataHelper;
 use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Console\Events\CommandStarting;
+use Illuminate\Support\Str;
 
 /**
  * Class CommandRecorder
@@ -84,11 +85,12 @@ class CommandRecorder extends Recorder
      */
     public function finish(CommandFinished $event)
     {
-        $command = $this->laritor->getEvents(static::$eventType);
-        $command = isset($command[0]) ? $command[0] : null;
+        $command = collect(
+            $this->laritor->getEvents(static::$eventType)
+        )->firstWhere('completed_at', '=',null);
 
         if ($command) {
-            $startTime = defined('LARAVEL_START') ? LARAVEL_START : 0;
+            $startTime = $this->laritor->getDurationFromStart();
             $duration =  $startTime ? floor((microtime(true) - $startTime) * 1000) : 0;
 
             $command['duration'] = $duration;
@@ -110,7 +112,7 @@ class CommandRecorder extends Recorder
      */
     public function ignore($command)
     {
-        return in_array($command, [
+        return Str::startsWith($command, ['horizon','pulse:']) || in_array($command, [
             'db:seed',
             'optimize',
             'schedule:work',
@@ -122,6 +124,7 @@ class CommandRecorder extends Recorder
             'config:cache',
             'queue:work',
             'queue:listen',
+            'octane:install',
             'laritor:sync',
             'laritor:send-metrics'
         ]);
