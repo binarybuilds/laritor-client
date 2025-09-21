@@ -7,8 +7,6 @@ use BinaryBuilds\LaritorClient\Override\LaritorOverride;
 use BinaryBuilds\LaritorClient\Redactor\DataRedactor;
 use BinaryBuilds\LaritorClient\Redactor\DefaultRedactor;
 use Illuminate\Foundation\Application;
-use Illuminate\Routing\Contracts\CallableDispatcher;
-use Illuminate\Routing\ControllerDispatcher;
 use Illuminate\Routing\Events\PreparingResponse;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
@@ -17,7 +15,6 @@ use BinaryBuilds\LaritorClient\Commands\SyncCommand;
 use BinaryBuilds\LaritorClient\Commands\HealthCheckMakeCommand;
 use BinaryBuilds\LaritorClient\Commands\QueueHealthCheckMakeCommand;
 use BinaryBuilds\LaritorClient\Commands\SendServerMetricsCommand;
-use Illuminate\Routing\Contracts\ControllerDispatcher as ControllerDispatcherContract;
 
 /**
  * Class LaritorServiceProvider
@@ -36,18 +33,8 @@ class LaritorServiceProvider extends ServiceProvider
             return;
         }
 
-        if (method_exists($this->app, 'scoped')) {
-            $this->app->scoped(Laritor::class, function () {
-                return new Laritor();
-            });
-
-            $this->app->scoped(CommandOutput::class, function () {
-                return new CommandOutput();
-            });
-        } else {
-            $this->app->singleton(Laritor::class);
-            $this->app->singleton(CommandOutput::class);
-        }
+        $this->app->singleton(Laritor::class);
+        $this->app->singleton(CommandOutput::class);
 
         $this->registerRecorders();
 
@@ -123,17 +110,13 @@ class LaritorServiceProvider extends ServiceProvider
         }
 
         if (
-            class_exists(\Laravel\Octane\Events\RequestReceived::class) &&
-            class_exists(\Laravel\Octane\Events\TaskReceived::class) &&
-            class_exists(\Laravel\Octane\Events\TickReceived::class)
+            class_exists(\Laravel\Octane\Events\RequestReceived::class)
         ) {
             Event::listen([
-                \Laravel\Octane\Events\RequestReceived::class,
-                \Laravel\Octane\Events\TaskReceived::class,
-                \Laravel\Octane\Events\TickReceived::class
+                \Laravel\Octane\Events\RequestReceived::class
             ], function (){
-                app(Laritor::class)->sendEvents();
-            } );
+                app(Laritor::class)->octaneRequestStarted();
+            });
         }
 
         $kernel = $this->app->make( \Illuminate\Contracts\Http\Kernel::class);

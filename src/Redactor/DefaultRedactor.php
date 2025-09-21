@@ -6,12 +6,12 @@ use Illuminate\Support\Facades\Auth;
 
 class DefaultRedactor implements DataRedactor
 {
-    public function redactEmailAddress(string $address): string
+    public function redactEmailAddress($address)
     {
         return $address;
     }
 
-    public function redactString(string $text): string
+    public function redactString($text)
     {
         $patterns = [
 
@@ -76,7 +76,7 @@ class DefaultRedactor implements DataRedactor
         return $redacted;
     }
 
-    public function redactArrayValue(string $key, string $text): string
+    public function redactArrayValue($key, $text)
     {
         $sensitiveKeys = [
             'authorization', 'proxy-authorization', 'cookie', 'set-cookie', 'x-api-key',
@@ -94,7 +94,7 @@ class DefaultRedactor implements DataRedactor
             'encryption_key', 'aws_secret_access_key', 'gcp_private_key', 'azure_secret',
         ];
 
-        if (in_array(strtolower($key), $sensitiveKeys)) {
+        if (in_array(strtolower((string)$key), $sensitiveKeys)) {
             return '*****';
         }
 
@@ -112,12 +112,12 @@ class DefaultRedactor implements DataRedactor
         ];
     }
 
-    public function redactIPAddress($ip): string
+    public function redactIPAddress($ip)
     {
         return $ip;
     }
 
-    public function redactUserAgent($userAgent): string
+    public function redactUserAgent($userAgent)
     {
         return $userAgent;
     }

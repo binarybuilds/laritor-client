@@ -11,6 +11,8 @@ use BinaryBuilds\LaritorClient\Recorders\SchedulerRecorder;
 
 class Laritor
 {
+    public const VERSION = '1.5.1';
+
     /**
      * @var array
      */
@@ -51,6 +53,13 @@ class Laritor
     public function started()
     {
         $this->started = defined('LARAVEL_START') ? LARAVEL_START : request()->server('REQUEST_TIME_FLOAT');
+    }
+
+    public function octaneRequestStarted()
+    {
+        $this->reset();
+        $this->context = 'MIDDLEWARE';
+        $this->started = microtime(true);
     }
 
     public function booted()
@@ -101,6 +110,11 @@ class Laritor
         return floor((microtime(true) - $time) * 1000);
     }
 
+    public function getDurationFromStart()
+    {
+        return $this->getDurationFrom($this->started);
+    }
+
     /**
      * @param $name
      * @param $event
@@ -138,9 +152,13 @@ class Laritor
      * @param $name
      * @return array|mixed
      */
-    public function getEvents($name)
+    public function getEvents($name = null)
     {
-        return isset($this->events[$name]) ? $this->events[$name] : [];
+        if ($name) {
+            return isset($this->events[$name]) ? $this->events[$name] : [];
+        }
+
+        return $this->events;
     }
 
     /**
@@ -152,6 +170,9 @@ class Laritor
             'app' => url('/'),
             'env' => !empty(config('laritor.env')) ? config('laritor.env') : config('app.env'),
             'event_at' => now()->toDateTimeString(),
+            'version' => app()->version(),
+            'php' => phpversion(),
+            'client_version' => self::VERSION,
             'server' => [
                 'host' => !empty(config('laritor.server_name')) ? config('laritor.server_name') : gethostname(),
             ],
@@ -194,6 +215,7 @@ class Laritor
     {
         rescue(function () {
             Event::fakeFor(function (){
+                $this->cleanupEvents();
                 if ($this->shouldSendEvents()) {
                     $this->callApi();
                 }
@@ -201,6 +223,15 @@ class Laritor
                 $this->reset();
             });
         }, null, false);
+    }
+
+    public function cleanupEvents()
+    {
+        if (isset($this->events['outbound_requests'])) {
+            $this->events['outbound_requests'] = array_filter($this->events['outbound_requests'], function ($event) {
+                return !empty($event['completed_at']);
+            });
+        }
     }
 
     /**
@@ -237,6 +268,7 @@ class Laritor
                 'app' => url('/'),
                 'version' => $app->version(),
                 'php' => phpversion(),
+                'client_version' => self::VERSION,
                 'server' => [
                     'host' => !empty(config('laritor.server_name')) ? config('laritor.server_name') : gethostname(),
                     'os' => PHP_OS,

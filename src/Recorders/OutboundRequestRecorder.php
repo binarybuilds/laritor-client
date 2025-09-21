@@ -53,6 +53,7 @@ class OutboundRequestRecorder extends Recorder
 
         $this->laritor->pushEvent(static::$eventType, [
             'started_at' => now(),
+            'completed_at' => null,
             'url' => $event->request->url(),
             'method' => $event->request->method(),
             'status' => 'sent',
