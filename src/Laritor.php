@@ -110,6 +110,11 @@ class Laritor
         return floor((microtime(true) - $time) * 1000);
     }
 
+    public function getDurationFromStart()
+    {
+        return $this->getDurationFrom($this->started);
+    }
+
     /**
      * @param $name
      * @param $event
