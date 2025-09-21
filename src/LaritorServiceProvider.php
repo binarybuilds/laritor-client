@@ -7,8 +7,6 @@ use BinaryBuilds\LaritorClient\Override\LaritorOverride;
 use BinaryBuilds\LaritorClient\Redactor\DataRedactor;
 use BinaryBuilds\LaritorClient\Redactor\DefaultRedactor;
 use Illuminate\Foundation\Application;
-use Illuminate\Routing\Contracts\CallableDispatcher;
-use Illuminate\Routing\ControllerDispatcher;
 use Illuminate\Routing\Events\PreparingResponse;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
@@ -17,7 +15,6 @@ use BinaryBuilds\LaritorClient\Commands\SyncCommand;
 use BinaryBuilds\LaritorClient\Commands\HealthCheckMakeCommand;
 use BinaryBuilds\LaritorClient\Commands\QueueHealthCheckMakeCommand;
 use BinaryBuilds\LaritorClient\Commands\SendServerMetricsCommand;
-use Illuminate\Routing\Contracts\ControllerDispatcher as ControllerDispatcherContract;
 
 /**
  * Class LaritorServiceProvider
