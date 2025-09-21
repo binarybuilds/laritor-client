@@ -39,7 +39,7 @@ class RequestRecorder extends Recorder
 
         $this->laritor->responseRenderCompleted(isset($event->response->exception) ? $event->response->exception : null);
 
-        $startTime = defined('LARAVEL_START') ? LARAVEL_START : $event->request->server('REQUEST_TIME_FLOAT');
+        $startTime = $this->laritor->getDurationFromStart();
         $duration =  $startTime ? floor((microtime(true) - $startTime) * 1000) : null;
 
         /** @phpstan-ignore-next-line  */

@@ -4,13 +4,13 @@ namespace BinaryBuilds\LaritorClient\Redactor;
 
 interface DataRedactor
 {
-    public function redactEmailAddress(string $address): string;
+    public function redactEmailAddress($address);
 
-    public function redactString(string $text): string;
+    public function redactString($text);
 
     public function redactArray(array $array): array;
 
-    public function redactArrayValue(string $key, string $text): string;
+    public function redactArrayValue($key, $text);
 
     public function redactAuthenticatedUser(): array;
 
@@ -18,12 +18,12 @@ interface DataRedactor
      * @param string|null $ip
      * @return string
      */
-    public function redactIPAddress($ip): string;
+    public function redactIPAddress($ip);
 
     /**
      * @param string|null $userAgent
      * @return string
      */
-    public function redactUserAgent($userAgent): string;
+    public function redactUserAgent($userAgent);
 
 }

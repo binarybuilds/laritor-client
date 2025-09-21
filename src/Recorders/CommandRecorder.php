@@ -90,7 +90,7 @@ class CommandRecorder extends Recorder
         )->firstWhere('completed_at', '=',null);
 
         if ($command) {
-            $startTime = defined('LARAVEL_START') ? LARAVEL_START : 0;
+            $startTime = $this->laritor->getDurationFromStart();
             $duration =  $startTime ? floor((microtime(true) - $startTime) * 1000) : 0;
 
             $command['duration'] = $duration;

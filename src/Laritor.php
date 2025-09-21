@@ -11,7 +11,7 @@ use BinaryBuilds\LaritorClient\Recorders\SchedulerRecorder;
 
 class Laritor
 {
-    public const VERSION = '2.3.2';
+    public const VERSION = '2.3.3';
 
     /**
      * @var array
@@ -108,6 +108,11 @@ class Laritor
     public function getDurationFrom($time)
     {
         return floor((microtime(true) - $time) * 1000);
+    }
+
+    public function getDurationFromStart()
+    {
+        return $this->getDurationFrom($this->started);
     }
 
     /**
