@@ -8,6 +8,11 @@ trait SendOutputToLaritor
 {
     private $lastLine = [];
 
+    private function isLaritorEnabled(): bool
+    {
+        return config('laritor.enabled');
+    }
+
     private function addLine($line, $type)
     {
         app(CommandOutput::class)->addLine($line, $type);
@@ -21,15 +26,19 @@ trait SendOutputToLaritor
 
     public function table($headers, $rows, $tableStyle = 'default', array $columnStyles = [])
     {
-        app(CommandOutput::class)->addTable(array_values($headers), array_values($rows));
-        $this->lastLine = ['type' => 'table', 'text' => 'table'];
+        if($this->isLaritorEnabled()) {
+            app(CommandOutput::class)->addTable(array_values($headers), array_values($rows));
+            $this->lastLine = ['type' => 'table', 'text' => 'table'];
+        }
 
         parent::table($headers, $rows, $tableStyle, $columnStyles);
     }
 
     public function info($string, $verbosity = null)
     {
-        $this->addLine($string, 'info');
+        if ($this->isLaritorEnabled()) {
+            $this->addLine($string, 'info');
+        }
         parent::info($string, $verbosity);
     }
 
@@ -44,6 +53,7 @@ trait SendOutputToLaritor
     public function line($string, $style = null, $verbosity = null)
     {
         if(
+            $this->isLaritorEnabled() &&
             ! (Str::startsWith($string, '*') &&  Str::endsWith($string, '*')) &&
             (!isset($this->lastLine['text']) || $this->lastLine['text'] !== $string)
         ) {
@@ -62,7 +72,7 @@ trait SendOutputToLaritor
      */
     public function comment($string, $verbosity = null)
     {
-        if(!(Str::startsWith($string, '*') &&  Str::endsWith($string, '*')) && $string ) {
+        if( $this->isLaritorEnabled() && !(Str::startsWith($string, '*') &&  Str::endsWith($string, '*')) && $string ) {
             $this->addLine($string, 'comment');
         }
 
@@ -78,7 +88,9 @@ trait SendOutputToLaritor
      */
     public function question($string, $verbosity = null)
     {
-        $this->addLine($string, 'question');
+        if ($this->isLaritorEnabled()) {
+            $this->addLine($string, 'question');
+        }
         parent::question($string, $verbosity);
     }
 
@@ -91,7 +103,9 @@ trait SendOutputToLaritor
      */
     public function error($string, $verbosity = null)
     {
-        $this->addLine($string, 'error');
+        if ($this->isLaritorEnabled()) {
+            $this->addLine($string, 'error');
+        }
         parent::error($string, $verbosity);
     }
 
@@ -104,7 +118,9 @@ trait SendOutputToLaritor
      */
     public function warn($string, $verbosity = null)
     {
-        $this->addLine($string, 'warning');
+        if ($this->isLaritorEnabled()) {
+            $this->addLine($string, 'warning');
+        }
         parent::warn($string, $verbosity);
     }
 
@@ -117,7 +133,9 @@ trait SendOutputToLaritor
      * @phpstan-ignore arguments.count  */
     public function alert($string, $verbosity = null)
     {
-        $this->addLine($string, 'alert');
+        if ($this->isLaritorEnabled()) {
+            $this->addLine($string, 'alert');
+        }
         /** @phpstan-ignore arguments.count */
         parent::alert($string, $verbosity);
     }
@@ -130,8 +148,10 @@ trait SendOutputToLaritor
      * @phpstan-ignore staticMethod.void  */
     public function newLine($count = 1)
     {
-        for ($i = 0; $i < $count; $i++) {
-            $this->addLine('', 'plain');
+        if ($this->isLaritorEnabled()) {
+            for ($i = 0; $i < $count; $i++) {
+                $this->addLine('', 'plain');
+            }
         }
 
         /** @phpstan-ignore return.type */
