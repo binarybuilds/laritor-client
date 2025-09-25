@@ -39,13 +39,13 @@ class RequestRecorder extends Recorder
 
         $this->laritor->responseRenderCompleted(isset($event->response->exception) ? $event->response->exception : null);
 
-        $startTime = $this->laritor->getDurationFromStart();
-        $duration =  $startTime ? floor((microtime(true) - $startTime) * 1000) : null;
+        $duration = $this->laritor->getDurationFromStart();
 
         /** @phpstan-ignore-next-line  */
         $controller = $request->route() ? explode('@', optional($request->route())->getActionName()) : [];
         $this->laritor->pushEvent(static::$eventType, [
             'request' => [
+                'started_at' => now()->subMilliseconds($duration)->format('Y-m-d H:i:s'),
                 'completed_at' => now()->format('Y-m-d H:i:s'),
                 'duration' => $duration,
                 'memory' => round(memory_get_peak_usage(true) / 1024 / 1024, 1),

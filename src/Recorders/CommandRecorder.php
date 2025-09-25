@@ -90,10 +90,7 @@ class CommandRecorder extends Recorder
         )->firstWhere('completed_at', '=',null);
 
         if ($command) {
-            $startTime = $this->laritor->getDurationFromStart();
-            $duration =  $startTime ? floor((microtime(true) - $startTime) * 1000) : 0;
-
-            $command['duration'] = $duration;
+            $command['duration'] = $command['started_at']->diffInMilliseconds();;
             $command['completed_at'] = now()->format('Y-m-d H:i:s');
             $command['started_at'] = $command['started_at']->format('Y-m-d H:i:s');
             $command['code'] = $event->exitCode;
