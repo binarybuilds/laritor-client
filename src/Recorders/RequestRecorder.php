@@ -46,6 +46,7 @@ class RequestRecorder extends Recorder
         $controller = $request->route() ? explode('@', optional($request->route())->getActionName()) : [];
         $this->laritor->pushEvent(static::$eventType, [
             'request' => [
+                'started_at' => now()->subMilliseconds($duration)->format('Y-m-d H:i:s'),
                 'completed_at' => now()->format('Y-m-d H:i:s'),
                 'duration' => $duration,
                 'memory' => round(memory_get_peak_usage(true) / 1024 / 1024, 1),
