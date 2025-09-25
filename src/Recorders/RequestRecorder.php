@@ -40,7 +40,7 @@ class RequestRecorder extends Recorder
         $this->laritor->responseRenderCompleted(isset($event->response->exception) ? $event->response->exception : null);
 
         $startTime = $this->laritor->getDurationFromStart();
-        $duration =  $startTime ? floor((microtime(true) - $startTime) * 1000) : null;
+        $duration =  $startTime ? floor((microtime(true) - $startTime) * 1000) : 0;
 
         /** @phpstan-ignore-next-line  */
         $controller = $request->route() ? explode('@', optional($request->route())->getActionName()) : [];
