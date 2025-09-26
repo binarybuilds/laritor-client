@@ -58,4 +58,6 @@ return [
 
         'response_body' => env('LARITOR_RECORD_OUTBOUND_REQUEST_RESPONSE_BODY', false),
     ],
+
+    'whitelisted_vendors' => env('LARITOR_WHITELISTED_VENDORS', ''),
 ];

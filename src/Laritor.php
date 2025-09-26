@@ -11,7 +11,7 @@ use BinaryBuilds\LaritorClient\Recorders\SchedulerRecorder;
 
 class Laritor
 {
-    public const VERSION = '2.3.5';
+    public const VERSION = '2.3.6';
 
     /**
      * @var array
