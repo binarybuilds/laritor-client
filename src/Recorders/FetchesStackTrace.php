@@ -21,7 +21,11 @@ trait FetchesStackTrace
                 return false;
             }
 
-            return ! Str::contains($frame['file'], $this->ignoredPaths());
+            if (Str::contains($frame['file'], 'vendor/')) {
+                return Str::contains($frame['file'], $this->whitelistedVendors());
+            }
+
+            return true;
         });
     }
 
@@ -30,24 +34,12 @@ trait FetchesStackTrace
      *
      * @return array
      */
-    protected function ignoredPaths(): array
+    protected function whitelistedVendors(): array
     {
-        return [
-            'artisan','laritor/', base_path('vendor'.DIRECTORY_SEPARATOR.$this->ignoredVendorPath())
-        ];
-    }
-
-    /**
-     * Choose the frame outside of either Telescope / Laravel or all packages.
-     *
-     * @return string|null
-     */
-    protected function ignoredVendorPath()
-    {
-        if (! ($this->options['ignore_packages'] ?? true)) {
-            return 'laravel';
-        }
-
-        return '';
+        return array_map(function ($path) {
+            return 'vendor/'.$path;
+        }, array_merge(['laravel/nova'],
+            explode(',', config('laritor.whitelisted_vendors', ''))
+        ));
     }
 }
