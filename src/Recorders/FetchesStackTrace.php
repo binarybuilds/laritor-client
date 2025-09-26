@@ -36,10 +36,10 @@ trait FetchesStackTrace
      */
     protected function whitelistedVendors(): array
     {
+        $whitelist = config('laritor.whitelisted_vendors', '') ? explode(',', config('laritor.whitelisted_vendors', '')) : [];
+
         return array_map(function ($path) {
             return 'vendor/'.$path;
-        }, array_merge(['laravel/nova'],
-            explode(',', config('laritor.whitelisted_vendors', ''))
-        ));
+        }, array_merge(['laravel/nova'], $whitelist));
     }
 }
