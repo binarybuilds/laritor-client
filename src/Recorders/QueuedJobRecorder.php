@@ -81,6 +81,7 @@ class QueuedJobRecorder extends Recorder
 
     public function processing(JobProcessing $event)
     {
+        $this->laritor->reset();
         $this->laritor->setContext('JOB');
         $this->laritor->pushEvent(static::$eventType, [
             'connection' => $event->connectionName,
