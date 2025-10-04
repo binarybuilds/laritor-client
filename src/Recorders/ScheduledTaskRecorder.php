@@ -127,6 +127,7 @@ class ScheduledTaskRecorder extends Recorder
 
                 if (
                     $task['task'] === ( $event instanceof CallbackEvent ? 'Closure' : $event->command)
+                    && $task['status'] === 'started'
                 ) {
                     $task['status'] = $status;
                     $task['duration'] = $task['started_at']->diffInMilliseconds();
