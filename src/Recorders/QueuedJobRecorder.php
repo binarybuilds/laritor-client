@@ -100,13 +100,18 @@ class QueuedJobRecorder extends Recorder
      */
     public function complete($event)
     {
-        $events = $this->laritor->getEvents(static::$eventType);
+        $job = null;
+        foreach ($this->laritor->getEvents(static::$eventType) as $jobEvent) {
+            if (isset($jobEvent['id']) && $jobEvent['id'] === $event->job->getJobId()) {
+                $job = $jobEvent;
+                break;
+            }
+        }
 
-        if (!isset($events[0])) {
+        if (empty($job)) {
             return;
         }
 
-        $job = $events[0];
         $start = Carbon::parse($job['started_at']);
         $job['duration'] = $start->diffInMilliseconds();
         $job['started_at'] = $start->toDateTimeString();
