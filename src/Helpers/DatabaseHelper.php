@@ -73,7 +73,13 @@ class DatabaseHelper
     private function getTablesAndComments($driver, $databaseName)
     {
         if ($driver === 'pgsql') {
-            return DB::select("SELECT obj_description(oid) AS comment, relname AS table_name FROM pg_class");
+            return DB::select(
+                "SELECT c.relname AS table_name, obj_description(c.oid) AS comment ".
+                "FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace ".
+                "WHERE c.relkind = 'r' AND ".
+                "n.nspname NOT IN ('pg_catalog', 'information_schema', 'pg_toast') ".
+                "ORDER BY n.nspname, c.relname"
+            );
         } elseif (in_array($driver, ['mysql','mariadb','singlestore'])) {
             return DB::select("SELECT TABLE_COMMENT AS comment, TABLE_NAME AS table_name FROM information_schema.TABLES WHERE TABLE_SCHEMA = ? ", [$databaseName]);
         } elseif ($driver === 'sqlite') {
@@ -112,11 +118,10 @@ class DatabaseHelper
     private function getColumns($driver, $tableName)
     {
         if ($driver === 'pgsql') {
-            return DB::select("
-            SELECT
-                pgc.column_name   AS Field,
-                pgd.description   AS Comment,
-                pgc.data_type     AS Type,
+            return DB::select("SELECT
+                pgc.column_name   AS \"Field\",
+                pgd.description   AS \"Comment\",
+                pgc.data_type     AS \"Type\",
                 pgc.is_nullable = 'YES' AS \"Null\",
                 pgc.column_default AS \"Default\",
                 (pgc.ordinal_position = ANY (
@@ -210,8 +215,7 @@ class DatabaseHelper
     {
         $indexes = [];
         if ($driver === 'pgsql') {
-            $pgIndexes = DB::select("SQL
-            SELECT
+            $pgIndexes = DB::select("SELECT
               i.relname           AS indexname,
               ix.indisunique      AS unique,
               a.attname           AS column_name,
