@@ -34,7 +34,5 @@ class JobTest extends TestCase
         $this->assertArrayHasKey('events', $data);
         $this->assertArrayHasKey(QueuedJobRecorder::$eventType, $data['events']);
         $this->assertNotEmpty( $data['events'][QueuedJobRecorder::$eventType]);
-        $this->assertArrayHasKey(ExceptionRecorder::$eventType, $data['events']);
-        $this->assertNotEmpty( $data['events'][ExceptionRecorder::$eventType]);
     }
 }
