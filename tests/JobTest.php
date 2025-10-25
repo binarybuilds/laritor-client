@@ -29,6 +29,9 @@ class JobTest extends TestCase
         $this->assertFileExists($file);
 
         $data = json_decode(file_get_contents($file), true);
+
+        var_dump($data);
+
         $this->assertIsArray($data, 'Payload is not valid JSON');
         $this->assertArrayHasKey('events', $data);
         $this->assertArrayHasKey(QueuedJobRecorder::$eventType, $data['events']);
