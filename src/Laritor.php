@@ -313,6 +313,10 @@ class Laritor
      */
     public function shouldSendEvents()
     {
+        if (empty($this->events)) {
+            return false;
+        }
+
         try {
             $timeout = trim(file_get_contents(storage_path('laritor-timeout.txt')));
 
