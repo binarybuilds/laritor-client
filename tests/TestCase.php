@@ -128,12 +128,17 @@ abstract class TestCase extends Orchestra
         });
 
         $app['router']->get('/laritor-failed-job', function () {
-            dispatch(function (){
-                /**
-                 * @phpstan-ignore-next-line
-                 */
-                return $invalid;
-            });
+            try{
+                dispatch(function (){
+                    /**
+                     * @phpstan-ignore-next-line
+                     */
+                    return $invalid;
+                });
+            } catch (\Throwable $e) {
+                return response('NOT OK', 500);
+            }
+
             return response('OK', 200);
         });
     }

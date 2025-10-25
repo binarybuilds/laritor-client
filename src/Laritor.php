@@ -149,7 +149,7 @@ class Laritor
         return $this;
     }
 
-    public function addCustomLog(string $type, string $level, string $message, array $context = [], Carbon $written_at = null)
+    public function addCustomLog(string $type, string $level, string $message, array $context = [], ?Carbon $written_at = null)
     {
         $this->events[LogRecorder::$eventType][] = [
             'level' => $level,
