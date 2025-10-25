@@ -19,4 +19,9 @@ class TestOverride extends DefaultOverride
 
         return true;
     }
+
+    public function recordException($exception): bool
+    {
+        return !request()->is('laritor-failed-job');
+    }
 }
