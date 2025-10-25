@@ -2,6 +2,8 @@
 
 namespace BinaryBuilds\LaritorClient;
 
+use BinaryBuilds\LaritorClient\Recorders\LogRecorder;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Http;
@@ -145,6 +147,17 @@ class Laritor
     {
         $this->events[$name] = $events;
         return $this;
+    }
+
+    public function addCustomLog(string $type, string $level, string $message, array $context = [], Carbon $written_at = null)
+    {
+        $this->events[LogRecorder::$eventType][] = [
+            'level' => $level,
+            'message' => $message,
+            'log_context' => $context,
+            'occurred_at' => $written_at ? $written_at->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'),
+            'context' => $type
+        ];
     }
 
     public function removeScheduler()
@@ -308,19 +321,6 @@ class Laritor
             }
 
         } catch (\Throwable $exception) {}
-
-        $hasOccurrence = false;
-
-        foreach ($this->events as $type => $event) {
-            if (in_array($type, ['requests', 'commands', 'scheduler', 'scheduled_tasks', 'jobs','server_stats'])) {
-                $hasOccurrence = true;
-                break;
-            }
-        }
-
-        if (! $hasOccurrence) {
-            return false;
-        }
 
         if (app()->runningInConsole() || ! $this->isRateLimiterEnabled() ) {
             return true;
