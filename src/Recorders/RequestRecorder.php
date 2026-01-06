@@ -159,11 +159,21 @@ class RequestRecorder extends Recorder
     {
         $user = DataHelper::getRedactedUser();
 
-        return [
-            'id' => isset($user['id']) ? $user['id'] : null,
-            'name' =>  isset($user['name']) ? $user['name'] : null,
-            'email' =>  isset($user['email']) ? $user['email'] : null,
-        ];
+        $user = is_array($user) ? $user : [];
+
+        if (!isset($user['id'])) {
+            $user['id'] = null;
+        }
+
+        if (!isset($user['name'])) {
+            $user['name'] = null;
+        }
+
+        if (!isset($user['email'])) {
+            $user['email'] = null;
+        }
+
+        return $user;
     }
 
     private function getUrl($request)
