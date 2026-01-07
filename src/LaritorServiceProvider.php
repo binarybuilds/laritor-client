@@ -34,7 +34,7 @@ class LaritorServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        if ( ! config('laritor.enabled') || !config('laritor.keys.backend') ) {
+        if ( ! config('laritor.enabled') ) {
             return;
         }
 
