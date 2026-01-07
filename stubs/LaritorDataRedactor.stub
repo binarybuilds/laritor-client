@@ -1,0 +1,39 @@
+<?php
+
+namespace {{ namespace }};
+
+use BinaryBuilds\LaritorClient\Redactor\DefaultRedactor;
+use Illuminate\Support\Facades\Auth;
+
+class LaritorDataRedactor extends DefaultRedactor
+{
+    public function redactEmailAddress($address): string
+    {
+        return parent::redactEmailAddress($address);
+    }
+
+    public function redactString($text): string
+    {
+        return parent::redactString($text);
+    }
+
+    public function redactArrayValue($key, $text): string
+    {
+        return parent::redactArrayValue($key, $text);
+    }
+
+    public function redactAuthenticatedUser() : array
+    {
+        return parent::redactAuthenticatedUser();
+    }
+
+    public function redactIPAddress($ip): string
+    {
+        return parent::redactIPAddress($ip);
+    }
+
+    public function redactUserAgent($userAgent): string
+    {
+        return parent::redactUserAgent($userAgent);
+    }
+}

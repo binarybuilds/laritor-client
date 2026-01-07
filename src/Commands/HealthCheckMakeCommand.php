@@ -46,7 +46,7 @@ class HealthCheckMakeCommand extends GeneratorCommand
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace.'\Laritor';
+        return $rootNamespace.'\Laritor\HealthChecks';
     }
 
     /**

@@ -2,6 +2,8 @@
 
 namespace BinaryBuilds\LaritorClient;
 
+use BinaryBuilds\LaritorClient\Commands\DataFilterMakeCommand;
+use BinaryBuilds\LaritorClient\Commands\DataRedactorMakeCommand;
 use BinaryBuilds\LaritorClient\Override\DefaultOverride;
 use BinaryBuilds\LaritorClient\Override\LaritorOverride;
 use BinaryBuilds\LaritorClient\Redactor\DataRedactor;
@@ -45,7 +47,9 @@ class LaritorServiceProvider extends ServiceProvider
             HealthCheckMakeCommand::class,
             QueueHealthCheckMakeCommand::class,
             SyncCommand::class,
-            SendServerMetricsCommand::class
+            SendServerMetricsCommand::class,
+            DataRedactorMakeCommand::class,
+            DataFilterMakeCommand::class
         ]);
 
         app(Laritor::class)->started();
