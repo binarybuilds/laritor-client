@@ -42,6 +42,16 @@ class SyncCommand extends Command
         Laritor $laritor
     )
     {
+        if (! config('laritor.keys.backend') ) {
+            $this->error('Laritor key is not configured. Please add the LARITOR_BACKEND_KEY env variable');
+            return self::FAILURE;
+        }
+
+        if (! config('laritor.ingest_endpoint') ) {
+            $this->error('Laritor ingest endpoint is not configured. Please add the LARITOR_INGEST_ENDPOINT env variable');
+            return self::FAILURE;
+        }
+
         $scheduled_tasks = $scheduledTaskHelper->getScheduledTasks();;
 
         $health_checks = $healthCheckHelper->getHealthChecks();
