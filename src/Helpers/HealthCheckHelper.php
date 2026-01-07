@@ -18,15 +18,15 @@ class HealthCheckHelper
     {
         $health_checks = [];
 
-        if (is_dir(app_path('Laritor'))) {
-            foreach ((new Finder())->in(app_path('Laritor'))->files() as $health_check) {
+        if (is_dir(app_path('Laritor/HealthChecks'))) {
+            foreach ((new Finder())->in(app_path('Laritor/HealthChecks'))->files() as $health_check) {
                 $name = str_replace(
                     ['/', '.php'],
                     ['\\', ''],
-                    Str::after($health_check->getPathname(), app_path('Laritor').DIRECTORY_SEPARATOR)
+                    Str::after($health_check->getPathname(), app_path('Laritor/HealthChecks').DIRECTORY_SEPARATOR)
                 );
 
-                $class = app()->getNamespace().'Laritor\\'.$name;
+                $class = app()->getNamespace().'Laritor\\HealthChecks\\'.$name;
 
                 $health_checks[] = [
                     'name' => $class::$name,

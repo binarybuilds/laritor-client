@@ -35,7 +35,7 @@ class HealthCheckController
             case 'queue' : $health_check = app( QueueWorkerHealthCheck::class );break;
             default: {
 
-                $health_check_class = app()->getNamespace()."BinaryBuilds\\$check_type";
+                $health_check_class = app()->getNamespace()."Laritor\\HealthChecks\\$check_type";
 
                 if (class_exists($health_check_class)) {
                     $health_check = app( $health_check_class );
