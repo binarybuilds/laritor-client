@@ -42,17 +42,17 @@ class FeatureFlagRecorder extends Recorder
 
         $flagAdded = false;
         foreach ($flags as $flag) {
-            if ($flag['flag'] === $feature) {
+            if ($flag['feature'] === $feature) {
                 $flagAdded = true;
                 $flag['active'] = $active;
-                $addedFlags[] = $flag;
-                break;
             }
+
+            $addedFlags[] = $flag;
         }
 
         if (!$flagAdded) {
             $addedFlags[] = [
-                'flag' => $feature,
+                'feature' => $feature,
                 'active' => $active
             ];
         }
