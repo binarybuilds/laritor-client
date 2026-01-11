@@ -84,6 +84,13 @@ class FilterHelper
         });
     }
 
+    public static function recordFeatureFlag($flag, $scope): bool
+    {
+        return static::recordEvent(function () use ($flag, $scope) {
+            return app(LaritorOverride::class)->recordFeatureFlag($flag, $scope);
+        });
+    }
+
     public static function isBot($request): bool
     {
         return static::recordEvent(function () use ($request) {

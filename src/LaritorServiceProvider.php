@@ -130,6 +130,7 @@ class LaritorServiceProvider extends ServiceProvider
             \BinaryBuilds\LaritorClient\Recorders\LogRecorder::class,
             \BinaryBuilds\LaritorClient\Recorders\MailRecorder::class,
             \BinaryBuilds\LaritorClient\Recorders\NotificationRecorder::class,
+            \BinaryBuilds\LaritorClient\Recorders\FeatureFlagRecorder::class,
         ];
 
         foreach ($recorders as $recorder) {

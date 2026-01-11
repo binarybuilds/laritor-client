@@ -71,6 +71,13 @@ interface LaritorOverride
     public function recordNotification($notifiable, $notification): bool;
 
     /**
+     * @param string $flag
+     * @param mixed $scope
+     * @return bool
+     */
+    public function recordFeatureFlag($flag, $scope): bool;
+
+    /**
      * @param Request $request
      * @return bool
      */

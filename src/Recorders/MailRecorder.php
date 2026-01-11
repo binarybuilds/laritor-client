@@ -5,7 +5,6 @@ namespace BinaryBuilds\LaritorClient\Recorders;
 use BinaryBuilds\LaritorClient\Helpers\DataHelper;
 use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Mail\Events\MessageSent;
 use Illuminate\Mail\Mailable;
