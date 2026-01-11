@@ -130,6 +130,16 @@ class DefaultOverride implements LaritorOverride
     }
 
     /**
+     * @param string $flag
+     * @param mixed $scope
+     * @return bool
+     */
+    public function recordFeatureFlag($flag, $scope): bool
+    {
+        return true;
+    }
+
+    /**
      * @param Request $request
      * @return bool
      */
