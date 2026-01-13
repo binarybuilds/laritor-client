@@ -53,7 +53,8 @@ class FeatureFlagRecorder extends Recorder
         if (!$flagAdded) {
             $addedFlags[] = [
                 'feature' => $feature,
-                'active' => $active
+                'active' => $active,
+                'checked_at' => now()->toDateTimeString(),
             ];
         }
 
