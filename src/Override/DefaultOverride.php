@@ -5,6 +5,7 @@ namespace BinaryBuilds\LaritorClient\Override;
 use Illuminate\Contracts\Queue\Job;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Str;
 use Jaybizzle\CrawlerDetect\CrawlerDetect;
 use Symfony\Component\Mime\Email;
 
@@ -16,7 +17,13 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordCacheHit($cacheKey): bool
     {
-        return true;
+        $ignore = [
+            'illuminate:queue',
+            'laravel:',
+            'telescope:'
+        ];
+
+        return ! Str::startsWith($cacheKey, $ignore);
     }
 
     /**
@@ -58,7 +65,19 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordQuery($query, $duration): bool
     {
-        return true;
+        $ignore = [
+            "`".config('session.table')."`",
+            "`".config('cache.stores.database.table')."`",
+            "`".config('queue.connections.database.table')."`",
+            "`".config('pennant.stores.database.table')."`",
+            "`telescope_entries`",
+            "`telescope_entries_tags`",
+            "`pulse_entries`",
+            "`pulse_aggregates`",
+            "`action_events`",
+        ];
+
+        return ! Str::contains($query, $ignore);
     }
 
     /**

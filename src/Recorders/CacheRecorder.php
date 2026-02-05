@@ -32,7 +32,7 @@ class CacheRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if ( Str::startsWith($event->key, ['laritor','illuminate:queue:restart']) ||
+        if ( Str::startsWith($event->key, ['laritor']) ||
             !FilterHelper::recordCacheHit($event->key)
         ) {
             return;
