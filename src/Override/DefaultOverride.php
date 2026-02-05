@@ -82,6 +82,7 @@ class DefaultOverride implements LaritorOverride
             '_debugbar*',
             '__clockwork*',
             '_ignition/*',
+            '*livewire.min.js*'
         ];
 
         foreach ($ignore as $ignored ) {
