@@ -5,6 +5,7 @@ namespace BinaryBuilds\LaritorClient\Recorders;
 use BinaryBuilds\LaritorClient\Helpers\DataHelper;
 use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Foundation\Http\Events\RequestHandled;
+use Illuminate\Support\Str;
 
 class RequestRecorder extends Recorder
 {
@@ -92,7 +93,7 @@ class RequestRecorder extends Recorder
     {
         $context = [];
 
-        if (ltrim($request->path(), '/') === 'livewire/update') {
+        if ($this->isLivewireUpdateRequest($request)) {
             $components = $request->input('components', []);
             if (is_array($components)) {
                 foreach ($components as $component) {
@@ -178,19 +179,22 @@ class RequestRecorder extends Recorder
 
     private function getUrl($request)
     {
-        if (ltrim($request->path(), '/') === 'livewire/update') {
+        if ($this->isLivewireUpdateRequest($request)) {
             $url = '';
-            $fragments = parse_url($request->headers->get('referer'));
-            if (isset($fragments['path'])) {
-                $url = rtrim($fragments['path'], '/');
-            }
+            $referer = $request->headers->get('referer');
+            if ($referer) {
+                $fragments = parse_url($referer);
+                if (isset($fragments['path'])) {
+                    $url = rtrim($fragments['path'], '/');
+                }
 
-            if (config('laritor.requests.query_string') && isset($fragments['query'])) {
-                $url .= '?' . $fragments['query'];
-            }
+                if (config('laritor.requests.query_string') && isset($fragments['query'])) {
+                    $url .= '?' . $fragments['query'];
+                }
 
-            if ($url) {
-                return $url;
+                if ($url) {
+                    return $url;
+                }
             }
         }
 
@@ -202,5 +206,13 @@ class RequestRecorder extends Recorder
         }
 
         return $request->path().$query;
+    }
+
+    public function isLivewireUpdateRequest($request): bool
+    {
+        $route = $request->route() ? $request->route()->getName() : '';
+
+        return ($route && Str::endsWith($route, 'livewire.update')) ||
+            preg_match('#^livewire(?:-[^/]+)?/update$#', ltrim($request->path(), '/')) === 1;
     }
 }
