@@ -9,6 +9,7 @@ use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Console\Scheduling\CallbackEvent;
+use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Str;
 
 class ScheduledTaskRecorder extends Recorder
@@ -57,6 +58,10 @@ class ScheduledTaskRecorder extends Recorder
      */
     public function start(ScheduledTaskStarting $event)
     {
+        if (class_exists(\Illuminate\Support\Facades\Context::class)) {
+            Context::add('laritor_scheduled_task_id', Str::uuid()->toString());
+        }
+
         $event = $event->task;
 
         $scheduler = $this->laritor->getEvents(SchedulerRecorder::$eventType);
