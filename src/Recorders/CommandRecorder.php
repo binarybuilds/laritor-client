@@ -71,10 +71,13 @@ class CommandRecorder extends Recorder
             )
         );
 
-        $options = implode(' ',  $options);
+        $commandString = $arguments.' ';
+        foreach ($options as $option => $value) {
+            $commandString .= '--'.$option.'='.$value.' ';
+        }
 
         $this->laritor->pushEvent(static::$eventType,  [
-            'command' => trim($arguments.' '.$options),
+            'command' => trim($commandString),
             'started_at' => now(),
             'completed_at' => null
         ]);
@@ -90,7 +93,7 @@ class CommandRecorder extends Recorder
         )->firstWhere('completed_at', '=',null);
 
         if ($command) {
-            $command['duration'] = $command['started_at']->diffInMilliseconds();;
+            $command['duration'] = $command['started_at']->diffInMilliseconds();
             $command['completed_at'] = now()->format('Y-m-d H:i:s');
             $command['started_at'] = $command['started_at']->format('Y-m-d H:i:s');
             $command['code'] = $event->exitCode;
@@ -136,7 +139,8 @@ class CommandRecorder extends Recorder
             'reverb:start',
             'schedule:list',
             'laritor:sync',
-            'laritor:send-metrics'
+            'laritor:send-metrics',
+            'vendor:publish',
         ]);
     }
 }
