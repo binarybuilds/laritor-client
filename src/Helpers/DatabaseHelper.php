@@ -330,7 +330,7 @@ class DatabaseHelper
               ON af.attrelid = pc.confrelid
              AND af.attnum  = pc.confkey[1]
             WHERE pc.contype = 'f'
-              AND pc.conrelid = ?::regclass
+              AND pc.conrelid = to_regclass(?)
         ", [$tableName]);
 
             foreach ($pgForeignKeys as $fk) {
