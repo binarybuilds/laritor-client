@@ -60,4 +60,6 @@ return [
     ],
 
     'whitelisted_vendors' => env('LARITOR_WHITELISTED_VENDORS', ''),
+
+    'ingest_events_without_occurrence' => env('LARITOR_INGEST_EVENTS_WITHOUT_OCCURRENCE', false),
 ];

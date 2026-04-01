@@ -36,6 +36,8 @@ class Laritor
 
     private $context = 'BOOT';
 
+    private $hasCustomLogs = false;
+
     /**
      * @return string
      */
@@ -151,6 +153,7 @@ class Laritor
 
     public function addCustomLog(string $type, string $level, string $message, array $context = [], ?Carbon $written_at = null)
     {
+        $this->hasCustomLogs = true;
         $this->events[LogRecorder::$eventType][] = [
             'level' => $level,
             'message' => $message,
@@ -223,6 +226,7 @@ class Laritor
         $this->controller = 0;
         $this->response = 0;
         $this->context = 'BOOT';
+        $this->hasCustomLogs = false;
     }
 
     /**
@@ -325,6 +329,23 @@ class Laritor
             }
 
         } catch (\Throwable $exception) {}
+
+        $hasOccurrence = false;
+
+        if ($this->hasCustomLogs || config('laritor.ingest_events_without_occurrence')) {
+            $hasOccurrence = true;
+        } else {
+            foreach ($this->events as $type => $event) {
+                if (in_array($type, ['requests', 'commands', 'scheduler', 'scheduled_tasks', 'jobs','server_stats'])) {
+                    $hasOccurrence = true;
+                    break;
+                }
+            }
+        }
+
+        if (! $hasOccurrence) {
+            return false;
+        }
 
         if (app()->runningInConsole() || ! $this->isRateLimiterEnabled() ) {
             return true;
