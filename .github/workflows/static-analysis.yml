@@ -104,3 +104,27 @@ jobs:
 
       - name: Run Analysis
         run:  php -d memory_limit=-1 ./vendor/bin/phpstan analyse src tests
+
+  test-laravel-13:
+    name: PHP ${{ matrix.php }} / Laravel 13.x
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [ 8.3, 8.4, 8.5]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, bcmath, xml, ctype, json, pdo_sqlite
+
+      - name: Require Laravel & Testbench
+        run: |
+          composer require --dev laravel/framework:13.x --no-update
+          composer require --dev orchestra/testbench:^11.0 --no-update
+          composer update --prefer-dist --no-interaction --no-scripts
+
+      - name: Run Analysis
+        run:  php -d memory_limit=-1 ./vendor/bin/phpstan analyse src tests
