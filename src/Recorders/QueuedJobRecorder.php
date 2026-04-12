@@ -7,7 +7,6 @@ use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use BinaryBuilds\LaritorClient\Jobs\QueueHealthCheck;
 use Carbon\Carbon;
 use Illuminate\Queue\Events\JobExceptionOccurred;
-use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Queue\Events\JobQueued;
@@ -22,13 +21,12 @@ class QueuedJobRecorder extends Recorder
     public static $events = [
         JobQueued::class,
         JobProcessing::class,
-        JobFailed::class,
         JobProcessed::class,
         JobExceptionOccurred::class,
     ];
 
     /**
-     * @param JobFailed|JobProcessing|JobProcessed $event
+     * @param JobExceptionOccurred|JobProcessing|JobProcessed $event
      * @return void
      */
     public function trackEvent($event)
@@ -42,10 +40,7 @@ class QueuedJobRecorder extends Recorder
         }
         elseif ($event instanceof JobProcessing ) {
             $this->processing($event);
-        } elseif (
-            $event instanceof JobFailed ||
-            $event instanceof JobExceptionOccurred
-        ) {
+        } elseif ($event instanceof JobExceptionOccurred) {
             app(ExceptionRecorder::class)->handle($event->exception);
             $this->complete($event);
         } elseif ($event instanceof JobProcessed ) {
@@ -75,54 +70,71 @@ class QueuedJobRecorder extends Recorder
             'queued_at' => now()->toDateTimeString(),
             'status' => 'queued',
             'context' => $this->laritor->getContext(),
-            'custom_context' =>DataHelper::getRedactedContext(),
+            'custom_context' => DataHelper::getRedactedContext(),
         ]);
     }
 
     public function processing(JobProcessing $event)
     {
-        $this->laritor->reset();
+        if ($event->connectionName !== 'sync') {
+            $this->laritor->reset();
+        }
+
+        $jobs = [];
+        $jobExists = false;
+        foreach ($this->laritor->getEvents(static::$eventType) as $job) {
+            if (isset($job['id']) && $job['id'] === $event->job->getJobId()) {
+                $jobExists = true;
+                $job['started_at'] = now()->toDateTimeString();
+                $job['completed_at'] = null;
+                $job['status'] = 'processing';
+            }
+
+            $jobs[] = $job;
+        }
+
+        if (!$jobExists) {
+            $jobs[] = [
+                'connection' => $event->connectionName,
+                'queue' => $event->job->getQueue() ?? config("queue.connections.{$event->connectionName}.queue", 'default'),
+                'job' =>  isset($event->job->payload()['displayName']) ? $event->job->payload()['displayName'] : get_class($event->job),
+                'started_at' => now()->toDateTimeString(),
+                'completed_at' => null,
+                'duration' => 0,
+                'status' => 'processing',
+                'id' => $event->job->getJobId()
+            ];
+        }
+
         $this->laritor->setContext('JOB');
-        $this->laritor->pushEvent(static::$eventType, [
-            'connection' => $event->connectionName,
-            'queue' => $event->job->getQueue() ?? config("queue.connections.{$event->connectionName}.queue", 'default'),
-            'job' =>  isset($event->job->payload()['displayName']) ? $event->job->payload()['displayName'] : get_class($event->job),
-            'started_at' => now()->toDateTimeString(),
-            'completed_at' => null,
-            'duration' => 0,
-            'status' => 'processing',
-            'id' => $event->job->getJobId()
-        ]);
+        $this->laritor->addEvents(static::$eventType, $jobs);
     }
 
     /**
-     * @param JobFailed|JobProcessed $event
+     * @param JobExceptionOccurred|JobProcessed $event
      * @return void
      */
     public function complete($event)
     {
-        $job = null;
-        foreach ($this->laritor->getEvents(static::$eventType) as $jobEvent) {
-            if (isset($jobEvent['id']) && $jobEvent['id'] === $event->job->getJobId()) {
-                $job = $jobEvent;
-                break;
+        $jobs = [];
+        foreach ($this->laritor->getEvents(static::$eventType) as $job) {
+            if (isset($job['id']) && $job['id'] === $event->job->getJobId()) {
+                $start = Carbon::parse($job['started_at']);
+                $job['duration'] = $start->diffInMilliseconds();
+                $job['started_at'] = $start->toDateTimeString();
+                $job['completed_at'] = now()->toDateTimeString();
+                $job['id'] = $event->job->getJobId();
+                $job['status'] = $event instanceof JobExceptionOccurred ? 'failed' : 'processed';
+                $job['custom_context'] = DataHelper::getRedactedContext();
             }
+
+            $jobs[] = $job;
         }
 
-        if (empty($job)) {
-            return;
+        $this->laritor->addEvents(static::$eventType, $jobs);
+
+        if ($event->connectionName !== 'sync') {
+            $this->laritor->sendEvents();
         }
-
-        $start = Carbon::parse($job['started_at']);
-        $job['duration'] = $start->diffInMilliseconds();
-        $job['started_at'] = $start->toDateTimeString();
-        $job['completed_at'] = now()->toDateTimeString();
-        $job['id'] = $event->job->getJobId();
-        $job['status'] = $event instanceof JobFailed ? 'failed' : 'processed';
-        $job['custom_context'] = DataHelper::getRedactedContext();
-
-        $this->laritor->addEvents('jobs', [$job]);
-
-        $this->laritor->sendEvents();
     }
 }
