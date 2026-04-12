@@ -65,7 +65,7 @@ class QueuedJobRecorder extends Recorder
             'connection' => $event->connectionName,
             'queue' => $event->job->queue ?? config("queue.connections.{$event->connectionName}.queue", 'default'),
             'job' =>  isset($jobPayload['displayName']) ? $jobPayload['displayName'] : get_class($event->job),
-            'id' => $event->id,
+            'id' => $this->resolveJobId($event),
             'delay' => isset($event->delay) ? $event->delay : ( isset($jobPayload['delay']) ? $jobPayload['delay'] : 0 ),
             'queued_at' => now()->toDateTimeString(),
             'status' => 'queued',
@@ -83,7 +83,7 @@ class QueuedJobRecorder extends Recorder
         $jobs = [];
         $jobExists = false;
         foreach ($this->laritor->getEvents(static::$eventType) as $job) {
-            if (isset($job['id']) && $job['id'] === $event->job->getJobId()) {
+            if (isset($job['id']) && $job['id'] === $this->resolveJobId($event)) {
                 $jobExists = true;
                 $job['started_at'] = now()->toDateTimeString();
                 $job['completed_at'] = null;
@@ -94,7 +94,7 @@ class QueuedJobRecorder extends Recorder
         }
 
         if (!$jobExists) {
-            $jobs[] = [
+            $job = [
                 'connection' => $event->connectionName,
                 'queue' => $event->job->getQueue() ?? config("queue.connections.{$event->connectionName}.queue", 'default'),
                 'job' =>  isset($event->job->payload()['displayName']) ? $event->job->payload()['displayName'] : get_class($event->job),
@@ -102,8 +102,14 @@ class QueuedJobRecorder extends Recorder
                 'completed_at' => null,
                 'duration' => 0,
                 'status' => 'processing',
-                'id' => $event->job->getJobId()
+                'id' => $this->resolveJobId($event)
             ];
+
+            if ($event->connectionName === 'sync') {
+                $job['queued_at'] = now()->toDateTimeString();
+            }
+
+            $jobs[] = $job;
         }
 
         $this->laritor->setContext('JOB');
@@ -118,12 +124,11 @@ class QueuedJobRecorder extends Recorder
     {
         $jobs = [];
         foreach ($this->laritor->getEvents(static::$eventType) as $job) {
-            if (isset($job['id']) && $job['id'] === $event->job->getJobId()) {
+            if (isset($job['id']) && $job['id'] === $this->resolveJobId($event)) {
                 $start = Carbon::parse($job['started_at']);
                 $job['duration'] = $start->diffInMilliseconds();
                 $job['started_at'] = $start->toDateTimeString();
                 $job['completed_at'] = now()->toDateTimeString();
-                $job['id'] = $event->job->getJobId();
                 $job['status'] = $event instanceof JobExceptionOccurred ? 'failed' : 'processed';
                 $job['custom_context'] = DataHelper::getRedactedContext();
             }
@@ -136,5 +141,32 @@ class QueuedJobRecorder extends Recorder
         if ($event->connectionName !== 'sync') {
             $this->laritor->sendEvents();
         }
+    }
+
+    /**
+     * @param JobQueued|JobProcessing|JobProcessed|JobExceptionOccurred $event
+     * @return mixed
+     */
+    private function resolveJobId($event)
+    {
+        try{
+            if ($event instanceof JobQueued) {
+                $jobPayload = [];
+                /** @phpstan-ignore-next-line  */
+                if (method_exists($event, 'payload')) {
+                    $jobPayload = $event->payload();
+                }
+            } else {
+                $jobPayload = $event->job->payload();
+            }
+        } catch (\Exception $e) {
+            $jobPayload = [];
+        }
+
+        if (isset($jobPayload['uuid'])) {
+            return $jobPayload['uuid'];
+        }
+
+        return $event instanceof JobQueued ? $event->id : $event->job->getJobId();
     }
 }
