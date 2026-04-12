@@ -93,6 +93,9 @@ class QueuedJobRecorder extends Recorder
             $jobs[] = $job;
         }
 
+        $this->laritor->setContext('JOB');
+        $this->laritor->addEvents(static::$eventType, $jobs);
+
         if (!$jobExists) {
             $job = [
                 'connection' => $event->connectionName,
@@ -107,13 +110,11 @@ class QueuedJobRecorder extends Recorder
 
             if ($event->connectionName === 'sync') {
                 $job['queued_at'] = now()->toDateTimeString();
+                $job['delay'] = 0;
             }
 
-            $jobs[] = $job;
+            $this->laritor->pushEvent(static::$eventType, $job);
         }
-
-        $this->laritor->setContext('JOB');
-        $this->laritor->addEvents(static::$eventType, $jobs);
     }
 
     /**
