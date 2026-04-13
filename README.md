@@ -1,21 +1,47 @@
-Laritor Client Package
+# Laritor Client for Laravel
+
+[![Latest Version](https://img.shields.io/packagist/v/binarybuilds/laritor-client)](https://packagist.org/packages/binarybuilds/laritor-client)
+[![Total Downloads](https://img.shields.io/packagist/dt/binarybuilds/laritor-client)](https://packagist.org/packages/binarybuilds/laritor-client)
+[![PHP Version](https://img.shields.io/packagist/php-v/binarybuilds/laritor-client)](https://packagist.org/packages/binarybuilds/laritor-client)
+[![Tests](https://img.shields.io/github/actions/workflow/status/binarybuilds/laritor-client/ci.yml?label=tests)](https://github.com/binarybuilds/laritor-client/actions)
+[![License](https://img.shields.io/github/license/binarybuilds/laritor-client)](https://github.com/binarybuilds/laritor-client/blob/main/LICENSE.md)
+[![Agentless Setup](https://img.shields.io/badge/Setup-Agentless-brightgreen)](https://laritor.com)
+
 ------------------------------------------------
 ![Laritor Image](/art/laritor-og.png "Laritor Image")
 
-[Laritor](https://laritor.com) is a full-stack observability platform for Laravel applications. 
+**Performance monitoring and observability for Laravel.**
 
-This is a client package for sending application telemetry to Laritor.
+[Laritor](https://laritor.com) gives you complete visibility into your application without requiring agents or infrastructure changes.  
+Track requests, database queries, queued jobs, scheduled tasks, exceptions, outbound HTTP calls, and more, all in a single timeline.
+
+This package sends telemetry events from your Laravel application to Laritor.
+
+---
+## Why Laritor?
+
+- See exactly what’s slowing your application
+- Debug issues with full request timelines
+- Detect N+1 queries and slow database calls
+- Monitor queues, scheduled tasks, and failures
+- Get real-time alerts for production issues
+- No agents. No infrastructure changes
 
 ## Requirements
 - PHP: `^7.4 | ^8.0 | ^8.1 | ^8.2 | ^8.3 | ^8.4 | ^8.5`
 - Laravel: `^9 | ^10 | ^11 | ^12 | ^13`
 
-## Installation
+## Getting Started
+
+### 1. Signup for Laritor
+Signup for Laritor at https://laritor.com/signup
+
+## 2. Install package
 ```
 composer require binarybuilds/laritor-client
 ```
 
-## Configuration
+## 3. Add env variables
 Add the following to your `.env`:
 ```
 LARITOR_ENABLED=true
@@ -28,13 +54,19 @@ Environment variables:
 - `LARITOR_INGEST_ENDPOINT`: Laritor ingest URL for your account.
 - `LARITOR_BACKEND_KEY`: Backend key for authentication.
 
-## Usage
-Sync after each deployment to push scheduled tasks, schema changes, and health checks.
+## 4. Run command during deployment
+
+After deployment, run:
 ```
 php artisan laritor:sync
 ```
+This syncs:
+- Scheduled tasks
+- Database schema
+- Health checks
 
-Optional: collect server metrics (CPU, memory, disk) by scheduling this every minute.
+## 5. (Optional) Server Metrics
+To collect CPU, memory, and disk usage, schedule below command to run every minute.
 ```
 php artisan laritor:send-metrics
 ```
@@ -59,8 +91,8 @@ If you discover a security vulnerability, do not use the public issue tracker or
 Please refer to our [Security Policy](https://github.com/binarybuilds/laritor-client/security/policy).
 
 ## Support
-Email: [support@laritor.com](mailto:support@laritor.com)
-Discord: [Laritor Discord](https://discord.laritor.com)
+- Email: [support@laritor.com](mailto:support@laritor.com)
+- Discord: [Laritor Discord](https://discord.laritor.com)
 
 ## License
 This package is open-sourced software licensed under the [MIT license](LICENSE.md).
