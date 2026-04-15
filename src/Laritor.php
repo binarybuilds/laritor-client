@@ -13,7 +13,7 @@ use BinaryBuilds\LaritorClient\Recorders\SchedulerRecorder;
 
 class Laritor
 {
-    public const VERSION = '3.0.4';
+    public const VERSION = '3.0.5';
 
     /**
      * @var array
@@ -83,6 +83,10 @@ class Laritor
 
     public function controllerStarted()
     {
+        if (!$this->started) {
+            $this->started = microtime(true);
+        }
+
         $this->middleware = $this->getDurationFrom($this->started) - $this->booted;
         $this->setContext('CONTROLLER');
     }
