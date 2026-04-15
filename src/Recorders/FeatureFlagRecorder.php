@@ -37,27 +37,11 @@ class FeatureFlagRecorder extends Recorder
     {
         $laritor = app(Laritor::class);
 
-        $flags = $laritor->getEvents(self::$eventType);
-        $addedFlags = [];
-
-        $flagAdded = false;
-        foreach ($flags as $flag) {
-            if ($flag['feature'] === $feature) {
-                $flagAdded = true;
-                $flag['active'] = $active;
-            }
-
-            $addedFlags[] = $flag;
-        }
-
-        if (!$flagAdded) {
-            $addedFlags[] = [
-                'feature' => $feature,
-                'active' => $active,
-                'checked_at' => now()->toDateTimeString(),
-            ];
-        }
-
-        $laritor->addevents(self::$eventType, $addedFlags);
+        $laritor->pushEvent(self::$eventType, [
+            'feature' => $feature,
+            'active' => $active,
+            'context' => $laritor->getContext(),
+            'checked_at' => now()->toDateTimeString(),
+        ]);
     }
 }
