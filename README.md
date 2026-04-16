@@ -1,4 +1,4 @@
-# Laritor Client for Laravel
+# Performance monitoring and Observability for Laravel
 
 [![Latest Version](https://img.shields.io/packagist/v/binarybuilds/laritor-client)](https://packagist.org/packages/binarybuilds/laritor-client)
 [![Total Downloads](https://img.shields.io/packagist/dt/binarybuilds/laritor-client)](https://packagist.org/packages/binarybuilds/laritor-client)
@@ -7,15 +7,15 @@
 [![License](https://img.shields.io/github/license/binarybuilds/laritor-client)](https://github.com/binarybuilds/laritor-client/blob/main/LICENSE.md)
 [![Agentless Setup](https://img.shields.io/badge/Setup-Agentless-brightgreen)](https://laritor.com)
 
-------------------------------------------------
-![Laritor Image](/art/laritor-og.png "Laritor Image")
+[Laritor](https://laritor.com) is a Laravel-native observability and performance monitoring tool that captures requests, queries, jobs, and external calls into a single correlated timeline.
 
-**Performance monitoring and observability for Laravel.**
-
-[Laritor](https://laritor.com) gives you complete visibility into your application without requiring agents or infrastructure changes.  
-Track requests, database queries, queued jobs, scheduled tasks, exceptions, outbound HTTP calls, and more, all in a single timeline.
+With built-in dashboards, alerts, and AI-powered insights, it helps you understand and optimize your application using real production data.
 
 This package sends telemetry events from your Laravel application to Laritor.
+
+
+------------------------------------------------
+![Laritor Image](/art/laritor-og.png "Laritor Image")
 
 ---
 ## Why Laritor?
@@ -28,7 +28,7 @@ This package sends telemetry events from your Laravel application to Laritor.
 - No agents. No infrastructure changes
 
 ## Requirements
-- PHP: `^7.4 | ^8.0 | ^8.1 | ^8.2 | ^8.3 | ^8.4 | ^8.5`
+- PHP: `^8.0 | ^8.1 | ^8.2 | ^8.3 | ^8.4 | ^8.5`
 - Laravel: `^9 | ^10 | ^11 | ^12 | ^13`
 
 ## Getting Started

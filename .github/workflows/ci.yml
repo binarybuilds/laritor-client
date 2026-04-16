@@ -11,7 +11,7 @@ jobs:
       matrix:
         php: [8.0, 8.1, 8.2, 8.3, 8.4]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
@@ -31,7 +31,6 @@ jobs:
       - name: Run Tests
         run: ./vendor/bin/phpunit
 
-
   test-laravel-10:
     name: PHP ${{ matrix.php }} / Laravel 10.x
     runs-on: ubuntu-latest
@@ -39,7 +38,7 @@ jobs:
       matrix:
         php: [8.1, 8.2, 8.3, 8.4, 8.5]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
@@ -69,7 +68,7 @@ jobs:
           - laravel: 11.x
             testbench: ^9.0
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
@@ -96,7 +95,7 @@ jobs:
       matrix:
         php: [8.2, 8.3, 8.4, 8.5]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
@@ -123,7 +122,7 @@ jobs:
       matrix:
         php: [8.3, 8.4, 8.5]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2

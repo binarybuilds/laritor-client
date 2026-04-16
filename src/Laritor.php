@@ -13,7 +13,7 @@ use BinaryBuilds\LaritorClient\Recorders\SchedulerRecorder;
 
 class Laritor
 {
-    public const VERSION = '3.0.5';
+    public const VERSION = '3.0.6';
 
     /**
      * @var array
@@ -37,6 +37,8 @@ class Laritor
     private $context = 'BOOT';
 
     private $hasCustomLogs = false;
+
+    public const CUSTOM_EVENT = 'custom';
 
     /**
      * @return string
@@ -136,6 +138,7 @@ class Laritor
     {
         if ($this->eventsCount <= config('laritor.max_events')) {
             $event['order'] = $this->order;
+            $event['timestamp'] = microtime(true);
             $this->order++;
             $this->events[ $name ][] = $event;
             $this->eventsCount++;
@@ -165,6 +168,15 @@ class Laritor
             'occurred_at' => $written_at ? $written_at->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'),
             'context' => $type
         ];
+    }
+
+    public static function addCustomEvent($name, $meta = [])
+    {
+        $laritor = app(Laritor::class);
+        $meta = is_array($meta) ? $meta : [];
+        $meta['name'] = $name;
+        $meta['context'] = $laritor->getContext();
+        $laritor->pushEvent(Laritor::CUSTOM_EVENT, $meta);
     }
 
     public function removeScheduler()
