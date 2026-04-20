@@ -88,25 +88,17 @@ class OutboundRequestRecorder extends Recorder
             ->map(function ($request) use ($outboundRequestEvent){
 
             if ( $request['status'] === 'sent' && $request['url'] === $outboundRequestEvent->request->url() ) {
-                $duration = $request['started_at']->diffInMilliseconds();
-                return [
-                    'started_at' => $request['started_at']->format('Y-m-d H:i:s'),
-                    'completed_at' => now()->format('Y-m-d H:i:s'),
-                    'duration' => $duration,
-                    'code' => $outboundRequestEvent instanceof ResponseReceived ? $outboundRequestEvent->response->status() : 0,
-                    'url' => $outboundRequestEvent->request->url(),
-                    'method' => $outboundRequestEvent->request->method(),
-                    'status' => 'completed',
-                    'order' => $request['order'],
-                    'context' => $request['context'],
-                    'request' => [
-                        'body' => $this->getRequestBody($outboundRequestEvent->request),
-                        'headers' => $this->getRequestHeaders($outboundRequestEvent->request),
-                    ],
-                    'response' => [
-                        'body' => $outboundRequestEvent instanceof ConnectionFailed ? false : $this->getResponseBody($outboundRequestEvent->response),
-                        'headers' => $outboundRequestEvent instanceof ConnectionFailed ? false : $this->getResponseHeaders($outboundRequestEvent->response),
-                    ]
+                $request['started_at'] = $request['started_at']->format('Y-m-d H:i:s');
+                $request['duration'] = $request['started_at']->diffInMilliseconds();
+                $request['code'] = $outboundRequestEvent instanceof ResponseReceived ? $outboundRequestEvent->response->status() : 0;
+                $request['status'] = 'completed';
+                $request['request'] = [
+                    'body' => $this->getRequestBody($outboundRequestEvent->request),
+                    'headers' => $this->getRequestHeaders($outboundRequestEvent->request),
+                ];
+                $request['response'] = [
+                    'body' => $outboundRequestEvent instanceof ConnectionFailed ? false : $this->getResponseBody($outboundRequestEvent->response),
+                    'headers' => $outboundRequestEvent instanceof ConnectionFailed ? false : $this->getResponseHeaders($outboundRequestEvent->response),
                 ];
             }
 
