@@ -13,7 +13,7 @@ use BinaryBuilds\LaritorClient\Recorders\SchedulerRecorder;
 
 class Laritor
 {
-    public const VERSION = '3.0.6';
+    public const VERSION = '3.0.7';
 
     /**
      * @var array
@@ -161,13 +161,13 @@ class Laritor
     public function addCustomLog(string $type, string $level, string $message, array $context = [], ?Carbon $written_at = null)
     {
         $this->hasCustomLogs = true;
-        $this->events[LogRecorder::$eventType][] = [
+        $this->pushEvent(LogRecorder::$eventType, [
             'level' => $level,
             'message' => $message,
             'log_context' => $context,
             'occurred_at' => $written_at ? $written_at->format('Y-m-d H:i:s') : now()->format('Y-m-d H:i:s'),
             'context' => $type
-        ];
+        ]);
     }
 
     public static function addCustomEvent($name, $meta = [])

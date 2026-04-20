@@ -64,17 +64,23 @@ class ScheduledTaskRecorder extends Recorder
 
         $event = $event->task;
 
-        $scheduler = $this->laritor->getEvents(SchedulerRecorder::$eventType);
-
-        $this->laritor->pushEvent(static::$eventType, [
-            'scheduled_at' => $scheduler[0]['started_at']->startOfMinute()->format('Y-m-d H:i:s'),
-            'started_at' => now(),
+        $payload = [
             'task' => $event instanceof CallbackEvent ? 'Closure' : $event->command,
+            'started_at' => now(),
             'expression' => $event->expression,
             'timezone' => $event->timezone,
             'user' => $event->user,
-            'status' => 'started'
-        ]);
+            'status' => 'started',
+            'scheduled_at_timestamp' => microtime(true),
+        ];
+
+        $scheduler = $this->laritor->getEvents(SchedulerRecorder::$eventType);
+
+        if (isset($scheduler[0]['timestamp'])) {
+            $payload['scheduled_at_timestamp'] = $scheduler[0]['timestamp'];
+        }
+
+        $this->laritor->pushEvent(static::$eventType, $payload);
     }
 
     /**
@@ -97,20 +103,25 @@ class ScheduledTaskRecorder extends Recorder
     {
         $event = $event->task;
 
-        $scheduler = $this->laritor->getEvents(SchedulerRecorder::$eventType);
-
-        $this->laritor->pushEvent(static::$eventType, [
-            'scheduled_at' => $scheduler[0]['started_at']->startOfMinute()->format('Y-m-d H:i:s'),
+        $payload = [
             'started_at' => now()->format('Y-m-d H:i:s'),
-            'completed_at' => now()->format('Y-m-d H:i:s'),
             'duration' => 0,
             'task' => $event instanceof CallbackEvent ? 'Closure' : $event->command,
             'expression' => $event->expression,
             'timezone' => $event->timezone,
             'user' => $event->user,
             'status' => 'skipped',
-            'custom_context' => DataHelper::getRedactedContext()
-        ]);
+            'custom_context' => DataHelper::getRedactedContext(),
+            'scheduled_at_timestamp' => microtime(true),
+        ];
+
+        $scheduler = $this->laritor->getEvents(SchedulerRecorder::$eventType);
+
+        if (isset($scheduler[0]['timestamp'])) {
+            $payload['scheduled_at_timestamp'] = $scheduler[0]['timestamp'];
+        }
+
+        $this->laritor->pushEvent(static::$eventType, $payload);
 
         $this->sendEvents();
     }
