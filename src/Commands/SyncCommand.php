@@ -42,6 +42,11 @@ class SyncCommand extends Command
         Laritor $laritor
     )
     {
+        if (! config('laritor.enabled') ) {
+            $this->warn('Laritor not enabled');
+            return self::SUCCESS;
+        }
+
         if (! config('laritor.keys.backend') ) {
             $this->error('Laritor key is not configured. Please add the LARITOR_BACKEND_KEY env variable');
             return self::FAILURE;
@@ -62,11 +67,17 @@ class SyncCommand extends Command
             $schema = $databaseHelper->getSchema();
         }
 
-        $laritor->sync([
+        $response = $laritor->sync([
             'scheduled_tasks' => $scheduled_tasks,
             'health_checks' => $health_checks,
             'db_schema' => $schema
         ]);
+
+        if ($response['success']) {
+            $this->info('Laritor successfully synced');
+        } else {
+            $this->error('Laritor sync failed with error: ' . $response['message']);
+        }
 
         return self::SUCCESS;
     }

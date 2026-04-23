@@ -13,7 +13,7 @@ use BinaryBuilds\LaritorClient\Recorders\SchedulerRecorder;
 
 class Laritor
 {
-    public const VERSION = '3.0.7';
+    public const VERSION = '3.0.8';
 
     /**
      * @var array
@@ -294,10 +294,11 @@ class Laritor
 
     /**
      * @param $data
+     * @return array
      */
     public function sync($data)
     {
-        rescue(function () use ($data) {
+        try {
             $app = app();
 
             $data = json_encode([
@@ -318,14 +319,32 @@ class Laritor
                 'data' => $data
             ], JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_UNICODE);
 
-            Http::withHeaders([
+            $response = Http::withHeaders([
                 'X-Api-Key' => config('laritor.keys.backend'),
                 'Content-Type' => 'application/json',
             ])
                 ->withUserAgent('laritor-client')
                 ->withBody($data, 'application/json')
                 ->post(rtrim(config('laritor.ingest_endpoint'),'/').'/sync');
-        }, null, false);
+
+            if ($response->successful()) {
+                return [
+                    'success' => true,
+                    'message' => 'sync successful!',
+                ];
+            }
+
+            return [
+                'success' => false,
+                'message' => $response->body(),
+            ];
+
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+        }
     }
 
     /**
