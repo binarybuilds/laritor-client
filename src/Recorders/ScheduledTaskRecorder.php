@@ -18,7 +18,9 @@ class ScheduledTaskRecorder extends Recorder
 
     public static $events = [
         ScheduledTaskStarting::class,
-        ScheduledTaskFinished::class
+        ScheduledTaskFinished::class,
+        ScheduledTaskSkipped::class,
+        ScheduledTaskFailed::class
     ];
 
     /**
@@ -42,11 +44,17 @@ class ScheduledTaskRecorder extends Recorder
         if ($event instanceof ScheduledTaskStarting ) {
             $this->start($event);
         } elseif ($event instanceof ScheduledTaskFinished ) {
-            $this->finish($event);
+            $event = $event->task;
+            if($event->exitCode === 0) {
+                $this->completeScheduledTask($event, 'completed');
+            } else {
+                $this->completeScheduledTask($event, 'failed');
+            }
         } elseif ($event instanceof ScheduledTaskSkipped ) {
             $this->skip($event);
         } elseif ($event instanceof ScheduledTaskFailed ) {
-            $this->fail($event);
+            $event = $event->task;
+            $this->completeScheduledTask($event, 'failed');
         }
     }
 
@@ -84,18 +92,6 @@ class ScheduledTaskRecorder extends Recorder
     }
 
     /**
-     * Handle the event.
-     *
-     * @param  ScheduledTaskFinished  $event
-     * @return void
-     */
-    public function finish(ScheduledTaskFinished $event)
-    {
-        $event = $event->task;
-        $this->completeScheduledTask($event, 'completed');
-    }
-
-    /**
      * @param ScheduledTaskSkipped $event
      * @return void
      */
@@ -124,16 +120,6 @@ class ScheduledTaskRecorder extends Recorder
         $this->laritor->pushEvent(static::$eventType, $payload);
 
         $this->sendEvents();
-    }
-
-    /**
-     * @param ScheduledTaskFailed $event
-     * @return void
-     */
-    public function fail(ScheduledTaskFailed $event)
-    {
-        $event = $event->task;
-        $this->completeScheduledTask($event, 'failed');
     }
 
     public function completeScheduledTask($event, $status)
