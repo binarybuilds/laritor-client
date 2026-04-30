@@ -141,9 +141,11 @@ class ScheduledTaskRecorder extends Recorder
                 return $task;
             })->values()->toArray();
 
-        $this->laritor->addEvents(static::$eventType, $scheduledTasks);
+        if (!empty($scheduledTasks)) {
+            $this->laritor->addEvents(static::$eventType, $scheduledTasks);
 
-        $this->sendEvents();
+            $this->sendEvents();
+        }
     }
 
     public function sendEvents()
