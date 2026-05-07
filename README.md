@@ -2,6 +2,7 @@
 
 [![Latest Version](https://img.shields.io/packagist/v/binarybuilds/laritor-client)](https://packagist.org/packages/binarybuilds/laritor-client)
 [![Total Downloads](https://img.shields.io/packagist/dt/binarybuilds/laritor-client)](https://packagist.org/packages/binarybuilds/laritor-client)
+[![Laravel Compatibility](https://badge.laravel.cloud/badge/binarybuilds/laritor-client)](https://packagist.org/packages/binarybuilds/laritor-client)
 [![PHP Version](https://img.shields.io/packagist/php-v/binarybuilds/laritor-client)](https://packagist.org/packages/binarybuilds/laritor-client)
 [![Tests](https://img.shields.io/github/actions/workflow/status/binarybuilds/laritor-client/ci.yml?label=tests)](https://github.com/binarybuilds/laritor-client/actions)
 [![License](https://img.shields.io/github/license/binarybuilds/laritor-client)](https://github.com/binarybuilds/laritor-client/blob/main/LICENSE.md)
