@@ -9,6 +9,7 @@ use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Console\Scheduling\CallbackEvent;
+use Illuminate\Console\Scheduling\Event;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Str;
 
@@ -45,7 +46,7 @@ class ScheduledTaskRecorder extends Recorder
             $this->start($event);
         } elseif ($event instanceof ScheduledTaskFinished ) {
             $event = $event->task;
-            if($event->exitCode === 0) {
+            if($event->exitCode === 0 || $event->runInBackground) {
                 $this->completeScheduledTask($event, 'completed');
             } else {
                 $this->completeScheduledTask($event, 'failed');
@@ -78,6 +79,9 @@ class ScheduledTaskRecorder extends Recorder
             'expression' => $event->expression,
             'timezone' => $event->timezone,
             'user' => $event->user,
+            'background' => $event->runInBackground,
+            'maintenance' => $event->evenInMaintenanceMode,
+            'one_server' => $event->onOneServer,
             'status' => 'started',
             'scheduled_at_timestamp' => microtime(true),
         ];
@@ -106,6 +110,9 @@ class ScheduledTaskRecorder extends Recorder
             'expression' => $event->expression,
             'timezone' => $event->timezone,
             'user' => $event->user,
+            'background' => $event->runInBackground,
+            'maintenance' => $event->evenInMaintenanceMode,
+            'one_server' => $event->onOneServer,
             'status' => 'skipped',
             'custom_context' => DataHelper::getRedactedContext(),
             'scheduled_at_timestamp' => microtime(true),
