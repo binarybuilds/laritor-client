@@ -129,7 +129,7 @@ class ScheduledTaskRecorder extends Recorder
         $this->sendEvents();
     }
 
-    public function completeScheduledTask(Event $event, $status)
+    public function completeScheduledTask($event, $status)
     {
         $scheduledTasks = collect( $this->laritor->getEvents(static::$eventType))
             ->map(function ($task) use ($event, $status){
