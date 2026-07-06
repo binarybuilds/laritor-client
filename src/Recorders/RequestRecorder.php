@@ -42,6 +42,18 @@ class RequestRecorder extends Recorder
 
         $duration = $this->laritor->getDurationFromStart();
 
+        $session = [
+            'id' => null,
+            'name' => null,
+            'data' => []
+        ];
+
+        if ($request->hasSession()) {
+            $session['id'] = $request->session()->getId();
+            $session['name'] = $request->session()->getName();
+            $session['data'] = config('laritor.session.data') ? $request->session()->all() : [];
+        }
+
         /** @phpstan-ignore-next-line  */
         $controller = $request->route() ? explode('@', optional($request->route())->getActionName()) : [];
         $this->laritor->pushEvent(static::$eventType, [
@@ -61,6 +73,7 @@ class RequestRecorder extends Recorder
                 'headers' => $this->getResponseHeaders($response),
                 'body' => $this->getResponseBody($response),
             ],
+            'session' => $session,
             'user' => [
                 'authenticated' => $this->getAuthenticatedUser(),
                 'ip' => DataHelper::redactIPAddress($request->getClientIp()),
