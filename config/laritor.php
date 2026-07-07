@@ -59,6 +59,10 @@ return [
         'response_body' => env('LARITOR_RECORD_OUTBOUND_REQUEST_RESPONSE_BODY', false),
     ],
 
+    'session' => [
+      'data' => env('LARITOR_RECORD_SESSION_DATA', false),
+    ],
+
     'whitelisted_vendors' => env('LARITOR_WHITELISTED_VENDORS', ''),
 
     'ingest_events_without_occurrence' => env('LARITOR_INGEST_EVENTS_WITHOUT_OCCURRENCE', false),
