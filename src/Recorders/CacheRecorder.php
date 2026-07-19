@@ -2,13 +2,10 @@
 
 namespace BinaryBuilds\LaritorClient\Recorders;
 
-use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Cache\Events\CacheHit;
 use Illuminate\Cache\Events\CacheMissed;
 use Illuminate\Cache\Events\KeyForgotten;
 use Illuminate\Cache\Events\KeyWritten;
-use Illuminate\Cache\Events\RetrievingKey;
-use Illuminate\Support\Str;
 
 class CacheRecorder extends Recorder
 {
@@ -34,7 +31,8 @@ class CacheRecorder extends Recorder
     public function trackEvent($event)
     {
         $type = null;
-        if (class_exists(RetrievingKey::class) && $event instanceof RetrievingKey) {
+        if (class_exists(\Illuminate\Cache\Events\RetrievingKey::class) &&
+            $event instanceof \Illuminate\Cache\Events\RetrievingKey) {
             $type = 'RETRIEVING';
         }
         elseif ($event instanceof CacheHit) {
@@ -66,7 +64,7 @@ class CacheRecorder extends Recorder
             $this->laritor->pushEvent(static::$eventType, [
                 'key' => $event->key,
                 'type' => $type,
-                'store' => $event->storeName,
+                'store' => property_exists($event, 'storeName') ? $event->storeName : config('cache.default'),
                 'duration' => 0,
                 'occurred_at' => now()->format('Y-m-d H:i:s'),
                 'context' => $this->laritor->getContext()
