@@ -18,7 +18,6 @@ class CacheRecorder extends Recorder
      * @var string[]
      */
     public static $events = [
-        \Illuminate\Cache\Events\RetrievingKey::class,
         CacheHit::class,
         CacheMissed::class,
         KeyWritten::class,
@@ -71,5 +70,17 @@ class CacheRecorder extends Recorder
                 'context' => $this->laritor->getContext()
             ]);
         }
+    }
+
+    /**
+     * @return void
+     */
+    public static function registerRecorder()
+    {
+        if (class_exists(\Illuminate\Cache\Events\RetrievingKey::class)) {
+            self::$events[] = \Illuminate\Cache\Events\RetrievingKey::class;
+        }
+
+        parent::registerRecorder();
     }
 }
