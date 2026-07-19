@@ -45,7 +45,7 @@ class FilterHelper
 
     public static function recordOutboundRequest($url, $status_code, $duration): bool
     {
-        return Str::doesntContain($url, 'laritor.net') &&
+        return ! Str::contains($url, 'laritor.net') &&
             static::recordEvent(function () use ($url, $status_code, $duration) {
             return app(LaritorOverride::class)->recordOutboundRequest($url, $status_code, $duration);
         });
@@ -60,7 +60,7 @@ class FilterHelper
 
     public static function recordQueuedJob(string $connection, string $queue, string $job, string $status, int $duration): bool
     {
-        return Str::doesntContain($job, 'QueueHealthCheck') &&
+        return ! Str::contains($job, 'QueueHealthCheck') &&
             static::recordEvent(function () use ($connection, $queue, $job, $status, $duration) {
                 return app(LaritorOverride::class)->recordQueuedJob($connection, $queue, $job, $status, $duration);
         });
@@ -75,7 +75,7 @@ class FilterHelper
 
     public static function recordCommandOrScheduledTask(string $command, string $status, int $duration): bool
     {
-        return Str::doesntContain($command, self::$ignoredCommands) &&
+        return ! Str::contains($command, self::$ignoredCommands) &&
             static::recordEvent(function () use ($command, $status, $duration) {
             return app(LaritorOverride::class)->recordCommandOrScheduledTask($command, $status, $duration);
         });
