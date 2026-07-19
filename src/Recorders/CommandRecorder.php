@@ -4,7 +4,6 @@ namespace BinaryBuilds\LaritorClient\Recorders;
 
 use BinaryBuilds\LaritorClient\CommandOutput;
 use BinaryBuilds\LaritorClient\Helpers\DataHelper;
-use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Console\Events\CommandFinished;
 use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Support\Str;

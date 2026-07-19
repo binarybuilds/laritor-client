@@ -3,7 +3,6 @@
 namespace BinaryBuilds\LaritorClient\Recorders;
 
 use BinaryBuilds\LaritorClient\Helpers\DataHelper;
-use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use BinaryBuilds\LaritorClient\Laritor;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Str;

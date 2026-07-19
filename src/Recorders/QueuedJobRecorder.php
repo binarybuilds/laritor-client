@@ -3,15 +3,11 @@
 namespace BinaryBuilds\LaritorClient\Recorders;
 
 use BinaryBuilds\LaritorClient\Helpers\DataHelper;
-use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
-use BinaryBuilds\LaritorClient\Jobs\QueueHealthCheck;
 use Carbon\Carbon;
 use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Queue\Events\JobQueued;
-use Illuminate\Queue\Events\JobQueueing;
-use Illuminate\Support\Facades\Queue;
 
 class QueuedJobRecorder extends Recorder
 {

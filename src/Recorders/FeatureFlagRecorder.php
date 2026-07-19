@@ -2,7 +2,6 @@
 
 namespace BinaryBuilds\LaritorClient\Recorders;
 
-use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use BinaryBuilds\LaritorClient\Laritor;
 use Illuminate\Support\Facades\Event;
 

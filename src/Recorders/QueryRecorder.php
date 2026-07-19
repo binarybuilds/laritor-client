@@ -3,9 +3,7 @@
 namespace BinaryBuilds\LaritorClient\Recorders;
 
 use BinaryBuilds\LaritorClient\Helpers\DataHelper;
-use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Database\Events\QueryExecuted;
-use Illuminate\Support\Str;
 use BinaryBuilds\LaritorClient\Helpers\FileHelper;
 
 class QueryRecorder extends Recorder
