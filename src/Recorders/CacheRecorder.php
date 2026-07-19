@@ -18,6 +18,7 @@ class CacheRecorder extends Recorder
      * @var string[]
      */
     public static $events = [
+        \Illuminate\Cache\Events\RetrievingKey::class,
         CacheHit::class,
         CacheMissed::class,
         KeyWritten::class,

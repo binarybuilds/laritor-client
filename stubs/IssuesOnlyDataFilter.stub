@@ -1,0 +1,216 @@
+<?php
+
+namespace {{ namespace }};
+
+use Illuminate\Contracts\Queue\Job;
+use Illuminate\Http\Request;
+use Illuminate\Notifications\Notification;
+use Symfony\Component\Mime\Email;
+use BinaryBuilds\LaritorClient\Override\DefaultOverride;
+use BinaryBuilds\LaritorClient\Laritor;
+
+class LaritorDataFilter extends DefaultOverride
+{
+    public function hasFailedRequest()
+    {
+        $laritor = app(Laritor::class);
+
+        return
+            $laritor->getRequestStatus() >= 400 ||
+            $laritor->getRequestDuration() >= 1000;
+    }
+
+    public function hasFailedJob()
+    {
+        $laritor = app(Laritor::class);
+
+        return
+            $laritor->hasFailedJob() ||
+            $laritor->getJobDuration() >= 60000;
+    }
+
+    public function hasFailedCommand()
+    {
+        $laritor = app(Laritor::class);
+
+        return
+            $laritor->hasFailedCommand() ||
+            $laritor->getCommandDuration() >= 300000;
+    }
+
+    /**
+     * @param string $cacheKey
+     * @return bool
+     */
+    public function recordCacheHit($cacheKey): bool
+    {
+        return
+            $this->hasFailedRequest() ||
+            $this->hasFailedJob() ||
+            $this->hasFailedCommand() ||
+            Laritor::hasException();
+    }
+
+    /**
+     * @param \Throwable $exception
+     * @return bool
+     */
+    public function recordException($exception): bool
+    {
+        return true;
+    }
+
+    /**
+     * @param $url
+     * @param $status_code
+     * @param $duration
+     * @return bool
+     */
+    public function recordOutboundRequest($url, $status_code, $duration): bool
+    {
+        return
+            $this->hasFailedRequest() ||
+            $this->hasFailedJob() ||
+            $this->hasFailedCommand() ||
+            Laritor::hasException() ||
+            $status_code >= 300 ||
+            $duration >= 1000;
+    }
+
+    /**
+     * @param $query
+     * @param $duration
+     * @param $path
+     * @return bool
+     */
+    public function recordQuery($query, $duration, $path): bool
+    {
+        return
+            $this->hasFailedRequest() ||
+            $this->hasFailedJob() ||
+            $this->hasFailedCommand() ||
+            Laritor::hasException() ||
+            $duration >= 200;
+    }
+
+    /**
+     * @param string $connection
+     * @param string $queue
+     * @param string $job
+     * @param string $status
+     * @param int $duration
+     * @return bool
+     */
+    public function recordQueuedJob(string $connection, string $queue, string $job, string $status, int $duration): bool
+    {
+        return
+            $this->hasFailedRequest() ||
+            $this->hasFailedCommand() ||
+            Laritor::hasException() ||
+            strtolower($status) === 'failed' ||
+            $duration >= 60000;
+    }
+
+    /**
+     * @param $request
+     * @param $response
+     * @param $status
+     * @param $duration
+     * @param $user
+     * @return bool
+     */
+    public function recordRequest($request, $response, $status, $duration, $user): bool
+    {
+        return
+            Laritor::hasException() ||
+            $status >= 400 ||
+            $duration >= 1000;
+    }
+
+    /**
+     * @param string $command
+     * @param string $status
+     * @param int $duration
+     * @return bool
+     */
+    public function recordCommandOrScheduledTask(string $command, string $status, int $duration): bool
+    {
+        return strtolower($status) === 'failed' || $duration >= 60000;
+    }
+
+    /**
+     * @return bool
+     */
+    public function recordTaskScheduler(): bool
+    {
+        return parent::recordTaskScheduler();
+    }
+
+    /**
+     * @param $mailable
+     * @param $to
+     * @param $subject
+     * @return bool
+     */
+    public function recordMail($mailable, $to, $subject): bool
+    {
+        return
+            $this->hasFailedRequest() ||
+            $this->hasFailedJob() ||
+            $this->hasFailedCommand() ||
+            Laritor::hasException();
+    }
+
+    /**
+     * @param mixed $notifiable
+     * @param Notification $notification
+     * @return bool
+     */
+    public function recordNotification($notifiable, $notification): bool
+    {
+        return
+            $this->hasFailedRequest() ||
+            $this->hasFailedJob() ||
+            $this->hasFailedCommand() ||
+            Laritor::hasException();
+    }
+
+    /**
+     * @param string $flag
+     * @param mixed $scope
+     * @return bool
+     */
+    public function recordFeatureFlag($flag, $scope): bool
+    {
+        return
+            $this->hasFailedRequest() ||
+            $this->hasFailedJob() ||
+            $this->hasFailedCommand() ||
+            Laritor::hasException();
+    }
+
+    /**
+     * @param $level
+     * @param $message
+     * @param array $context
+     * @return bool
+     */
+    public function recordLog($level, $message, array $context = []): bool
+    {
+        return
+            $this->hasFailedRequest() ||
+            $this->hasFailedJob() ||
+            $this->hasFailedCommand() ||
+            Laritor::hasException() ||
+            !in_array(strtoupper($level), ['INFO','DEBUG']);
+    }
+
+    /**
+     * @param Request $request
+     * @return bool
+     */
+    public function isBot($request): bool
+    {
+        return parent::isBot($request);
+    }
+}

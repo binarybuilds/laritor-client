@@ -1,13 +1,14 @@
 <?php
 
-namespace BinaryBuilds\LaritorClient\Override;
+namespace {{ namespace }};
 
+use Illuminate\Contracts\Queue\Job;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Str;
-use Jaybizzle\CrawlerDetect\CrawlerDetect;
+use Symfony\Component\Mime\Email;
+use BinaryBuilds\LaritorClient\Override\DefaultOverride;
 
-class DefaultOverride implements LaritorOverride
+class LaritorDataFilter extends DefaultOverride
 {
     /**
      * @param string $cacheKey
@@ -15,13 +16,7 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordCacheHit($cacheKey): bool
     {
-        $ignore = [
-            'illuminate:queue',
-            'laravel:',
-            'telescope:'
-        ];
-
-        return ! Str::startsWith($cacheKey, $ignore);
+        return parent::recordCacheHit($cacheKey);
     }
 
     /**
@@ -30,21 +25,7 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordException($exception): bool
     {
-        $ignore = [
-            \Illuminate\Database\Eloquent\ModelNotFoundException::class,
-            \Symfony\Component\HttpKernel\Exception\NotFoundHttpException::class,
-            \Illuminate\Auth\Access\AuthorizationException::class,
-            \Illuminate\Auth\AuthenticationException::class,
-            \Illuminate\Validation\ValidationException::class,
-        ];
-
-        foreach ($ignore as $ignored ) {
-            if ($exception instanceof $ignored) {
-                return false;
-            }
-        }
-
-        return true;
+        return parent::recordException($exception);
     }
 
     /**
@@ -55,7 +36,7 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordOutboundRequest($url, $status_code, $duration): bool
     {
-        return true;
+        return parent::recordOutboundRequest($url, $status_code, $duration);
     }
 
     /**
@@ -66,19 +47,7 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordQuery($query, $duration, $path): bool
     {
-        $ignore = [
-            "`".config('session.table')."`",
-            "`".config('cache.stores.database.table')."`",
-            "`".config('queue.connections.database.table')."`",
-            "`".config('pennant.stores.database.table')."`",
-            "`telescope_entries`",
-            "`telescope_entries_tags`",
-            "`pulse_entries`",
-            "`pulse_aggregates`",
-            "`action_events`",
-        ];
-
-        return ! Str::contains($query, $ignore);
+        return parent::recordQuery($query, $duration, $path);
     }
 
     /**
@@ -91,7 +60,7 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordQueuedJob(string $connection, string $queue, string $job, string $status, int $duration): bool
     {
-        return true;
+        return parent::recordQueuedJob($connection, $queue, $job, $status, $duration);
     }
 
     /**
@@ -104,22 +73,7 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordRequest($request, $response, $status, $duration, $user): bool
     {
-        $ignore = [
-            'telescope/*'.
-            'pulse/*',
-            '_debugbar*',
-            '__clockwork*',
-            '_ignition/*',
-            '*livewire.min.js*'
-        ];
-
-        foreach ($ignore as $ignored ) {
-            if ($request->is($ignored)) {
-                return false;
-            }
-        }
-
-        return true;
+        return parent::recordRequest($request, $response, $status, $duration, $user);
     }
 
     /**
@@ -130,7 +84,7 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordCommandOrScheduledTask(string $command, string $status, int $duration): bool
     {
-        return true;
+        return parent::recordCommandOrScheduledTask($command, $status, $duration);
     }
 
     /**
@@ -138,7 +92,7 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordTaskScheduler(): bool
     {
-        return true;
+        return parent::recordTaskScheduler();
     }
 
     /**
@@ -149,7 +103,7 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordMail($mailable, $to, $subject): bool
     {
-        return true;
+        return parent::recordMail($mailable, $to, $subject);
     }
 
     /**
@@ -159,7 +113,7 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordNotification($notifiable, $notification): bool
     {
-        return true;
+        return parent::recordNotification($notifiable, $notification);
     }
 
     /**
@@ -169,7 +123,7 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordFeatureFlag($flag, $scope): bool
     {
-        return true;
+        return parent::recordFeatureFlag($flag, $scope);
     }
 
     /**
@@ -180,7 +134,7 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordLog($level, $message, array $context = []): bool
     {
-        return true;
+        return parent::recordLog($level, $message, array $context = []);
     }
 
     /**
@@ -189,8 +143,6 @@ class DefaultOverride implements LaritorOverride
      */
     public function isBot($request): bool
     {
-        $userAgent = $request->userAgent();
-        $crawler = new CrawlerDetect();
-        return $crawler->isCrawler($userAgent);
+        return parent::isBot($request);
     }
 }

@@ -52,6 +52,11 @@ class RequestRecorder extends Recorder
 
         /** @phpstan-ignore-next-line  */
         $controller = $request->route() ? explode('@', optional($request->route())->getActionName()) : [];
+
+        $status = $this->getStatusCode($response);
+        $this->laritor->setRequestDuration($duration);
+        $this->laritor->setRequestStatus($status);
+
         $this->laritor->pushEvent(static::$eventType, [
             'request_instance' => $request,
             'response_instance' => $response,
@@ -66,7 +71,7 @@ class RequestRecorder extends Recorder
                 'body' => $this->getRequestBody($request),
             ],
             'response' => [
-                'status_code' => $this->getStatusCode($response),
+                'status_code' => $status,
                 'size' => strlen($response->getContent()),
                 'headers' => $this->getResponseHeaders($response),
                 'body' => $this->getResponseBody($response),

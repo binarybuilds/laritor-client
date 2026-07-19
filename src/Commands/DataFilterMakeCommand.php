@@ -3,6 +3,7 @@
 namespace BinaryBuilds\LaritorClient\Commands;
 
 use Illuminate\Console\GeneratorCommand;
+use Symfony\Component\Console\Input\InputArgument;
 
 class DataFilterMakeCommand extends GeneratorCommand
 {
@@ -34,7 +35,11 @@ class DataFilterMakeCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-       return __DIR__.'/../../stubs/LaritorDataFilter.stub';
+        return match ($this->argument('type')) {
+            'issues-only' => __DIR__.'/../../stubs/IssuesOnlyDataFilter.stub',
+            'exceptions-only' => __DIR__.'/../../stubs/ExceptionsOnlyDataFilter.stub',
+            default => __DIR__.'/../../stubs/FullObservabilityDataFilter.stub'
+        };
     }
 
     /**
@@ -50,7 +55,9 @@ class DataFilterMakeCommand extends GeneratorCommand
 
     protected function getArguments()
     {
-        return [];
+        return [
+            ['type', InputArgument::OPTIONAL, 'The type of the filter', 'full-observability'],
+        ];
     }
 
     protected function getNameInput()

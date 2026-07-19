@@ -54,12 +54,105 @@ class Laritor
 
     private $exception = null;
 
+    private int $requestStatus = 0;
+
+    private int $requestDuration = 0;
+
+    private $failedJob = null;
+
+    private $failedCommand = null;
+
+    private $jobDuration = 0;
+
+    private $commandDuration = 0;
+
+    public function getJobDuration()
+    {
+        return $this->jobDuration;
+    }
+
+    public function setJobDuration($jobDuration): void
+    {
+        $this->jobDuration = $jobDuration;
+    }
+
+    public function getCommandDuration()
+    {
+        return $this->commandDuration;
+    }
+
+    public function setCommandDuration($commandDuration): void
+    {
+        $this->commandDuration = $commandDuration;
+    }
+
+    /**
+     * @param $failedJob
+     * @return void
+     */
+    public function setFailedJob($failedJob): void
+    {
+        $this->failedJob = $failedJob;
+    }
+
+    /**
+     * @param $failedCommand
+     * @return void
+     */
+    public function setFailedCommand($failedCommand): void
+    {
+        $this->failedCommand = $failedCommand;
+    }
+
+    public function hasFailedJob(): bool
+    {
+        return !is_null($this->failedJob);
+    }
+
+    public function hasFailedCommand(): bool
+    {
+        return !is_null($this->failedCommand);
+    }
+
+    /**
+     * @param int $status
+     * @return void
+     */
+    public function setRequestStatus(int $status): void
+    {
+        $this->requestStatus = $status;
+    }
+
+    /**
+     * @param int $duration
+     * @return void
+     */
+    public function setRequestDuration(int $duration): void
+    {
+        $this->requestDuration = $duration;
+    }
+
+    public function getRequestStatus(): int
+    {
+        return $this->requestStatus;
+    }
+
+    public function getRequestDuration(): int
+    {
+        return $this->requestDuration;
+    }
+
     /**
      * @return \Throwable|null
      */
     public function getException()
     {
         return $this->exception;
+    }
+
+    public static function hasException(): bool
+    {
+        return !is_null(app(Laritor::class)->getException());
     }
 
     /**
@@ -274,6 +367,12 @@ class Laritor
         $this->context = 'BOOT';
         $this->hasCustomLogs = false;
         $this->exception = null;
+        $this->requestStatus = 0;
+        $this->requestDuration = 0;
+        $this->failedJob = null;
+        $this->failedCommand = null;
+        $this->jobDuration = 0;
+        $this->commandDuration = 0;
     }
 
     /**

@@ -36,6 +36,7 @@ class QueuedJobRecorder extends Recorder
             $this->processing($event);
         } elseif ($event instanceof JobExceptionOccurred) {
             app(ExceptionRecorder::class)->handle($event->exception);
+            $this->laritor->setFailedJob($event->job);
             $this->complete($event);
         } elseif ($event instanceof JobProcessed ) {
             $this->complete($event);
@@ -125,7 +126,9 @@ class QueuedJobRecorder extends Recorder
         foreach ($this->laritor->getEvents(static::$eventType) as $job) {
             if (isset($job['id']) && $job['id'] === $this->resolveJobId($event)) {
                 $start = Carbon::parse($job['started_at']);
-                $job['duration'] = $start->diffInMilliseconds();
+                $duration = $start->diffInMilliseconds();
+                $this->laritor->setJobDuration($duration);
+                $job['duration'] = $duration;
                 $job['started_at'] = $start->toDateTimeString();
                 $job['completed_at'] = now()->toDateTimeString();
                 $job['status'] = $event instanceof JobExceptionOccurred ? 'failed' : 'processed';
