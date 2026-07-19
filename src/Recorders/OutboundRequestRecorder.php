@@ -46,11 +46,6 @@ class OutboundRequestRecorder extends Recorder
      */
     public function sending(RequestSending $event)
     {
-        if ( Str::contains($event->request->url(), 'laritor.net') ||
-            !FilterHelper::recordOutboundRequest($event->request->url())) {
-            return;
-        }
-
         $this->laritor->pushEvent(static::$eventType, [
             'started_at' => now(),
             'completed_at' => null,

@@ -50,20 +50,23 @@ class DefaultOverride implements LaritorOverride
     }
 
     /**
-     * @param string $url
+     * @param $url
+     * @param $status_code
+     * @param $duration
      * @return bool
      */
-    public function recordOutboundRequest($url): bool
+    public function recordOutboundRequest($url, $status_code, $duration): bool
     {
         return true;
     }
 
     /**
-     * @param string $query
-     * @param int $duration
+     * @param $query
+     * @param $duration
+     * @param $path
      * @return bool
      */
-    public function recordQuery($query, $duration): bool
+    public function recordQuery($query, $duration, $path): bool
     {
         $ignore = [
             "`".config('session.table')."`",
@@ -81,19 +84,27 @@ class DefaultOverride implements LaritorOverride
     }
 
     /**
-     * @param Job $job
+     * @param string $connection
+     * @param string $queue
+     * @param string $job
+     * @param string $status
+     * @param int $duration
      * @return bool
      */
-    public function recordQueuedJob($job): bool
+    public function recordQueuedJob(string $connection, string $queue, string $job, string $status, int $duration): bool
     {
         return true;
     }
 
     /**
-     * @param Request $request
+     * @param $request
+     * @param $response
+     * @param $status
+     * @param $duration
+     * @param $user
      * @return bool
      */
-    public function recordRequest($request): bool
+    public function recordRequest($request, $response, $status, $duration, $user): bool
     {
         $ignore = [
             'telescope/*'.
@@ -115,9 +126,11 @@ class DefaultOverride implements LaritorOverride
 
     /**
      * @param string $command
+     * @param string $status
+     * @param int $duration
      * @return bool
      */
-    public function recordCommandOrScheduledTask($command): bool
+    public function recordCommandOrScheduledTask(string $command, string $status, int $duration): bool
     {
         return true;
     }
@@ -131,10 +144,12 @@ class DefaultOverride implements LaritorOverride
     }
 
     /**
-     * @param Email $message
+     * @param $mailable
+     * @param $to
+     * @param $subject
      * @return bool
      */
-    public function recordMail($message): bool
+    public function recordMail($mailable, $to, $subject): bool
     {
         return true;
     }
@@ -155,6 +170,17 @@ class DefaultOverride implements LaritorOverride
      * @return bool
      */
     public function recordFeatureFlag($flag, $scope): bool
+    {
+        return true;
+    }
+
+    /**
+     * @param $level
+     * @param $message
+     * @param array $context
+     * @return bool
+     */
+    public function recordLog($level, $message, array $context = []): bool
     {
         return true;
     }

@@ -30,18 +30,6 @@ class ScheduledTaskRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        $task = Str::substr(
-            Str::replace("'",'', $event->task->command),
-            mb_strpos(Str::replace("'",'', $event->task->command), 'artisan')
-        );
-
-        if (
-            in_array($task, ['artisan laritor:send-metrics', 'artisan laritor:sync']) ||
-            !FilterHelper::recordCommandOrScheduledTask($event->task->command)
-        ) {
-            return;
-        }
-
         if ($event instanceof ScheduledTaskStarting ) {
             $this->start($event);
         } elseif ($event instanceof ScheduledTaskFinished ) {

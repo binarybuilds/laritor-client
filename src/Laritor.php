@@ -2,7 +2,19 @@
 
 namespace BinaryBuilds\LaritorClient;
 
+use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
+use BinaryBuilds\LaritorClient\Recorders\CacheRecorder;
+use BinaryBuilds\LaritorClient\Recorders\CommandRecorder;
+use BinaryBuilds\LaritorClient\Recorders\ExceptionRecorder;
+use BinaryBuilds\LaritorClient\Recorders\FeatureFlagRecorder;
 use BinaryBuilds\LaritorClient\Recorders\LogRecorder;
+use BinaryBuilds\LaritorClient\Recorders\MailRecorder;
+use BinaryBuilds\LaritorClient\Recorders\NotificationRecorder;
+use BinaryBuilds\LaritorClient\Recorders\OutboundRequestRecorder;
+use BinaryBuilds\LaritorClient\Recorders\QueryRecorder;
+use BinaryBuilds\LaritorClient\Recorders\QueuedJobRecorder;
+use BinaryBuilds\LaritorClient\Recorders\RequestRecorder;
+use BinaryBuilds\LaritorClient\Recorders\ScheduledTaskRecorder;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Event;
@@ -39,6 +51,24 @@ class Laritor
     private $hasCustomLogs = false;
 
     public const CUSTOM_EVENT = 'custom';
+
+    private $exception = null;
+
+    /**
+     * @return \Throwable|null
+     */
+    public function getException()
+    {
+        return $this->exception;
+    }
+
+    /**
+     * @param \Throwable|null $exception
+     */
+    public function setException($exception): void
+    {
+        $this->exception = $exception;
+    }
 
     /**
      * @return string
@@ -243,6 +273,7 @@ class Laritor
         $this->response = 0;
         $this->context = 'BOOT';
         $this->hasCustomLogs = false;
+        $this->exception = null;
     }
 
     /**
@@ -252,7 +283,7 @@ class Laritor
     {
         rescue(function () {
             Event::fakeFor(function (){
-                $this->cleanupEvents();
+                $this->filterEvents();
                 if ($this->shouldSendEvents()) {
                     $this->callApi();
                 }
@@ -262,12 +293,42 @@ class Laritor
         }, null, false);
     }
 
-    public function cleanupEvents()
+    public function filterEvents()
     {
-        if (isset($this->events['outbound_requests'])) {
-            $this->events['outbound_requests'] = array_values(array_filter($this->events['outbound_requests'], function ($event) {
-                return !empty($event['completed_at']);
-            }));
+        foreach ($this->events as $type => $events) {
+            $filtered = [];
+            foreach ($events as $event) {
+                $shouldAdd = match ($type){
+                    CacheRecorder::$eventType => FilterHelper::recordCacheHit($event['key']),
+                    CommandRecorder::$eventType => FilterHelper::recordCommandOrScheduledTask($event['command'], $event['code'] === 0 ? 'completed' : 'failed', $event['duration'] ?? 0),
+                    ExceptionRecorder::$eventType => FilterHelper::recordException($this->exception),
+                    FeatureFlagRecorder::$eventType => FilterHelper::recordFeatureFlag($event['flag'], $event['feature_flag_scope']),
+                    LogRecorder::$eventType => FilterHelper::recordLog($event['level'], $event['message'], $event['log_context']),
+                    MailRecorder::$eventType => FilterHelper::recordMail($event['mailable'], $event['to'], $event['subject']),
+                    NotificationRecorder::$eventType => FilterHelper::recordNotification($event['notifiable_instance'], $event['notification']),
+                    OutboundRequestRecorder::$eventType => !empty($event['completed_at']) && FilterHelper::recordOutboundRequest($event['url'], $event['code'], $event['duration']),
+                    QueryRecorder::$eventType => FilterHelper::recordQuery($event['query'], $event['time'], $event['path']),
+                    QueuedJobRecorder::$eventType => FilterHelper::recordQueuedJob($event['connection'], $event['queue'], $event['job'], $event['status'], $event['duration'] ?? 0),
+                    RequestRecorder::$eventType => FilterHelper::recordRequest($event['request_instance'], $event['response_instance'], $event['response']['status_code'], $event['request']['duration']),
+                    ScheduledTaskRecorder::$eventType => FilterHelper::recordCommandOrScheduledTask($event['task'], $event['status'], $event['duration'] ?? 0),
+                    default => false
+                };
+
+                if ($shouldAdd) {
+                    unset($event['feature_flag_scope']);
+                    unset($event['notifiable_instance']);
+                    unset($event['request_instance']);
+                    unset($event['response_instance']);
+
+                    $filtered[] = $event;
+                }
+            }
+
+            if (!empty($filtered)) {
+                $this->events[$type] = $filtered;
+            } else {
+                unset($this->events[$type]);
+            }
         }
     }
 

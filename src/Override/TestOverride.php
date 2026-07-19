@@ -4,7 +4,7 @@ namespace BinaryBuilds\LaritorClient\Override;
 
 class TestOverride extends DefaultOverride
 {
-    public function recordRequest($request): bool
+    public function recordRequest($request, $response, $status, $duration, $user): bool
     {
         $ignore = [
             'laritor-job',

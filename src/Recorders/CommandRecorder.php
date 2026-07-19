@@ -33,10 +33,6 @@ class CommandRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if ($this->ignore($event->command) || !FilterHelper::recordCommandOrScheduledTask($event->command)) {
-            return;
-        }
-
         if ($event instanceof CommandStarting ) {
             $this->start($event);
         } elseif ($event instanceof CommandFinished ) {

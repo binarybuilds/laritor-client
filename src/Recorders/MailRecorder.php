@@ -31,10 +31,6 @@ class MailRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if (!FilterHelper::recordMail($event->message)) {
-            return;
-        }
-
         if ($event instanceof MessageSending ) {
             $this->sending($event);
         }

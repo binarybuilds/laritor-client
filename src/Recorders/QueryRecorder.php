@@ -24,10 +24,6 @@ class QueryRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if (!FilterHelper::recordQuery($event->sql, $event->time)) {
-            return;
-        }
-
         if($caller = $this->getCallerFromStackTrace()) {
             $time = $event->time;
 

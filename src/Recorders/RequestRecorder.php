@@ -32,10 +32,6 @@ class RequestRecorder extends Recorder
         $request = $event->request;
         $response = $event->response;
 
-        if ($request->is('laritor/*') || !FilterHelper::recordRequest($request)) {
-            return;
-        }
-
         $isBot = FilterHelper::isBot($request);
 
         $this->laritor->responseRenderCompleted(isset($event->response->exception) ? $event->response->exception : null);
@@ -57,6 +53,8 @@ class RequestRecorder extends Recorder
         /** @phpstan-ignore-next-line  */
         $controller = $request->route() ? explode('@', optional($request->route())->getActionName()) : [];
         $this->laritor->pushEvent(static::$eventType, [
+            'request_instance' => $request,
+            'response_instance' => $response,
             'request' => [
                 'started_at' => now()->subMilliseconds($duration)->format('Y-m-d H:i:s'),
                 'completed_at' => now()->format('Y-m-d H:i:s'),

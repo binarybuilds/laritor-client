@@ -10,6 +10,8 @@ use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Queue\Events\JobQueued;
+use Illuminate\Queue\Events\JobQueueing;
+use Illuminate\Support\Facades\Queue;
 
 class QueuedJobRecorder extends Recorder
 {
@@ -31,10 +33,6 @@ class QueuedJobRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if ($event->job instanceof QueueHealthCheck || !FilterHelper::recordQueuedJob($event->job)) {
-            return;
-        }
-
         if ($event instanceof JobQueued ) {
             $this->queued($event);
         }
