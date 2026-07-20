@@ -1,7 +1,8 @@
-# Upgrading
-## Upgrading to 4.x from 3.x
+# Upgrade Guide
 
-This guide covers upgrading `binarybuilds/laritor-client` from 3.x to 4.x.
+## Upgrading to 4.x
+
+This guide covers upgrading `binarybuilds/laritor-client` to 4.x.
 
 ### Upgrade the package
 
@@ -11,29 +12,102 @@ Update your Composer constraint, then refresh the lock file:
 composer require binarybuilds/laritor-client:^4.0 --update-with-all-dependencies
 ```
 
-### Update custom filters
+### Optional: Update custom event filters
 
-4.x moves event filtering from the point where an event is recorded to just before the event batch is sent. This lets filters use the completed event data, such as an HTTP response status, request duration, queued-job outcome, or mail recipient.
+> This step is required only if your application uses a custom Laritor override filter class. If you are unsure how to upgrade your custom override class, rename your current override class, publish the new override class by following https://laritor.com/docs/customization and make any necessary changes after publishing.
 
-If your application binds a custom implementation of `BinaryBuilds\LaritorClient\Override\LaritorOverride`, update it to match the new interface. A custom class that extends `DefaultOverride` only needs to update the methods it overrides; a class that implements the interface directly must implement the new `recordLog()` method as well.
+4.x moves event filtering from the point where an event is recorded to just before the event batch is sent. Filters can therefore use final status and duration values. It also replaces the recording and payload environment variables from `config/laritor.php` with methods on an override class. Keep filters side-effect free, since they run while Laritor prepares a batch for delivery.
 
-| Filter | 3.x signature | 4.x signature |
+Configure 4.x filters in a class extending `BinaryBuilds\LaritorClient\Override\DefaultOverride`. The override receives the request, response, status, duration, user, and other completed-event data needed to make context-aware decisions.
+
+| Filter or setting | 3.x signature / environment variable | 4.x override method |
 | --- | --- | --- |
-| Outbound request | `recordOutboundRequest($url)` | `recordOutboundRequest($url, $statusCode, $duration)` |
-| Query | `recordQuery($query, $duration)` | `recordQuery($query, $duration, $path)` |
-| Queued job | `recordQueuedJob($job)` | `recordQueuedJob(string $connection, string $queue, string $job, string $status, int $duration)` |
-| Request | `recordRequest($request)` | `recordRequest($request, $response, $status, $duration, $user)` |
-| Command / scheduled task | `recordCommandOrScheduledTask($command)` | `recordCommandOrScheduledTask(string $command, string $status, int $duration)` |
-| Mail | `recordMail($message)` | `recordMail($mailable, $to, $subject)` |
-| Log | _not available_ | `recordLog($level, $message, array $context = [])` |
+| Outbound request filter | `recordOutboundRequest($url)` | `recordOutboundRequest($url, $statusCode, $duration)` |
+| Query filter | `recordQuery($query, $duration)` | `recordQuery($query, $duration, $path)` |
+| Queued-job filter | `recordQueuedJob($job)` | `recordQueuedJob(string $connection, string $queue, string $job, string $status, $duration)` |
+| Request filter | `recordRequest($request)` | `recordRequest($request, $response, $status, $duration, $user)` |
+| Command / scheduled-task filter | `recordCommandOrScheduledTask($command)` | `recordCommandOrScheduledTask(string $command, string $status, $duration)` |
+| Mail filter | `recordMail($message)` | `recordMail($mailable, $to, $subject)` |
+| Log filter | _Not available_ | `recordLog($level, $message, array $context = [])` |
+| Log level | `LARITOR_LOG_LEVEL` | `recordLog($level, $message, array $context = [])` |
+| Context | `LARITOR_RECORD_CONTEXT` | `recordRequestContext()`, `recordCommandContext()`, `recordScheduledTaskContext()`, `recordQueuedJobContext()`, `recordLogContext()` |
+| Database schema | `LARITOR_RECORD_DB_SCHEMA` | `recordDatabaseSchema()` |
+| Query bindings | `LARITOR_RECORD_QUERY_BINDINGS` | `recordQueryBindings($query, $duration, $path)` |
+| Request query string | `LARITOR_RECORD_QUERY_STRING` | `recordRequestQueryParameters()` |
+| Request headers / body | `LARITOR_RECORD_REQUEST_HEADERS` / `LARITOR_RECORD_REQUEST_BODY` | `recordRequestHeaders()` / `recordRequestBody()` |
+| Response headers / body | `LARITOR_RECORD_REQUEST_RESPONSE_HEADERS` / `LARITOR_RECORD_REQUEST_RESPONSE_BODY` | `recordResponseHeaders()` / `recordResponseBody()` |
+| Session data | `LARITOR_RECORD_SESSION_DATA` | `recordSessionData()` |
+| Outbound-request headers / body | `LARITOR_RECORD_OUTBOUND_REQUEST_HEADERS` / `LARITOR_RECORD_OUTBOUND_REQUEST_BODY` | `recordOutboundRequestHeaders()` / `recordOutboundRequestBody()` |
+| Outbound response headers / body | `LARITOR_RECORD_OUTBOUND_REQUEST_RESPONSE_HEADERS` / `LARITOR_RECORD_OUTBOUND_REQUEST_RESPONSE_BODY` | `recordOutboundRequestResponseHeaders()` / `recordOutboundRequestResponseBody()` |
+| Whitelisted vendors | `LARITOR_WHITELISTED_VENDORS` | `whitelistedVendors(): array` |
 
-### Review filtering behavior
+If your application implements `LaritorOverride` directly, implement every new payload/context method in the table as well as `recordLog()`. Extending `DefaultOverride` is the recommended migration path: only update the methods you need.
 
-`LARITOR_LOG_LEVEL` is no longer applied by `LogRecorder`. If you used it to limit logs, move that policy into a custom `recordLog()` filter, for example:
+For example, this override retains the 3.x-style “only errors and above” log policy and disables request headers and session data:
 
 ```php
-public function recordLog($level, $message, array $context = []): bool
+namespace App\Laritor;
+
+use BinaryBuilds\LaritorClient\Override\DefaultOverride;
+
+class LaritorDataFilter extends DefaultOverride
 {
-    return in_array(strtolower($level), ['error', 'critical', 'alert', 'emergency'], true);
+    public function recordLog($level, $message, array $context = []): bool
+    {
+        return in_array(strtolower($level), ['error', 'critical', 'alert', 'emergency'], true);
+    }
+
+    public function recordRequestHeaders($request, $response, $status, $duration, $user): bool
+    {
+        return false;
+    }
+
+    public function recordSessionData($request, $response, $status, $duration, $user): bool
+    {
+        return false;
+    }
 }
 ```
+
+Bind the override in an application service provider (typically in `register`):
+
+```php
+use App\Laritor\LaritorDataFilter;
+use BinaryBuilds\LaritorClient\Override\LaritorOverride;
+
+$this->app->bind(LaritorOverride::class, LaritorDataFilter::class);
+```
+
+Review the defaults before deploying. `DefaultOverride` records request/response headers and session data by default; request and response bodies remain disabled. Existing redaction still applies, but applications with stricter data-collection requirements should explicitly return `false` from the relevant methods.
+
+For example, a request filter can exclude successful health checks while retaining failures:
+
+```php
+public function recordRequest($request, $response, $status, $duration, $user): bool
+{
+    return ! $request->is('health') || $status >= 400;
+}
+```
+
+### Use a generated filter preset (optional)
+
+The filter generator now accepts an optional preset and creates `App\Laritor\LaritorDataFilter`:
+
+```sh
+# Full observability (default)
+php artisan make:laritor-filter
+
+# Capture data associated with failures and slow operations
+php artisan make:laritor-filter issues-only
+
+# Capture only exception-related data
+php artisan make:laritor-filter exceptions-only
+```
+
+Bind the generated class as shown above. If a file with that name already exists, review and merge its customizations rather than overwriting it.
+
+### Other behavior changes
+
+- The default for `LARITOR_INGEST_EVENTS_WITHOUT_OCCURRENCE` is now `true`. Set it explicitly to `false` if you need the former default behavior.
+- Cache events now include the cache store name and a `duration` field.
+- The default filters omit Laritor's own cache keys, Laritor HTTP ingestion requests and routes, `QueueHealthCheck` jobs, and Laritor/internal Artisan commands, in addition to common framework and monitoring noise.
