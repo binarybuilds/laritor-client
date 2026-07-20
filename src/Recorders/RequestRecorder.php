@@ -136,7 +136,7 @@ class RequestRecorder extends Recorder
                 DataHelper::redactData(trim($request->getContent()));
         }
 
-        return false;
+        return [];
     }
 
     protected function getRequestHeaders($request, $response, $status, $duration)
@@ -145,7 +145,7 @@ class RequestRecorder extends Recorder
             return DataHelper::redactHeaders($request->headers->all());
         }
 
-        return false;
+        return [];
     }
 
     protected function getResponseBody($request, $response, $status, $duration)
@@ -163,7 +163,7 @@ class RequestRecorder extends Recorder
             return DataHelper::redactData($body);
         }
 
-        return false;
+        return [];
     }
 
     protected function getResponseHeaders($request, $response, $status, $duration)
@@ -172,7 +172,7 @@ class RequestRecorder extends Recorder
             return DataHelper::redactHeaders($response->headers->all());
         }
 
-        return false;
+        return [];
     }
 
     private function getAuthenticatedUser()

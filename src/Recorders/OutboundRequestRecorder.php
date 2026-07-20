@@ -114,7 +114,7 @@ class OutboundRequestRecorder extends Recorder
                 DataHelper::redactData($request->body());
         }
 
-        return false;
+        return [];
     }
 
     protected function getRequestHeaders(Request $request, $status, $duration)
@@ -123,7 +123,7 @@ class OutboundRequestRecorder extends Recorder
             return DataHelper::redactHeaders($request->headers());
         }
 
-        return false;
+        return [];
     }
 
     protected function getResponseBody(Response $response, $url, $status, $duration)
@@ -138,7 +138,7 @@ class OutboundRequestRecorder extends Recorder
             return DataHelper::redactData($response->body());
         }
 
-        return false;
+        return [];
     }
 
     protected function getResponseHeaders(Response $response, $url, $status, $duration)
@@ -147,6 +147,6 @@ class OutboundRequestRecorder extends Recorder
             return DataHelper::redactHeaders($response->headers());
         }
 
-        return false;
+        return [];
     }
 }
