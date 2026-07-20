@@ -134,7 +134,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordLog($level, $message, array $context = []): bool
     {
-        return parent::recordLog($level, $message, array $context = []);
+        return parent::recordLog($level, $message, $context);
     }
 
     /**
