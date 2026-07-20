@@ -214,91 +214,208 @@ class LaritorDataFilter extends DefaultOverride
         return parent::isBot($request);
     }
 
+    /**
+     * @param string $command
+     * @param string $status
+     * @param $duration
+     * @return bool
+     */
     public function recordCommandContext(string $command, string $status, $duration): bool
     {
         return self::recordCommandOrScheduledTask($command, $status, $duration);
     }
 
+    /**
+     * @param string $task
+     * @param string $status
+     * @param $duration
+     * @return bool
+     */
     public function recordScheduledTaskContext(string $task, string $status, $duration): bool
     {
        return self::recordCommandOrScheduledTask($task, $status, $duration);
     }
 
+    /**
+     * @param $request
+     * @param $response
+     * @param $status
+     * @param $duration
+     * @param $user
+     * @return bool
+     */
     public function recordRequestContext($request, $response, $status, $duration, $user): bool
     {
         return self::recordRequest($request, $response, $status, $duration, $user);
     }
 
+    /**
+     * @param $level
+     * @param $message
+     * @return bool
+     */
     public function recordLogContext($level, $message): bool
     {
        return self::recordLog($level, $message);
     }
 
+    /**
+     * @param string $connection
+     * @param string $queue
+     * @param string $job
+     * @param string $status
+     * @param $duration
+     * @return bool
+     */
     public function recordQueuedJobContext(string $connection, string $queue, string $job, string $status, $duration): bool
     {
         return self::recordQueuedJob($connection, $queue, $job, $status, $duration);
     }
 
+    /**
+     * @return bool
+     */
     public function recordDatabaseSchema(): bool
     {
         return parent::recordDatabaseSchema();
     }
 
+    /**
+     * @param $query
+     * @param $duration
+     * @param $path
+     * @return bool
+     */
     public function recordQueryBindings($query, $duration, $path): bool
     {
         return self::recordQuery($query, $duration, $path);
     }
 
+    /**
+     * @param $request
+     * @param $response
+     * @param $status
+     * @param $duration
+     * @param $user
+     * @return bool
+     */
     public function recordRequestQueryParameters($request, $response, $status, $duration, $user): bool
     {
         return self::recordRequest($request, $response, $status, $duration, $user);
     }
 
+    /**
+     * @param $request
+     * @param $response
+     * @param $status
+     * @param $duration
+     * @param $user
+     * @return bool
+     */
     public function recordRequestHeaders($request, $response, $status, $duration, $user): bool
     {
         return self::recordRequest($request, $response, $status, $duration, $user);
     }
 
+    /**
+     * @param $request
+     * @param $response
+     * @param $status
+     * @param $duration
+     * @param $user
+     * @return bool
+     */
     public function recordRequestBody($request, $response, $status, $duration, $user): bool
     {
         return self::recordRequest($request, $response, $status, $duration, $user);
     }
 
+    /**
+     * @param $request
+     * @param $response
+     * @param $status
+     * @param $duration
+     * @param $user
+     * @return bool
+     */
     public function recordResponseHeaders($request, $response, $status, $duration, $user): bool
     {
         return self::recordRequest($request, $response, $status, $duration, $user);
     }
 
+    /**
+     * @param $request
+     * @param $response
+     * @param $status
+     * @param $duration
+     * @param $user
+     * @return bool
+     */
     public function recordResponseBody($request, $response, $status, $duration, $user): bool
     {
        return self::recordRequest($request, $response, $status, $duration, $user);
     }
 
+    /**
+     * @param $request
+     * @param $response
+     * @param $status
+     * @param $duration
+     * @param $user
+     * @return bool
+     */
     public function recordSessionData($request, $response, $status, $duration, $user): bool
     {
         return self::recordRequest($request, $response, $status, $duration, $user);
     }
 
+    /**
+     * @param $url
+     * @param $status_code
+     * @param $duration
+     * @return bool
+     */
     public function recordOutboundRequestHeaders($url, $status_code, $duration): bool
     {
         return self::recordOutboundRequest($url, $status_code, $duration);
     }
 
+    /**
+     * @param $url
+     * @param $status_code
+     * @param $duration
+     * @return bool
+     */
     public function recordOutboundRequestBody($url, $status_code, $duration): bool
     {
         return self::recordOutboundRequest($url, $status_code, $duration);
     }
 
+    /**
+     * @param $url
+     * @param $status_code
+     * @param $duration
+     * @return bool
+     */
     public function recordOutboundRequestResponseHeaders($url, $status_code, $duration): bool
     {
         return self::recordOutboundRequest($url, $status_code, $duration);
     }
 
+    /**
+     * @param $url
+     * @param $status_code
+     * @param $duration
+     * @return bool
+     */
     public function recordOutboundRequestResponseBody($url, $status_code, $duration): bool
     {
         return self::recordOutboundRequest($url, $status_code, $duration);
     }
 
+    /**
+     * @return array
+     */
     public function whitelistedVendors(): array
     {
         return parent::whitelistedVendors();

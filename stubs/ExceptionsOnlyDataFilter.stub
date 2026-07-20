@@ -147,91 +147,208 @@ class LaritorDataFilter extends DefaultOverride
         return parent::isBot($request);
     }
 
+    /**
+     * @param string $command
+     * @param string $status
+     * @param $duration
+     * @return bool
+     */
     public function recordCommandContext(string $command, string $status, $duration): bool
     {
         return Laritor::hasException();
     }
 
+    /**
+     * @param string $task
+     * @param string $status
+     * @param $duration
+     * @return bool
+     */
     public function recordScheduledTaskContext(string $task, string $status, $duration): bool
     {
        return Laritor::hasException();
     }
 
+    /**
+     * @param $request
+     * @param $response
+     * @param $status
+     * @param $duration
+     * @param $user
+     * @return bool
+     */
     public function recordRequestContext($request, $response, $status, $duration, $user): bool
     {
         return Laritor::hasException();
     }
 
+    /**
+     * @param $level
+     * @param $message
+     * @return bool
+     */
     public function recordLogContext($level, $message): bool
     {
        return Laritor::hasException();
     }
 
+    /**
+     * @param string $connection
+     * @param string $queue
+     * @param string $job
+     * @param string $status
+     * @param $duration
+     * @return bool
+     */
     public function recordQueuedJobContext(string $connection, string $queue, string $job, string $status, $duration): bool
     {
         return Laritor::hasException();
     }
 
+    /**
+     * @return bool
+     */
     public function recordDatabaseSchema(): bool
     {
         return parent::recordDatabaseSchema();
     }
 
+    /**
+     * @param $query
+     * @param $duration
+     * @param $path
+     * @return bool
+     */
     public function recordQueryBindings($query, $duration, $path): bool
     {
         return Laritor::hasException();
     }
 
+    /**
+     * @param $request
+     * @param $response
+     * @param $status
+     * @param $duration
+     * @param $user
+     * @return bool
+     */
     public function recordRequestQueryParameters($request, $response, $status, $duration, $user): bool
     {
         return Laritor::hasException();
     }
 
+    /**
+     * @param $request
+     * @param $response
+     * @param $status
+     * @param $duration
+     * @param $user
+     * @return bool
+     */
     public function recordRequestHeaders($request, $response, $status, $duration, $user): bool
     {
         return Laritor::hasException();
     }
 
+    /**
+     * @param $request
+     * @param $response
+     * @param $status
+     * @param $duration
+     * @param $user
+     * @return bool
+     */
     public function recordRequestBody($request, $response, $status, $duration, $user): bool
     {
         return Laritor::hasException();
     }
 
+    /**
+     * @param $request
+     * @param $response
+     * @param $status
+     * @param $duration
+     * @param $user
+     * @return bool
+     */
     public function recordResponseHeaders($request, $response, $status, $duration, $user): bool
     {
         return Laritor::hasException();
     }
 
+    /**
+     * @param $request
+     * @param $response
+     * @param $status
+     * @param $duration
+     * @param $user
+     * @return bool
+     */
     public function recordResponseBody($request, $response, $status, $duration, $user): bool
     {
        return Laritor::hasException();
     }
 
+    /**
+     * @param $request
+     * @param $response
+     * @param $status
+     * @param $duration
+     * @param $user
+     * @return bool
+     */
     public function recordSessionData($request, $response, $status, $duration, $user): bool
     {
         return Laritor::hasException();
     }
 
+    /**
+     * @param $url
+     * @param $status_code
+     * @param $duration
+     * @return bool
+     */
     public function recordOutboundRequestHeaders($url, $status_code, $duration): bool
     {
         return Laritor::hasException();
     }
 
+    /**
+     * @param $url
+     * @param $status_code
+     * @param $duration
+     * @return bool
+     */
     public function recordOutboundRequestBody($url, $status_code, $duration): bool
     {
         return Laritor::hasException();
     }
 
+    /**
+     * @param $url
+     * @param $status_code
+     * @param $duration
+     * @return bool
+     */
     public function recordOutboundRequestResponseHeaders($url, $status_code, $duration): bool
     {
         return Laritor::hasException();
     }
 
+    /**
+     * @param $url
+     * @param $status_code
+     * @param $duration
+     * @return bool
+     */
     public function recordOutboundRequestResponseBody($url, $status_code, $duration): bool
     {
         return Laritor::hasException();
     }
 
+    /**
+     * @return array
+     */
     public function whitelistedVendors(): array
     {
         return Laritor::hasException();
