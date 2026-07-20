@@ -59,7 +59,7 @@ class LaritorDataFilter extends DefaultOverride
      * @param int $duration
      * @return bool
      */
-    public function recordQueuedJob(string $connection, string $queue, string $job, string $status, int $duration): bool
+    public function recordQueuedJob(string $connection, string $queue, string $job, string $status, $duration): bool
     {
         return Laritor::hasException();
     }
@@ -83,7 +83,7 @@ class LaritorDataFilter extends DefaultOverride
      * @param int $duration
      * @return bool
      */
-    public function recordCommandOrScheduledTask(string $command, string $status, int $duration): bool
+    public function recordCommandOrScheduledTask(string $command, string $status, $duration): bool
     {
         return Laritor::hasException();
     }
@@ -147,12 +147,12 @@ class LaritorDataFilter extends DefaultOverride
         return parent::isBot($request);
     }
 
-    public function recordCommandContext(string $command, string $status, int $duration): bool
+    public function recordCommandContext(string $command, string $status, $duration): bool
     {
         return Laritor::hasException();
     }
 
-    public function recordScheduledTaskContext(string $task, string $status, int $duration): bool
+    public function recordScheduledTaskContext(string $task, string $status, $duration): bool
     {
        return Laritor::hasException();
     }
@@ -167,7 +167,7 @@ class LaritorDataFilter extends DefaultOverride
        return Laritor::hasException();
     }
 
-    public function recordQueuedJobContext(string $connection, string $queue, string $job, string $status, int $duration): bool
+    public function recordQueuedJobContext(string $connection, string $queue, string $job, string $status, $duration): bool
     {
         return Laritor::hasException();
     }

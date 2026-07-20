@@ -101,7 +101,7 @@ class LaritorDataFilter extends DefaultOverride
      * @param int $duration
      * @return bool
      */
-    public function recordQueuedJob(string $connection, string $queue, string $job, string $status, int $duration): bool
+    public function recordQueuedJob(string $connection, string $queue, string $job, string $status, $duration): bool
     {
         return
             $this->hasFailedRequest() ||
@@ -133,7 +133,7 @@ class LaritorDataFilter extends DefaultOverride
      * @param int $duration
      * @return bool
      */
-    public function recordCommandOrScheduledTask(string $command, string $status, int $duration): bool
+    public function recordCommandOrScheduledTask(string $command, string $status, $duration): bool
     {
         return strtolower($status) === 'failed' || $duration >= 60000;
     }
@@ -214,12 +214,12 @@ class LaritorDataFilter extends DefaultOverride
         return parent::isBot($request);
     }
 
-    public function recordCommandContext(string $command, string $status, int $duration): bool
+    public function recordCommandContext(string $command, string $status, $duration): bool
     {
         return self::recordCommandOrScheduledTask($command, $status, $duration);
     }
 
-    public function recordScheduledTaskContext(string $task, string $status, int $duration): bool
+    public function recordScheduledTaskContext(string $task, string $status, $duration): bool
     {
        return self::recordCommandOrScheduledTask($task, $status, $duration);
     }
@@ -234,7 +234,7 @@ class LaritorDataFilter extends DefaultOverride
        return self::recordLog($level, $message);
     }
 
-    public function recordQueuedJobContext(string $connection, string $queue, string $job, string $status, int $duration): bool
+    public function recordQueuedJobContext(string $connection, string $queue, string $job, string $status, $duration): bool
     {
         return self::recordQueuedJob($connection, $queue, $job, $status, $duration);
     }

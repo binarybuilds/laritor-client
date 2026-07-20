@@ -58,7 +58,7 @@ class FilterHelper
         });
     }
 
-    public static function recordQueuedJob(string $connection, string $queue, string $job, string $status, int $duration): bool
+    public static function recordQueuedJob(string $connection, string $queue, string $job, string $status, $duration): bool
     {
         return ! Str::contains($job, 'QueueHealthCheck') &&
             static::recordEvent(function () use ($connection, $queue, $job, $status, $duration) {
@@ -66,14 +66,14 @@ class FilterHelper
         });
     }
 
-    public static function recordRequest($request, $response, int $status, int $duration): bool
+    public static function recordRequest($request, $response, int $status, $duration): bool
     {
         return !$request->is('laritor/*') && static::recordEvent(function () use ($request, $response, $status, $duration) {
             return app(LaritorOverride::class)->recordRequest($request, $response, $status, $duration, Auth::user());
         });
     }
 
-    public static function recordCommandOrScheduledTask(string $command, string $status, int $duration): bool
+    public static function recordCommandOrScheduledTask(string $command, string $status, $duration): bool
     {
         return ! Str::contains($command, self::$ignoredCommands) &&
             static::recordEvent(function () use ($command, $status, $duration) {
@@ -123,14 +123,14 @@ class FilterHelper
         }, false);
     }
 
-    public static function recordCommandContext(string $command, string $status, int $duration): bool
+    public static function recordCommandContext(string $command, string $status, $duration): bool
     {
         return static::recordEvent(function () use ($command, $status, $duration) {
             return app(LaritorOverride::class)->recordCommandContext($command, $status, $duration);
         }, true);
     }
 
-    public static function recordScheduledTaskContext(string $task, string $status, int $duration): bool
+    public static function recordScheduledTaskContext(string $task, string $status, $duration): bool
     {
         return static::recordEvent(function () use ($task, $status, $duration) {
             return app(LaritorOverride::class)->recordScheduledTaskContext($task, $status, $duration);
@@ -151,7 +151,7 @@ class FilterHelper
         }, true);
     }
 
-    public static function recordQueuedJobContext(string $connection, string $queue, string $job, string $status, int $duration): bool
+    public static function recordQueuedJobContext(string $connection, string $queue, string $job, string $status, $duration): bool
     {
         return static::recordEvent(function () use ($connection, $queue, $job, $status, $duration) {
             return app(LaritorOverride::class)->recordQueuedJobContext($connection, $queue, $job, $status, $duration);

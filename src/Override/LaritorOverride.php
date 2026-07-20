@@ -63,7 +63,7 @@ interface LaritorOverride
      * @param int $duration
      * @return bool
      */
-    public function recordCommandOrScheduledTask(string $command, string $status, int $duration): bool;
+    public function recordCommandOrScheduledTask(string $command, string $status, $duration): bool;
 
     /**
      * @return bool
@@ -106,15 +106,15 @@ interface LaritorOverride
      */
     public function isBot($request): bool;
 
-    public function recordCommandContext(string $command, string $status, int $duration): bool;
+    public function recordCommandContext(string $command, string $status, $duration): bool;
 
-    public function recordScheduledTaskContext(string $task, string $status, int $duration): bool;
+    public function recordScheduledTaskContext(string $task, string $status, $duration): bool;
 
     public function recordRequestContext($request, $response, $status, $duration, $user): bool;
 
     public function recordLogContext($level, $message): bool;
 
-    public function recordQueuedJobContext(string $connection, string $queue, string $job, string $status, int $duration): bool;
+    public function recordQueuedJobContext(string $connection, string $queue, string $job, string $status, $duration): bool;
 
     public function recordDatabaseSchema(): bool;
 
