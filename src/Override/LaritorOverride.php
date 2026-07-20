@@ -22,35 +22,48 @@ interface LaritorOverride
     public function recordException($exception): bool;
 
     /**
-     * @param string $url
+     * @param $url
+     * @param $status_code
+     * @param $duration
      * @return bool
      */
-    public function recordOutboundRequest($url): bool;
+    public function recordOutboundRequest($url, $status_code, $duration): bool;
 
     /**
-     * @param string $query
+     * @param $query
+     * @param $duration
+     * @param $path
+     * @return bool
+     */
+    public function recordQuery($query, $duration, $path): bool;
+
+    /**
+     * @param string $connection
+     * @param string $queue
+     * @param string $job
+     * @param string $status
      * @param int $duration
      * @return bool
      */
-    public function recordQuery($query, $duration): bool;
+    public function recordQueuedJob(string $connection, string $queue, string $job, string $status, int $duration): bool;
 
     /**
-     * @param Job $job
+     * @param $request
+     * @param $response
+     * @param $status
+     * @param $duration
+     * @param $user
      * @return bool
      */
-    public function recordQueuedJob($job): bool;
-
-    /**
-     * @param Request $request
-     * @return bool
-     */
-    public function recordRequest($request): bool;
+    public function recordRequest($request, $response, $status, $duration, $user): bool;
 
     /**
      * @param string $command
+     * @param string $status
+     * @param int $duration
      * @return bool
      */
-    public function recordCommandOrScheduledTask($command): bool;
+    public function recordCommandOrScheduledTask(string $command, string $status, $duration): bool;
 
     /**
      * @return bool
@@ -58,10 +71,12 @@ interface LaritorOverride
     public function recordTaskScheduler(): bool;
 
     /**
-     * @param Email $message
+     * @param $mailable
+     * @param $to
+     * @param $subject
      * @return bool
      */
-    public function recordMail($message): bool;
+    public function recordMail($mailable, $to, $subject): bool;
 
     /**
      * @param mixed $notifiable
@@ -78,8 +93,58 @@ interface LaritorOverride
     public function recordFeatureFlag($flag, $scope): bool;
 
     /**
+     * @param $level
+     * @param $message
+     * @param array $context
+     * @return bool
+     */
+    public function recordLog($level, $message, array $context = []): bool;
+
+    /**
      * @param Request $request
      * @return bool
      */
     public function isBot($request): bool;
+
+    public function recordCommandContext(string $command, string $status, $duration): bool;
+
+    public function recordScheduledTaskContext(string $task, string $status, $duration): bool;
+
+    public function recordRequestContext($request, $response, $status, $duration, $user): bool;
+
+    public function recordLogContext($level, $message): bool;
+
+    public function recordQueuedJobContext(string $connection, string $queue, string $job, string $status, $duration): bool;
+
+    public function recordDatabaseSchema(): bool;
+
+    /**
+     * @param $query
+     * @param $duration
+     * @param $path
+     * @return bool
+     */
+    public function recordQueryBindings($query, $duration, $path): bool;
+
+    public function recordRequestQueryParameters($request, $response, $status, $duration, $user): bool;
+
+    public function recordRequestHeaders($request, $response, $status, $duration, $user): bool;
+
+    public function recordRequestBody($request, $response, $status, $duration, $user): bool;
+
+    public function recordResponseHeaders($request, $response, $status, $duration, $user): bool;
+
+    public function recordResponseBody($request, $response, $status, $duration, $user): bool;
+
+    public function recordSessionData($request, $response, $status, $duration, $user): bool;
+
+    public function recordOutboundRequestHeaders($url, $status_code, $duration): bool;
+
+    public function recordOutboundRequestBody($url, $status_code, $duration): bool;
+
+    public function recordOutboundRequestResponseHeaders($url, $status_code, $duration): bool;
+
+    public function recordOutboundRequestResponseBody($url, $status_code, $duration): bool;
+
+    public function whitelistedVendors(): array;
 }

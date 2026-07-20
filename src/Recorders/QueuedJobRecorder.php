@@ -4,7 +4,6 @@ namespace BinaryBuilds\LaritorClient\Recorders;
 
 use BinaryBuilds\LaritorClient\Helpers\DataHelper;
 use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
-use BinaryBuilds\LaritorClient\Jobs\QueueHealthCheck;
 use Carbon\Carbon;
 use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Queue\Events\JobProcessed;
@@ -31,10 +30,6 @@ class QueuedJobRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if ($event->job instanceof QueueHealthCheck || !FilterHelper::recordQueuedJob($event->job)) {
-            return;
-        }
-
         if ($event instanceof JobQueued ) {
             $this->queued($event);
         }
@@ -42,6 +37,7 @@ class QueuedJobRecorder extends Recorder
             $this->processing($event);
         } elseif ($event instanceof JobExceptionOccurred) {
             app(ExceptionRecorder::class)->handle($event->exception);
+            $this->laritor->setFailedJob($event->job);
             $this->complete($event);
         } elseif ($event instanceof JobProcessed ) {
             $this->complete($event);
@@ -61,16 +57,18 @@ class QueuedJobRecorder extends Recorder
             $jobPayload = $event->payload();
         }
 
+        $queue = $event->job->queue ?? config("queue.connections.{$event->connectionName}.queue", 'default');
+        $jobName = isset($jobPayload['displayName']) ? $jobPayload['displayName'] : get_class($event->job);
         $this->laritor->pushEvent(static::$eventType, [
             'connection' => $event->connectionName,
-            'queue' => $event->job->queue ?? config("queue.connections.{$event->connectionName}.queue", 'default'),
-            'job' =>  isset($jobPayload['displayName']) ? $jobPayload['displayName'] : get_class($event->job),
+            'queue' => $queue,
+            'job' =>  $jobName,
             'id' => $this->resolveJobId($event),
             'delay' => isset($event->delay) ? $event->delay : ( isset($jobPayload['delay']) ? $jobPayload['delay'] : 0 ),
             'queued_at' => now()->toDateTimeString(),
             'status' => 'queued',
             'context' => $this->laritor->getContext(),
-            'custom_context' => DataHelper::getRedactedContext(),
+            'custom_context' => FilterHelper::recordQueuedJobContext($event->connectionName, $queue, $jobName, 'queued', 0) ? DataHelper::getRedactedContext() : [],
         ]);
     }
 
@@ -130,12 +128,15 @@ class QueuedJobRecorder extends Recorder
         $jobs = [];
         foreach ($this->laritor->getEvents(static::$eventType) as $job) {
             if (isset($job['id']) && $job['id'] === $this->resolveJobId($event)) {
+                $status = $event instanceof JobExceptionOccurred ? 'failed' : 'processed';
                 $start = Carbon::parse($job['started_at']);
-                $job['duration'] = $start->diffInMilliseconds();
+                $duration = $start->diffInMilliseconds();
+                $this->laritor->setJobDuration($duration);
+                $job['duration'] = $duration;
                 $job['started_at'] = $start->toDateTimeString();
                 $job['completed_at'] = now()->toDateTimeString();
-                $job['status'] = $event instanceof JobExceptionOccurred ? 'failed' : 'processed';
-                $job['custom_context'] = DataHelper::getRedactedContext();
+                $job['status'] = $status;
+                $job['custom_context'] = FilterHelper::recordQueuedJobContext($job['connection'], $job['queue'], $job['job'], $status, $duration) ? DataHelper::getRedactedContext() : [];
             }
 
             $jobs[] = $job;

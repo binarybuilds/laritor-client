@@ -9,7 +9,6 @@ use Illuminate\Http\Client\Events\RequestSending;
 use Illuminate\Http\Client\Events\ResponseReceived;
 use Illuminate\Http\Client\Request;
 use Illuminate\Http\Client\Response;
-use Illuminate\Support\Str;
 
 
 class OutboundRequestRecorder extends Recorder
@@ -46,11 +45,6 @@ class OutboundRequestRecorder extends Recorder
      */
     public function sending(RequestSending $event)
     {
-        if ( Str::contains($event->request->url(), 'laritor.net') ||
-            !FilterHelper::recordOutboundRequest($event->request->url())) {
-            return;
-        }
-
         $this->laritor->pushEvent(static::$eventType, [
             'started_at' => now(),
             'completed_at' => null,
@@ -89,18 +83,20 @@ class OutboundRequestRecorder extends Recorder
 
             if ( $request['status'] === 'sent' && $request['url'] === $outboundRequestEvent->request->url() ) {
                 $started = $request['started_at'];
+                $duration = $started->diffInMilliseconds();
+                $status = $outboundRequestEvent instanceof ResponseReceived ? $outboundRequestEvent->response->status() : 0;
                 $request['started_at'] = $started->format('Y-m-d H:i:s');
                 $request['completed_at'] = now()->format('Y-m-d H:i:s');
-                $request['duration'] = $started->diffInMilliseconds();
-                $request['code'] = $outboundRequestEvent instanceof ResponseReceived ? $outboundRequestEvent->response->status() : 0;
+                $request['duration'] = $duration;
+                $request['code'] = $status;
                 $request['status'] = 'completed';
                 $request['request'] = [
-                    'body' => $this->getRequestBody($outboundRequestEvent->request),
-                    'headers' => $this->getRequestHeaders($outboundRequestEvent->request),
+                    'body' => $this->getRequestBody($outboundRequestEvent->request, $status, $duration),
+                    'headers' => $this->getRequestHeaders($outboundRequestEvent->request, $status, $duration),
                 ];
                 $request['response'] = [
-                    'body' => $outboundRequestEvent instanceof ConnectionFailed ? false : $this->getResponseBody($outboundRequestEvent->response),
-                    'headers' => $outboundRequestEvent instanceof ConnectionFailed ? false : $this->getResponseHeaders($outboundRequestEvent->response),
+                    'body' => $outboundRequestEvent instanceof ConnectionFailed ? false : $this->getResponseBody($outboundRequestEvent->response, $outboundRequestEvent->request->url(), $status, $duration),
+                    'headers' => $outboundRequestEvent instanceof ConnectionFailed ? false : $this->getResponseHeaders($outboundRequestEvent->response, $outboundRequestEvent->request->url(), $status, $duration),
                 ];
             }
 
@@ -110,29 +106,29 @@ class OutboundRequestRecorder extends Recorder
         $this->laritor->addEvents(static::$eventType, $outboundRequests);
     }
 
-    protected function getRequestBody(Request $request)
+    protected function getRequestBody(Request $request, $status, $duration)
     {
-        if (config('laritor.outbound_requests.body')) {
+        if (FilterHelper::recordOutboundRequestBody($request->url(), $status, $duration)) {
             return $request->isJson() ?
                 DataHelper::redactArray(json_decode($request->body(), true)) :
                 DataHelper::redactData($request->body());
         }
 
-        return false;
+        return [];
     }
 
-    protected function getRequestHeaders(Request $request)
+    protected function getRequestHeaders(Request $request, $status, $duration)
     {
-        if (config('laritor.outbound_requests.headers')) {
+        if (FilterHelper::recordOutboundRequestHeaders($request->url(), $status, $duration)) {
             return DataHelper::redactHeaders($request->headers());
         }
 
-        return false;
+        return [];
     }
 
-    protected function getResponseBody(Response $response)
+    protected function getResponseBody(Response $response, $url, $status, $duration)
     {
-        if (config('laritor.outbound_requests.response_body')) {
+        if (FilterHelper::recordOutboundRequestResponseBody($url, $status, $duration)) {
             $body = $response->json();
 
             if (is_array($body)) {
@@ -142,15 +138,15 @@ class OutboundRequestRecorder extends Recorder
             return DataHelper::redactData($response->body());
         }
 
-        return false;
+        return [];
     }
 
-    protected function getResponseHeaders(Response $response)
+    protected function getResponseHeaders(Response $response, $url, $status, $duration)
     {
-        if (config('laritor.outbound_requests.response_headers')) {
+        if (FilterHelper::recordOutboundRequestResponseHeaders($url, $status, $duration)) {
             return DataHelper::redactHeaders($response->headers());
         }
 
-        return false;
+        return [];
     }
 }

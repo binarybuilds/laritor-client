@@ -5,7 +5,6 @@ namespace BinaryBuilds\LaritorClient\Recorders;
 use BinaryBuilds\LaritorClient\Helpers\DataHelper;
 use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Database\Events\QueryExecuted;
-use Illuminate\Support\Str;
 use BinaryBuilds\LaritorClient\Helpers\FileHelper;
 
 class QueryRecorder extends Recorder
@@ -24,18 +23,15 @@ class QueryRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if (!FilterHelper::recordQuery($event->sql, $event->time)) {
-            return;
-        }
-
         if($caller = $this->getCallerFromStackTrace()) {
             $time = $event->time;
+            $path = FileHelper::parseFileName($caller['file']) .'@'.$caller['line'];
 
             $query = [
                 'query' => $event->sql,
-                'bindings' => config('laritor.query_bindings') ? DataHelper::redactData($this->replaceBindings($event)) : null,
+                'bindings' => FilterHelper::recordQueryBindings($event->sql, $time, $path) ? DataHelper::redactData($this->replaceBindings($event)) : null,
                 'time' => $time,
-                'path' => FileHelper::parseFileName($caller['file']) .'@'.$caller['line'],
+                'path' => $path,
                 'completed_at' => now()->format('Y-m-d H:i:s'),
                 'context' => $this->laritor->getContext()
             ];

@@ -2,7 +2,6 @@
 
 namespace BinaryBuilds\LaritorClient\Recorders;
 
-use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use BinaryBuilds\LaritorClient\Laritor;
 use Illuminate\Support\Facades\Event;
 
@@ -19,11 +18,7 @@ class FeatureFlagRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if(!FilterHelper::recordFeatureFlag($event->feature, $event->scope)) {
-            return;
-        }
-
-        self::recordFeatureCheck($event->feature, $event->value !== false);
+        self::recordFeatureCheck($event->feature, $event->scope, $event->value !== false);
     }
 
     public static function registerRecorder()
@@ -33,13 +28,14 @@ class FeatureFlagRecorder extends Recorder
         }
     }
 
-    public static function recordFeatureCheck(string $feature, bool $active = true)
+    public static function recordFeatureCheck(string $feature, $scope = null, bool $active = true)
     {
         $laritor = app(Laritor::class);
 
         $laritor->pushEvent(self::$eventType, [
             'feature' => $feature,
             'active' => $active,
+            'feature_flag_scope' => $scope,
             'context' => $laritor->getContext(),
             'checked_at' => now()->toDateTimeString(),
         ]);

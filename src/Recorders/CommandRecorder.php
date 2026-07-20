@@ -33,10 +33,6 @@ class CommandRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if ($this->ignore($event->command) || !FilterHelper::recordCommandOrScheduledTask($event->command)) {
-            return;
-        }
-
         if ($event instanceof CommandStarting ) {
             $this->start($event);
         } elseif ($event instanceof CommandFinished ) {
@@ -93,11 +89,17 @@ class CommandRecorder extends Recorder
         )->firstWhere('completed_at', '=',null);
 
         if ($command) {
-            $command['duration'] = $command['started_at']->diffInMilliseconds();
+            $duration = $command['started_at']->diffInMilliseconds();
+            $this->laritor->setCommandDuration($duration);
+            if ($event->exitCode > 0) {
+                $this->laritor->setFailedCommand($event->command);
+            }
+
+            $command['duration'] = $duration;
             $command['completed_at'] = now()->format('Y-m-d H:i:s');
             $command['started_at'] = $command['started_at']->format('Y-m-d H:i:s');
             $command['code'] = $event->exitCode;
-            $command['custom_context'] = DataHelper::getRedactedContext();
+            $command['custom_context'] = FilterHelper::recordCommandContext($event->command, $event->exitCode > 0 ? 'failed' : 'completed', $duration) ? DataHelper::getRedactedContext() : [];
             $command['output'] = app(CommandOutput::class)->getLines();
 
             app(CommandOutput::class)->resetLines();

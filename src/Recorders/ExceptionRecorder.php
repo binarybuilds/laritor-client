@@ -3,7 +3,7 @@
 namespace BinaryBuilds\LaritorClient\Recorders;
 
 use BinaryBuilds\LaritorClient\Helpers\DataHelper;
-use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
+use BinaryBuilds\LaritorClient\Laritor;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Str;
 use BinaryBuilds\LaritorClient\Helpers\FileHelper;
@@ -25,9 +25,7 @@ class ExceptionRecorder extends Recorder
     {
         $throwable = $event;
 
-        if (!FilterHelper::recordException($throwable)) {
-            return;
-        }
+        app(Laritor::class)->setException($throwable);
 
         $data = [
             'message' => DataHelper::redactData($throwable->getMessage()),

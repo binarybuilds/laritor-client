@@ -41,7 +41,7 @@ class DataHelper
 
     public static function getRedactedContext()
     {
-        if (config('laritor.context') && class_exists(\Illuminate\Support\Facades\Context::class)) {
+        if (class_exists(\Illuminate\Support\Facades\Context::class)) {
             return app(DataRedactor::class)->redactArray(
                 \Illuminate\Support\Facades\Context::all()
             );

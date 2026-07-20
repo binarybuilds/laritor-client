@@ -3,7 +3,6 @@
 namespace BinaryBuilds\LaritorClient\Recorders;
 
 use BinaryBuilds\LaritorClient\Helpers\DataHelper;
-use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Mail\Events\MessageSent;
@@ -31,10 +30,6 @@ class MailRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if (!FilterHelper::recordMail($event->message)) {
-            return;
-        }
-
         if ($event instanceof MessageSending ) {
             $this->sending($event);
         }

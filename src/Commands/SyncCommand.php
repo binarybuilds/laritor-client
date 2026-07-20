@@ -2,6 +2,7 @@
 
 namespace BinaryBuilds\LaritorClient\Commands;
 
+use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use BinaryBuilds\LaritorClient\SendOutputToLaritor;
 use Illuminate\Console\Command;
 use BinaryBuilds\LaritorClient\Helpers\DatabaseHelper;
@@ -61,11 +62,7 @@ class SyncCommand extends Command
 
         $health_checks = $healthCheckHelper->getHealthChecks();
 
-        $schema = [];
-
-        if ( config('laritor.db_schema') ) {
-            $schema = $databaseHelper->getSchema();
-        }
+        $schema = FilterHelper::recordDatabaseSchema() ? $databaseHelper->getSchema() : [];
 
         $response = $laritor->sync([
             'scheduled_tasks' => $scheduled_tasks,

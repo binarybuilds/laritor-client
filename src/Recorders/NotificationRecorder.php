@@ -3,9 +3,7 @@
 namespace BinaryBuilds\LaritorClient\Recorders;
 
 use BinaryBuilds\LaritorClient\Helpers\DataHelper;
-use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Notifications\Events\NotificationSending;
 use Illuminate\Notifications\Events\NotificationSent;
@@ -35,10 +33,6 @@ class NotificationRecorder extends Recorder
      */
     public function trackEvent($event)
     {
-        if (!FilterHelper::recordNotification($event->notifiable, $event->notification)) {
-            return;
-        }
-
         if ($event instanceof NotificationSending ) {
             $this->sending($event);
         }
@@ -56,6 +50,7 @@ class NotificationRecorder extends Recorder
             'id' => $event->notification->id,
             'notification' => get_class($event->notification),
             'notifiable' => $this->formatNotifiable($event->notifiable),
+            'notifiable_instance' => $event->notifiable,
             'context' => $this->laritor->getContext(),
             'started_at' => now()->format('Y-m-d H:i:s'),
             'completed_at' => null

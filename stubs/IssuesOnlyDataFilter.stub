@@ -1,27 +1,54 @@
 <?php
 
-namespace BinaryBuilds\LaritorClient\Override;
+namespace {{ namespace }};
 
+use Illuminate\Contracts\Queue\Job;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Str;
-use Jaybizzle\CrawlerDetect\CrawlerDetect;
+use Symfony\Component\Mime\Email;
+use BinaryBuilds\LaritorClient\Override\DefaultOverride;
+use BinaryBuilds\LaritorClient\Laritor;
 
-class DefaultOverride implements LaritorOverride
+class LaritorDataFilter extends DefaultOverride
 {
+    public function hasFailedRequest()
+    {
+        $laritor = app(Laritor::class);
+
+        return
+            $laritor->getRequestStatus() >= 400 ||
+            $laritor->getRequestDuration() >= 1000;
+    }
+
+    public function hasFailedJob()
+    {
+        $laritor = app(Laritor::class);
+
+        return
+            $laritor->hasFailedJob() ||
+            $laritor->getJobDuration() >= 60000;
+    }
+
+    public function hasFailedCommand()
+    {
+        $laritor = app(Laritor::class);
+
+        return
+            $laritor->hasFailedCommand() ||
+            $laritor->getCommandDuration() >= 300000;
+    }
+
     /**
      * @param string $cacheKey
      * @return bool
      */
     public function recordCacheHit($cacheKey): bool
     {
-        $ignore = [
-            'illuminate:queue',
-            'laravel:',
-            'telescope:'
-        ];
-
-        return ! Str::startsWith($cacheKey, $ignore);
+        return
+            $this->hasFailedRequest() ||
+            $this->hasFailedJob() ||
+            $this->hasFailedCommand() ||
+            Laritor::hasException();
     }
 
     /**
@@ -30,20 +57,6 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordException($exception): bool
     {
-        $ignore = [
-            \Illuminate\Database\Eloquent\ModelNotFoundException::class,
-            \Symfony\Component\HttpKernel\Exception\NotFoundHttpException::class,
-            \Illuminate\Auth\Access\AuthorizationException::class,
-            \Illuminate\Auth\AuthenticationException::class,
-            \Illuminate\Validation\ValidationException::class,
-        ];
-
-        foreach ($ignore as $ignored ) {
-            if ($exception instanceof $ignored) {
-                return false;
-            }
-        }
-
         return true;
     }
 
@@ -55,7 +68,13 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordOutboundRequest($url, $status_code, $duration): bool
     {
-        return true;
+        return
+            $this->hasFailedRequest() ||
+            $this->hasFailedJob() ||
+            $this->hasFailedCommand() ||
+            Laritor::hasException() ||
+            $status_code >= 300 ||
+            $duration >= 1000;
     }
 
     /**
@@ -66,19 +85,12 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordQuery($query, $duration, $path): bool
     {
-        $ignore = [
-            "`".config('session.table')."`",
-            "`".config('cache.stores.database.table')."`",
-            "`".config('queue.connections.database.table')."`",
-            "`".config('pennant.stores.database.table')."`",
-            "`telescope_entries`",
-            "`telescope_entries_tags`",
-            "`pulse_entries`",
-            "`pulse_aggregates`",
-            "`action_events`",
-        ];
-
-        return ! Str::contains($query, $ignore);
+        return
+            $this->hasFailedRequest() ||
+            $this->hasFailedJob() ||
+            $this->hasFailedCommand() ||
+            Laritor::hasException() ||
+            $duration >= 200;
     }
 
     /**
@@ -91,7 +103,12 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordQueuedJob(string $connection, string $queue, string $job, string $status, $duration): bool
     {
-        return true;
+        return
+            $this->hasFailedRequest() ||
+            $this->hasFailedCommand() ||
+            Laritor::hasException() ||
+            strtolower($status) === 'failed' ||
+            $duration >= 60000;
     }
 
     /**
@@ -104,22 +121,10 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordRequest($request, $response, $status, $duration, $user): bool
     {
-        $ignore = [
-            'telescope/*'.
-            'pulse/*',
-            '_debugbar*',
-            '__clockwork*',
-            '_ignition/*',
-            '*livewire.min.js*'
-        ];
-
-        foreach ($ignore as $ignored ) {
-            if ($request->is($ignored)) {
-                return false;
-            }
-        }
-
-        return true;
+        return
+            Laritor::hasException() ||
+            $status >= 400 ||
+            $duration >= 1000;
     }
 
     /**
@@ -130,7 +135,7 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordCommandOrScheduledTask(string $command, string $status, $duration): bool
     {
-        return true;
+        return strtolower($status) === 'failed' || $duration >= 60000;
     }
 
     /**
@@ -138,7 +143,7 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordTaskScheduler(): bool
     {
-        return true;
+        return parent::recordTaskScheduler();
     }
 
     /**
@@ -149,7 +154,11 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordMail($mailable, $to, $subject): bool
     {
-        return true;
+        return
+            $this->hasFailedRequest() ||
+            $this->hasFailedJob() ||
+            $this->hasFailedCommand() ||
+            Laritor::hasException();
     }
 
     /**
@@ -159,7 +168,11 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordNotification($notifiable, $notification): bool
     {
-        return true;
+        return
+            $this->hasFailedRequest() ||
+            $this->hasFailedJob() ||
+            $this->hasFailedCommand() ||
+            Laritor::hasException();
     }
 
     /**
@@ -169,7 +182,11 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordFeatureFlag($flag, $scope): bool
     {
-        return true;
+        return
+            $this->hasFailedRequest() ||
+            $this->hasFailedJob() ||
+            $this->hasFailedCommand() ||
+            Laritor::hasException();
     }
 
     /**
@@ -180,7 +197,12 @@ class DefaultOverride implements LaritorOverride
      */
     public function recordLog($level, $message, array $context = []): bool
     {
-        return true;
+        return
+            $this->hasFailedRequest() ||
+            $this->hasFailedJob() ||
+            $this->hasFailedCommand() ||
+            Laritor::hasException() ||
+            !in_array(strtoupper($level), ['INFO','DEBUG']);
     }
 
     /**
@@ -189,98 +211,96 @@ class DefaultOverride implements LaritorOverride
      */
     public function isBot($request): bool
     {
-        $userAgent = $request->userAgent();
-        $crawler = new CrawlerDetect();
-        return $crawler->isCrawler($userAgent);
+        return parent::isBot($request);
     }
 
     public function recordCommandContext(string $command, string $status, $duration): bool
     {
-        return true;
+        return self::recordCommandOrScheduledTask($command, $status, $duration);
     }
 
     public function recordScheduledTaskContext(string $task, string $status, $duration): bool
     {
-       return true;
+       return self::recordCommandOrScheduledTask($task, $status, $duration);
     }
 
     public function recordRequestContext($request, $response, $status, $duration, $user): bool
     {
-        return true;
+        return self::recordRequest($request, $response, $status, $duration, $user);
     }
 
     public function recordLogContext($level, $message): bool
     {
-       return true;
+       return self::recordLog($level, $message);
     }
 
     public function recordQueuedJobContext(string $connection, string $queue, string $job, string $status, $duration): bool
     {
-        return true;
+        return self::recordQueuedJob($connection, $queue, $job, $status, $duration);
     }
 
     public function recordDatabaseSchema(): bool
     {
-        return true;
+        return parent::recordDatabaseSchema();
     }
 
     public function recordQueryBindings($query, $duration, $path): bool
     {
-        return true;
+        return self::recordQuery($query, $duration, $path);
     }
 
     public function recordRequestQueryParameters($request, $response, $status, $duration, $user): bool
     {
-        return true;
+        return self::recordRequest($request, $response, $status, $duration, $user);
     }
 
     public function recordRequestHeaders($request, $response, $status, $duration, $user): bool
     {
-        return true;
+        return self::recordRequest($request, $response, $status, $duration, $user);
     }
 
     public function recordRequestBody($request, $response, $status, $duration, $user): bool
     {
-        return false;
+        return self::recordRequest($request, $response, $status, $duration, $user);
     }
 
     public function recordResponseHeaders($request, $response, $status, $duration, $user): bool
     {
-        return true;
+        return self::recordRequest($request, $response, $status, $duration, $user);
     }
 
     public function recordResponseBody($request, $response, $status, $duration, $user): bool
     {
-       return false;
+       return self::recordRequest($request, $response, $status, $duration, $user);
     }
 
     public function recordSessionData($request, $response, $status, $duration, $user): bool
     {
-        return true;
+        return self::recordRequest($request, $response, $status, $duration, $user);
     }
 
     public function recordOutboundRequestHeaders($url, $status_code, $duration): bool
     {
-        return true;
+        return self::recordOutboundRequest($url, $status_code, $duration);
     }
 
     public function recordOutboundRequestBody($url, $status_code, $duration): bool
     {
-        return false;
+        return self::recordOutboundRequest($url, $status_code, $duration);
     }
 
     public function recordOutboundRequestResponseHeaders($url, $status_code, $duration): bool
     {
-        return true;
+        return self::recordOutboundRequest($url, $status_code, $duration);
     }
 
     public function recordOutboundRequestResponseBody($url, $status_code, $duration): bool
     {
-        return false;
+        return self::recordOutboundRequest($url, $status_code, $duration);
     }
 
     public function whitelistedVendors(): array
     {
-        return [];
+        return parent::whitelistedVendors();
     }
 }

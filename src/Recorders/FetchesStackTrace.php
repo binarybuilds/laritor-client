@@ -2,6 +2,7 @@
 
 namespace BinaryBuilds\LaritorClient\Recorders;
 
+use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Support\Str;
 
 trait FetchesStackTrace
@@ -36,7 +37,7 @@ trait FetchesStackTrace
      */
     protected function whitelistedVendors(): array
     {
-        $whitelist = config('laritor.whitelisted_vendors', '') ? explode(',', config('laritor.whitelisted_vendors', '')) : [];
+        $whitelist = FilterHelper::whitelistedVendors();
 
         return array_map(function ($path) {
             return 'vendor/'.$path;

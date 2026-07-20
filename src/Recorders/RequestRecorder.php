@@ -32,10 +32,6 @@ class RequestRecorder extends Recorder
         $request = $event->request;
         $response = $event->response;
 
-        if ($request->is('laritor/*') || !FilterHelper::recordRequest($request)) {
-            return;
-        }
-
         $isBot = FilterHelper::isBot($request);
 
         $this->laritor->responseRenderCompleted(isset($event->response->exception) ? $event->response->exception : null);
@@ -48,30 +44,37 @@ class RequestRecorder extends Recorder
             'data' => []
         ];
 
+        $status = $this->getStatusCode($response);
+        $this->laritor->setRequestDuration($duration);
+        $this->laritor->setRequestStatus($status);
+
         if ($request->hasSession()) {
             $session['id'] = $request->session()->getId();
             $session['name'] = $request->session()->getName();
-            $session['data'] = config('laritor.session.data') ? $request->session()->all() : [];
+            $session['data'] = FilterHelper::recordSessionData($request, $response, $status, $duration)  ? $request->session()->all() : [];
         }
 
         /** @phpstan-ignore-next-line  */
         $controller = $request->route() ? explode('@', optional($request->route())->getActionName()) : [];
+
         $this->laritor->pushEvent(static::$eventType, [
+            'request_instance' => $request,
+            'response_instance' => $response,
             'request' => [
                 'started_at' => now()->subMilliseconds($duration)->format('Y-m-d H:i:s'),
                 'completed_at' => now()->format('Y-m-d H:i:s'),
                 'duration' => $duration,
                 'memory' => round(memory_get_peak_usage(true) / 1024 / 1024, 1),
-                'url' => $this->getUrl($request),
+                'url' => $this->getUrl($request, $response, $status, $duration),
                 'size' => strlen($request->getContent()),
-                'headers' => $this->getRequestHeaders($request),
-                'body' => $this->getRequestBody($request),
+                'headers' => $this->getRequestHeaders($request, $response, $status, $duration),
+                'body' => $this->getRequestBody($request, $response, $status, $duration),
             ],
             'response' => [
-                'status_code' => $this->getStatusCode($response),
+                'status_code' => $status,
                 'size' => strlen($response->getContent()),
-                'headers' => $this->getResponseHeaders($response),
-                'body' => $this->getResponseBody($response),
+                'headers' => $this->getResponseHeaders($request, $response, $status, $duration),
+                'body' => $this->getResponseBody($request, $response, $status, $duration),
             ],
             'session' => $session,
             'user' => [
@@ -89,7 +92,7 @@ class RequestRecorder extends Recorder
                 'controller_method' => isset($controller[1]) ? $controller[1] : 'closure',
                 'method' => $request->method(),
             ],
-            'custom_context' => $this->getContext($request),
+            'custom_context' => $this->getContext($request, $response, $status, $duration),
         ]);
     }
 
@@ -102,7 +105,7 @@ class RequestRecorder extends Recorder
         return $response->getStatusCode();
     }
 
-    private function getContext($request)
+    private function getContext($request, $response, $status, $duration)
     {
         $context = [];
 
@@ -118,33 +121,36 @@ class RequestRecorder extends Recorder
             }
         }
 
-        return array_merge($context, DataHelper::getRedactedContext());
+        return array_merge(
+            $context,
+            FilterHelper::recordRequestContext($request, $response, $status, $duration) ? DataHelper::getRedactedContext() : []
+        );
     }
 
-    protected function getRequestBody($request)
+    protected function getRequestBody($request, $response, $status, $duration)
     {
-        if (config('laritor.requests.body')) {
+        if (FilterHelper::recordRequestBody($request, $response, $status, $duration)) {
             $payload = $request->post();
             return ! empty($payload) ?
                 DataHelper::redactArray($payload) :
                 DataHelper::redactData(trim($request->getContent()));
         }
 
-        return false;
+        return [];
     }
 
-    protected function getRequestHeaders($request)
+    protected function getRequestHeaders($request, $response, $status, $duration)
     {
-        if (config('laritor.requests.headers')) {
+        if (FilterHelper::recordRequestHeaders($request, $response, $status, $duration)) {
             return DataHelper::redactHeaders($request->headers->all());
         }
 
-        return false;
+        return [];
     }
 
-    protected function getResponseBody($response)
+    protected function getResponseBody($request, $response, $status, $duration)
     {
-        if (config('laritor.requests.response_body')) {
+        if (FilterHelper::recordResponseBody($request, $response, $status, $duration)) {
 
             $body = $response->getContent();
 
@@ -157,16 +163,16 @@ class RequestRecorder extends Recorder
             return DataHelper::redactData($body);
         }
 
-        return false;
+        return [];
     }
 
-    protected function getResponseHeaders($response)
+    protected function getResponseHeaders($request, $response, $status, $duration)
     {
-        if (config('laritor.requests.response_headers')) {
+        if (FilterHelper::recordResponseHeaders($request, $response, $status, $duration)) {
             return DataHelper::redactHeaders($response->headers->all());
         }
 
-        return false;
+        return [];
     }
 
     private function getAuthenticatedUser()
@@ -190,7 +196,7 @@ class RequestRecorder extends Recorder
         return $user;
     }
 
-    private function getUrl($request)
+    private function getUrl($request, $response, $status, $duration)
     {
         if ($this->isLivewireUpdateRequest($request)) {
             $url = '';
@@ -201,7 +207,7 @@ class RequestRecorder extends Recorder
                     $url = rtrim($fragments['path'], '/');
                 }
 
-                if (config('laritor.requests.query_string') && isset($fragments['query'])) {
+                if (FilterHelper::recordRequestQueryParameters($request, $response, $status, $duration) && isset($fragments['query'])) {
                     $url .= '?' . $fragments['query'];
                 }
 
@@ -212,7 +218,7 @@ class RequestRecorder extends Recorder
         }
 
         $query = '';
-        if (config('laritor.requests.query_string')) {
+        if (FilterHelper::recordRequestQueryParameters($request, $response, $status, $duration)) {
             $query = $request->getQueryString();
 
             $query = $query ? '?'.$query : '';
