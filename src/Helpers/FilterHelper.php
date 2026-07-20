@@ -122,4 +122,128 @@ class FilterHelper
             return app(LaritorOverride::class)->isBot($request);
         }, false);
     }
+
+    public static function recordCommandContext(string $command, string $status, int $duration): bool
+    {
+        return static::recordEvent(function () use ($command, $status, $duration) {
+            return app(LaritorOverride::class)->recordCommandContext($command, $status, $duration);
+        }, true);
+    }
+
+    public static function recordScheduledTaskContext(string $task, string $status, int $duration): bool
+    {
+        return static::recordEvent(function () use ($task, $status, $duration) {
+            return app(LaritorOverride::class)->recordScheduledTaskContext($task, $status, $duration);
+        }, true);
+    }
+
+    public static function recordRequestContext($request, $response, $status, $duration): bool
+    {
+        return static::recordEvent(function () use ($request, $response, $status, $duration) {
+            return app(LaritorOverride::class)->recordRequestContext($request, $response, $status, $duration, Auth::user());
+        }, true);
+    }
+
+    public static function recordLogContext($level, $message): bool
+    {
+        return static::recordEvent(function () use ($level, $message) {
+            return app(LaritorOverride::class)->recordLogContext($level, $message);
+        }, true);
+    }
+
+    public static function recordQueuedJobContext(string $connection, string $queue, string $job, string $status, int $duration): bool
+    {
+        return static::recordEvent(function () use ($connection, $queue, $job, $status, $duration) {
+            return app(LaritorOverride::class)->recordQueuedJobContext($connection, $queue, $job, $status, $duration);
+        }, true);
+    }
+
+    public static function recordDatabaseSchema(): bool
+    {
+        return static::recordEvent(function () {
+            return app(LaritorOverride::class)->recordDatabaseSchema();
+        }, true);
+    }
+
+    public static function recordQueryBindings($query, $duration, $path): bool
+    {
+        return static::recordEvent(function () use ($query, $duration, $path) {
+            return app(LaritorOverride::class)->recordQueryBindings($query, $duration, $path);
+        }, true);
+    }
+
+    public static function recordRequestQueryParameters($request, $response, $status, $duration): bool
+    {
+        return static::recordEvent(function () use ($request, $response, $status, $duration) {
+            return app(LaritorOverride::class)->recordRequestQueryParameters($request, $response, $status, $duration, Auth::user());
+        }, true);
+    }
+
+    public static function recordRequestHeaders($request, $response, $status, $duration): bool
+    {
+        return static::recordEvent(function () use ($request, $response, $status, $duration) {
+            return app(LaritorOverride::class)->recordRequestHeaders($request, $response, $status, $duration, Auth::user());
+        }, true);
+    }
+
+    public static function recordRequestBody($request, $response, $status, $duration): bool
+    {
+        return static::recordEvent(function () use ($request, $response, $status, $duration) {
+            return app(LaritorOverride::class)->recordRequestBody($request, $response, $status, $duration, Auth::user());
+        }, false);
+    }
+
+    public static function recordResponseHeaders($request, $response, $status, $duration): bool
+    {
+        return static::recordEvent(function () use ($request, $response, $status, $duration) {
+            return app(LaritorOverride::class)->recordResponseHeaders($request, $response, $status, $duration, Auth::user());
+        }, true);
+    }
+
+    public static function recordResponseBody($request, $response, $status, $duration): bool
+    {
+        return static::recordEvent(function () use ($request, $response, $status, $duration) {
+            return app(LaritorOverride::class)->recordResponseBody($request, $response, $status, $duration, Auth::user());
+        }, false);
+    }
+
+    public static function recordSessionData($request, $response, $status, $duration): bool
+    {
+        return static::recordEvent(function () use ($request, $response, $status, $duration) {
+            return app(LaritorOverride::class)->recordSessionData($request, $response, $status, $duration, Auth::user());
+        }, true);
+    }
+
+    public static function recordOutboundRequestHeaders($url, $status_code, $duration): bool
+    {
+        return static::recordEvent(function () use ($url, $status_code, $duration) {
+            return app(LaritorOverride::class)->recordOutboundRequestHeaders($url, $status_code, $duration);
+        }, true);
+    }
+
+    public static function recordOutboundRequestBody($url, $status_code, $duration): bool
+    {
+        return static::recordEvent(function () use ($url, $status_code, $duration) {
+            return app(LaritorOverride::class)->recordOutboundRequestBody($url, $status_code, $duration);
+        }, false);
+    }
+
+    public static function recordOutboundRequestResponseHeaders($url, $status_code, $duration): bool
+    {
+        return static::recordEvent(function () use ($url, $status_code, $duration) {
+            return app(LaritorOverride::class)->recordOutboundRequestResponseHeaders($url, $status_code, $duration);
+        }, true);
+    }
+
+    public static function recordOutboundRequestResponseBody($url, $status_code, $duration): bool
+    {
+        return static::recordEvent(function () use ($url, $status_code, $duration) {
+            return app(LaritorOverride::class)->recordOutboundRequestResponseBody($url, $status_code, $duration);
+        }, false);
+    }
+
+    public static function whitelistedVendors(): array
+    {
+        return [];
+    }
 }

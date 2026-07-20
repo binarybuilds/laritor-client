@@ -19,51 +19,7 @@ return [
 
     'server_name' => env('LARITOR_SERVER_NAME'),
 
-    'log_level' => env('LARITOR_LOG_LEVEL', 'debug'),
-
     'max_events' => env('LARITOR_MAX_EVENTS_PER_OCCURRENCE', 5000),
 
-    'context' => env('LARITOR_RECORD_CONTEXT', true),
-
-    'db_schema' => env('LARITOR_RECORD_DB_SCHEMA', true),
-
-    'query_bindings' => env('LARITOR_RECORD_QUERY_BINDINGS', true),
-
-    'requests' => [
-
-        'query_string' => env('LARITOR_RECORD_QUERY_STRING', true),
-
-        'body' => env('LARITOR_RECORD_REQUEST_BODY', false),
-
-        'headers' => env('LARITOR_RECORD_REQUEST_HEADERS', false),
-
-        'response_headers' => env('LARITOR_RECORD_REQUEST_RESPONSE_HEADERS', false),
-
-        'response_body' => env('LARITOR_RECORD_REQUEST_RESPONSE_BODY', false),
-
-        'rate_limit' => [
-            'enabled' => env('LARITOR_RATE_LIMIT_REQUESTS', false),
-
-            'attempts' => env('LARITOR_RATE_LIMIT_REQUESTS_ATTEMPTS', 5),
-        ],
-    ],
-
-    'outbound_requests' => [
-
-        'body' => env('LARITOR_RECORD_OUTBOUND_REQUEST_BODY', false),
-
-        'headers' => env('LARITOR_RECORD_OUTBOUND_REQUEST_HEADERS', false),
-
-        'response_headers' => env('LARITOR_RECORD_OUTBOUND_REQUEST_RESPONSE_HEADERS', false),
-
-        'response_body' => env('LARITOR_RECORD_OUTBOUND_REQUEST_RESPONSE_BODY', false),
-    ],
-
-    'session' => [
-      'data' => env('LARITOR_RECORD_SESSION_DATA', false),
-    ],
-
-    'whitelisted_vendors' => env('LARITOR_WHITELISTED_VENDORS', ''),
-
-    'ingest_events_without_occurrence' => env('LARITOR_INGEST_EVENTS_WITHOUT_OCCURRENCE', false),
+    'ingest_events_without_occurrence' => env('LARITOR_INGEST_EVENTS_WITHOUT_OCCURRENCE', true),
 ];

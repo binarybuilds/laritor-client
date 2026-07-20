@@ -105,4 +105,46 @@ interface LaritorOverride
      * @return bool
      */
     public function isBot($request): bool;
+
+    public function recordCommandContext(string $command, string $status, int $duration): bool;
+
+    public function recordScheduledTaskContext(string $task, string $status, int $duration): bool;
+
+    public function recordRequestContext($request, $response, $status, $duration, $user): bool;
+
+    public function recordLogContext($level, $message): bool;
+
+    public function recordQueuedJobContext(string $connection, string $queue, string $job, string $status, int $duration): bool;
+
+    public function recordDatabaseSchema(): bool;
+
+    /**
+     * @param $query
+     * @param $duration
+     * @param $path
+     * @return bool
+     */
+    public function recordQueryBindings($query, $duration, $path): bool;
+
+    public function recordRequestQueryParameters($request, $response, $status, $duration, $user): bool;
+
+    public function recordRequestHeaders($request, $response, $status, $duration, $user): bool;
+
+    public function recordRequestBody($request, $response, $status, $duration, $user): bool;
+
+    public function recordResponseHeaders($request, $response, $status, $duration, $user): bool;
+
+    public function recordResponseBody($request, $response, $status, $duration, $user): bool;
+
+    public function recordSessionData($request, $response, $status, $duration, $user): bool;
+
+    public function recordOutboundRequestHeaders($url, $status_code, $duration): bool;
+
+    public function recordOutboundRequestBody($url, $status_code, $duration): bool;
+
+    public function recordOutboundRequestResponseHeaders($url, $status_code, $duration): bool;
+
+    public function recordOutboundRequestResponseBody($url, $status_code, $duration): bool;
+
+    public function whitelistedVendors(): array;
 }

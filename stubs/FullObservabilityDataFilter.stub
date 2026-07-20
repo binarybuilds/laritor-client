@@ -145,4 +145,94 @@ class LaritorDataFilter extends DefaultOverride
     {
         return parent::isBot($request);
     }
+
+    public function recordCommandContext(string $command, string $status, int $duration): bool
+    {
+        return parent::recordCommandContext($command, $status, $duration);
+    }
+
+    public function recordScheduledTaskContext(string $task, string $status, int $duration): bool
+    {
+       return parent::recordScheduledTaskContext($task, $status, $duration);
+    }
+
+    public function recordRequestContext($request, $response, $status, $duration, $user): bool
+    {
+        return parent::recordRequestContext($request, $response, $status, $duration, $user);
+    }
+
+    public function recordLogContext($level, $message): bool
+    {
+       return parent::recordLogContext($level, $message);
+    }
+
+    public function recordQueuedJobContext(string $connection, string $queue, string $job, string $status, int $duration): bool
+    {
+        return parent::recordQueuedJobContext($connection, $queue, $job, $status, $duration);
+    }
+
+    public function recordDatabaseSchema(): bool
+    {
+        return parent::recordDatabaseSchema();
+    }
+
+    public function recordQueryBindings($query, $duration, $path): bool
+    {
+        return parent::recordQueryBindings($query, $duration, $path);
+    }
+
+    public function recordRequestQueryParameters($request, $response, $status, $duration, $user): bool
+    {
+        return parent::recordRequestQueryParameters($request, $response, $status, $duration, $user);
+    }
+
+    public function recordRequestHeaders($request, $response, $status, $duration, $user): bool
+    {
+        return parent::recordRequestHeaders($request, $response, $status, $duration, $user);
+    }
+
+    public function recordRequestBody($request, $response, $status, $duration, $user): bool
+    {
+        return parent::recordRequestBody($request, $response, $status, $duration, $user);
+    }
+
+    public function recordResponseHeaders($request, $response, $status, $duration, $user): bool
+    {
+        return parent::recordResponseHeaders($request, $response, $status, $duration, $user);
+    }
+
+    public function recordResponseBody($request, $response, $status, $duration, $user): bool
+    {
+       return parent::recordResponseBody($request, $response, $status, $duration, $user);
+    }
+
+    public function recordSessionData($request, $response, $status, $duration, $user): bool
+    {
+        return parent::recordSessionData($request, $response, $status, $duration, $user);
+    }
+
+    public function recordOutboundRequestHeaders($url, $status_code, $duration): bool
+    {
+        return parent::recordOutboundRequestHeaders($url, $status_code, $duration);
+    }
+
+    public function recordOutboundRequestBody($url, $status_code, $duration): bool
+    {
+        return parent::recordOutboundRequestBody($url, $status_code, $duration);
+    }
+
+    public function recordOutboundRequestResponseHeaders($url, $status_code, $duration): bool
+    {
+        return parent::recordOutboundRequestResponseHeaders($url, $status_code, $duration);
+    }
+
+    public function recordOutboundRequestResponseBody($url, $status_code, $duration): bool
+    {
+        return parent::recordOutboundRequestResponseBody($url, $status_code, $duration);
+    }
+
+    public function whitelistedVendors(): array
+    {
+        return parent::whitelistedVendors();
+    }
 }

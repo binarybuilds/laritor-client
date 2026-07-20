@@ -3,6 +3,7 @@
 namespace BinaryBuilds\LaritorClient\Recorders;
 
 use BinaryBuilds\LaritorClient\Helpers\DataHelper;
+use BinaryBuilds\LaritorClient\Helpers\FilterHelper;
 use Illuminate\Console\Events\ScheduledTaskFailed;
 use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
@@ -88,11 +89,11 @@ class ScheduledTaskRecorder extends Recorder
     public function skip(ScheduledTaskSkipped $event)
     {
         $event = $event->task;
-
+        $task = $event instanceof CallbackEvent ? 'Closure' : $event->command;
         $payload = [
             'started_at' => now()->format('Y-m-d H:i:s'),
             'duration' => 0,
-            'task' => $event instanceof CallbackEvent ? 'Closure' : $event->command,
+            'task' => $task,
             'expression' => $event->expression,
             'timezone' => $event->timezone,
             'user' => $event->user,
@@ -100,7 +101,7 @@ class ScheduledTaskRecorder extends Recorder
             'maintenance' => $event->evenInMaintenanceMode,
             'one_server' => $event->onOneServer,
             'status' => 'skipped',
-            'custom_context' => DataHelper::getRedactedContext(),
+            'custom_context' => FilterHelper::recordScheduledTaskContext($task, 'skipped', 0) ? DataHelper::getRedactedContext() : [],
             'scheduled_at_timestamp' => microtime(true),
         ];
 
@@ -124,11 +125,12 @@ class ScheduledTaskRecorder extends Recorder
                     $task['task'] === ( $event instanceof CallbackEvent ? 'Closure' : $event->command)
                     && $task['status'] === 'started'
                 ) {
+                    $duration = $task['started_at']->diffInMilliseconds();
                     $task['status'] = $status;
-                    $task['duration'] = $task['started_at']->diffInMilliseconds();
+                    $task['duration'] = $duration;
                     $task['completed_at'] = now()->format('Y-m-d H:i:s');
                     $task['started_at'] = $task['started_at']->format('Y-m-d H:i:s');
-                    $task['custom_context'] = DataHelper::getRedactedContext();
+                    $task['custom_context'] = FilterHelper::recordScheduledTaskContext($task, $status, $duration) ? DataHelper::getRedactedContext() : [];
                 }
 
                 return $task;

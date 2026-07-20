@@ -538,25 +538,6 @@ class Laritor
             }
         }
 
-        if (! $hasOccurrence) {
-            return false;
-        }
-
-        if (app()->runningInConsole() || ! $this->isRateLimiterEnabled() ) {
-            return true;
-        }
-
-        $key = 'laritor-'.Str::slug(request()->path());
-        if (! RateLimiter::tooManyAttempts($key, config('laritor.requests.rate_limit.attempts') ) ) {
-            RateLimiter::hit($key);
-            return true;
-        }
-
-        return false;
-    }
-
-    public function isRateLimiterEnabled()
-    {
-        return (bool)config('laritor.requests.rate_limit.enabled', false);
+        return $hasOccurrence;
     }
 }

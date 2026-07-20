@@ -193,4 +193,94 @@ class DefaultOverride implements LaritorOverride
         $crawler = new CrawlerDetect();
         return $crawler->isCrawler($userAgent);
     }
+
+    public function recordCommandContext(string $command, string $status, int $duration): bool
+    {
+        return true;
+    }
+
+    public function recordScheduledTaskContext(string $task, string $status, int $duration): bool
+    {
+       return true;
+    }
+
+    public function recordRequestContext($request, $response, $status, $duration, $user): bool
+    {
+        return true;
+    }
+
+    public function recordLogContext($level, $message): bool
+    {
+       return true;
+    }
+
+    public function recordQueuedJobContext(string $connection, string $queue, string $job, string $status, int $duration): bool
+    {
+        return true;
+    }
+
+    public function recordDatabaseSchema(): bool
+    {
+        return true;
+    }
+
+    public function recordQueryBindings($query, $duration, $path): bool
+    {
+        return true;
+    }
+
+    public function recordRequestQueryParameters($request, $response, $status, $duration, $user): bool
+    {
+        return true;
+    }
+
+    public function recordRequestHeaders($request, $response, $status, $duration, $user): bool
+    {
+        return true;
+    }
+
+    public function recordRequestBody($request, $response, $status, $duration, $user): bool
+    {
+        return false;
+    }
+
+    public function recordResponseHeaders($request, $response, $status, $duration, $user): bool
+    {
+        return true;
+    }
+
+    public function recordResponseBody($request, $response, $status, $duration, $user): bool
+    {
+       return false;
+    }
+
+    public function recordSessionData($request, $response, $status, $duration, $user): bool
+    {
+        return true;
+    }
+
+    public function recordOutboundRequestHeaders($url, $status_code, $duration): bool
+    {
+        return true;
+    }
+
+    public function recordOutboundRequestBody($url, $status_code, $duration): bool
+    {
+        return false;
+    }
+
+    public function recordOutboundRequestResponseHeaders($url, $status_code, $duration): bool
+    {
+        return true;
+    }
+
+    public function recordOutboundRequestResponseBody($url, $status_code, $duration): bool
+    {
+        return false;
+    }
+
+    public function whitelistedVendors(): array
+    {
+        return [];
+    }
 }
