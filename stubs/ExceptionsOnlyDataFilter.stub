@@ -91,7 +91,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordTaskScheduler(): bool
     {
-        return Laritor::hasException();
+        return false;
     }
 
     /**
@@ -208,7 +208,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordDatabaseSchema(): bool
     {
-        return parent::recordDatabaseSchema();
+        return true;
     }
 
     /**

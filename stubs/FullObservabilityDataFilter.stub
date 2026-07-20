@@ -14,7 +14,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordCacheHit($cacheKey): bool
     {
-        return parent::recordCacheHit($cacheKey);
+        return true;
     }
 
     /**
@@ -23,7 +23,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordException($exception): bool
     {
-        return parent::recordException($exception);
+        return true;
     }
 
     /**
@@ -34,7 +34,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordOutboundRequest($url, $status_code, $duration): bool
     {
-        return parent::recordOutboundRequest($url, $status_code, $duration);
+        return true;
     }
 
     /**
@@ -45,7 +45,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordQuery($query, $duration, $path): bool
     {
-        return parent::recordQuery($query, $duration, $path);
+        return true;
     }
 
     /**
@@ -58,7 +58,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordQueuedJob(string $connection, string $queue, string $job, string $status, $duration): bool
     {
-        return parent::recordQueuedJob($connection, $queue, $job, $status, $duration);
+        return true;
     }
 
     /**
@@ -71,7 +71,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordRequest($request, $response, $status, $duration, $user): bool
     {
-        return parent::recordRequest($request, $response, $status, $duration, $user);
+        return true;
     }
 
     /**
@@ -82,7 +82,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordCommandOrScheduledTask(string $command, string $status, $duration): bool
     {
-        return parent::recordCommandOrScheduledTask($command, $status, $duration);
+        return true;
     }
 
     /**
@@ -90,7 +90,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordTaskScheduler(): bool
     {
-        return parent::recordTaskScheduler();
+        return true;
     }
 
     /**
@@ -101,7 +101,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordMail($mailable, $to, $subject): bool
     {
-        return parent::recordMail($mailable, $to, $subject);
+        return true;
     }
 
     /**
@@ -111,7 +111,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordNotification($notifiable, $notification): bool
     {
-        return parent::recordNotification($notifiable, $notification);
+        return true;
     }
 
     /**
@@ -121,7 +121,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordFeatureFlag($flag, $scope): bool
     {
-        return parent::recordFeatureFlag($flag, $scope);
+        return true;
     }
 
     /**
@@ -132,7 +132,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordLog($level, $message, array $context = []): bool
     {
-        return parent::recordLog($level, $message, $context);
+        return true;
     }
 
     /**
@@ -152,7 +152,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordCommandContext(string $command, string $status, $duration): bool
     {
-        return parent::recordCommandContext($command, $status, $duration);
+        return true;
     }
 
     /**
@@ -163,7 +163,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordScheduledTaskContext(string $task, string $status, $duration): bool
     {
-       return parent::recordScheduledTaskContext($task, $status, $duration);
+       return true;
     }
 
     /**
@@ -176,7 +176,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordRequestContext($request, $response, $status, $duration, $user): bool
     {
-        return parent::recordRequestContext($request, $response, $status, $duration, $user);
+        return true;
     }
 
     /**
@@ -186,7 +186,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordLogContext($level, $message): bool
     {
-       return parent::recordLogContext($level, $message);
+       return true;
     }
 
     /**
@@ -199,7 +199,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordQueuedJobContext(string $connection, string $queue, string $job, string $status, $duration): bool
     {
-        return parent::recordQueuedJobContext($connection, $queue, $job, $status, $duration);
+        return true;
     }
 
     /**
@@ -207,7 +207,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordDatabaseSchema(): bool
     {
-        return parent::recordDatabaseSchema();
+        return true;
     }
 
     /**
@@ -218,7 +218,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordQueryBindings($query, $duration, $path): bool
     {
-        return parent::recordQueryBindings($query, $duration, $path);
+        return true;
     }
 
     /**
@@ -231,7 +231,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordRequestQueryParameters($request, $response, $status, $duration, $user): bool
     {
-        return parent::recordRequestQueryParameters($request, $response, $status, $duration, $user);
+        return true;
     }
 
     /**
@@ -244,7 +244,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordRequestHeaders($request, $response, $status, $duration, $user): bool
     {
-        return parent::recordRequestHeaders($request, $response, $status, $duration, $user);
+        return true;
     }
 
     /**
@@ -257,7 +257,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordRequestBody($request, $response, $status, $duration, $user): bool
     {
-        return parent::recordRequestBody($request, $response, $status, $duration, $user);
+        return false;
     }
 
     /**
@@ -270,7 +270,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordResponseHeaders($request, $response, $status, $duration, $user): bool
     {
-        return parent::recordResponseHeaders($request, $response, $status, $duration, $user);
+        return true;
     }
 
     /**
@@ -283,7 +283,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordResponseBody($request, $response, $status, $duration, $user): bool
     {
-       return parent::recordResponseBody($request, $response, $status, $duration, $user);
+       return false;
     }
 
     /**
@@ -296,7 +296,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordSessionData($request, $response, $status, $duration, $user): bool
     {
-        return parent::recordSessionData($request, $response, $status, $duration, $user);
+        return true;
     }
 
     /**
@@ -307,7 +307,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordOutboundRequestHeaders($url, $status_code, $duration): bool
     {
-        return parent::recordOutboundRequestHeaders($url, $status_code, $duration);
+        return true;
     }
 
     /**
@@ -318,7 +318,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordOutboundRequestBody($url, $status_code, $duration): bool
     {
-        return parent::recordOutboundRequestBody($url, $status_code, $duration);
+        return false;
     }
 
     /**
@@ -329,7 +329,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordOutboundRequestResponseHeaders($url, $status_code, $duration): bool
     {
-        return parent::recordOutboundRequestResponseHeaders($url, $status_code, $duration);
+        return true;
     }
 
     /**
@@ -340,7 +340,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordOutboundRequestResponseBody($url, $status_code, $duration): bool
     {
-        return parent::recordOutboundRequestResponseBody($url, $status_code, $duration);
+        return false;
     }
 
     /**
