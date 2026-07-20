@@ -2,10 +2,8 @@
 
 namespace {{ namespace }};
 
-use Illuminate\Contracts\Queue\Job;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notification;
-use Symfony\Component\Mime\Email;
 use BinaryBuilds\LaritorClient\Override\DefaultOverride;
 
 class LaritorDataFilter extends DefaultOverride

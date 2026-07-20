@@ -2,16 +2,14 @@
 
 namespace {{ namespace }};
 
-use Illuminate\Contracts\Queue\Job;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notification;
-use Symfony\Component\Mime\Email;
 use BinaryBuilds\LaritorClient\Override\DefaultOverride;
 use BinaryBuilds\LaritorClient\Laritor;
 
 class LaritorDataFilter extends DefaultOverride
 {
-    public function hasFailedRequest()
+    public function hasFailedRequest(): bool
     {
         $laritor = app(Laritor::class);
 
@@ -20,7 +18,7 @@ class LaritorDataFilter extends DefaultOverride
             $laritor->getRequestDuration() >= 1000;
     }
 
-    public function hasFailedJob()
+    public function hasFailedJob(): bool
     {
         $laritor = app(Laritor::class);
 
@@ -29,7 +27,7 @@ class LaritorDataFilter extends DefaultOverride
             $laritor->getJobDuration() >= 60000;
     }
 
-    public function hasFailedCommand()
+    public function hasFailedCommand(): bool
     {
         $laritor = app(Laritor::class);
 

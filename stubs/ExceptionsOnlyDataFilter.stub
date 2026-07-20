@@ -2,10 +2,8 @@
 
 namespace {{ namespace }};
 
-use Illuminate\Contracts\Queue\Job;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notification;
-use Symfony\Component\Mime\Email;
 use BinaryBuilds\LaritorClient\Override\DefaultOverride;
 use BinaryBuilds\LaritorClient\Laritor;
 
@@ -351,6 +349,6 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function whitelistedVendors(): array
     {
-        return Laritor::hasException();
+         return parent::whitelistedVendors();
     }
 }
