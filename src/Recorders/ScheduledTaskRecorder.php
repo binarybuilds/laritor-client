@@ -130,7 +130,7 @@ class ScheduledTaskRecorder extends Recorder
                     $task['duration'] = $duration;
                     $task['completed_at'] = now()->format('Y-m-d H:i:s');
                     $task['started_at'] = $task['started_at']->format('Y-m-d H:i:s');
-                    $task['custom_context'] = FilterHelper::recordScheduledTaskContext($task, $status, $duration) ? DataHelper::getRedactedContext() : [];
+                    $task['custom_context'] = FilterHelper::recordScheduledTaskContext($task['task'], $status, $duration) ? DataHelper::getRedactedContext() : [];
                 }
 
                 return $task;
