@@ -34,4 +34,14 @@ class TestOverride extends DefaultOverride
     {
         return true;
     }
+
+    public function recordRequestBody($request, $response, $status, $duration, $user): bool
+    {
+        return true;
+    }
+
+    public function recordResponseBody($request, $response, $status, $duration, $user): bool
+    {
+        return true;
+    }
 }
