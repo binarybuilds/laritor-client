@@ -24,4 +24,14 @@ class TestOverride extends DefaultOverride
     {
         return !request()->is('laritor-failed-job');
     }
+
+    public function recordOutboundRequestBody($url, $status_code, $duration): bool
+    {
+        return true;
+    }
+
+    public function recordOutboundRequestResponseBody($url, $status_code, $duration): bool
+    {
+        return true;
+    }
 }
