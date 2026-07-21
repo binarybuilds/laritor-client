@@ -389,7 +389,7 @@ class Laritor
 
                 $this->reset();
             });
-        }, null, false);
+        }, null, true);
     }
 
     public function filterEvents()
@@ -401,7 +401,7 @@ class Laritor
                     CacheRecorder::$eventType => FilterHelper::recordCacheHit($event['key']),
                     CommandRecorder::$eventType => FilterHelper::recordCommandOrScheduledTask($event['command'], $event['code'] === 0 ? 'completed' : 'failed', $event['duration'] ?? 0),
                     ExceptionRecorder::$eventType => FilterHelper::recordException($this->exception),
-                    FeatureFlagRecorder::$eventType => FilterHelper::recordFeatureFlag($event['flag'], $event['feature_flag_scope']),
+                    FeatureFlagRecorder::$eventType => FilterHelper::recordFeatureFlag($event['feature'], $event['feature_flag_scope']),
                     LogRecorder::$eventType => FilterHelper::recordLog($event['level'], $event['message'], $event['log_context']),
                     MailRecorder::$eventType => FilterHelper::recordMail($event['mailable'], $event['to'], $event['subject']),
                     NotificationRecorder::$eventType => FilterHelper::recordNotification($event['notifiable_instance'], $event['notification']),
