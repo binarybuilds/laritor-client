@@ -395,32 +395,35 @@ class Laritor
     public function filterEvents()
     {
         foreach ($this->events as $type => $events) {
-            $filtered = [];
-            foreach ($events as $event) {
-                $shouldAdd = match ($type){
-                    CacheRecorder::$eventType => FilterHelper::recordCacheHit($event['key']),
-                    CommandRecorder::$eventType => FilterHelper::recordCommandOrScheduledTask($event['command'], $event['code'] === 0 ? 'completed' : 'failed', $event['duration'] ?? 0),
-                    ExceptionRecorder::$eventType => FilterHelper::recordException($this->exception),
-                    FeatureFlagRecorder::$eventType => FilterHelper::recordFeatureFlag($event['feature'], $event['feature_flag_scope']),
-                    LogRecorder::$eventType => FilterHelper::recordLog($event['level'], $event['message'], $event['log_context']),
-                    MailRecorder::$eventType => FilterHelper::recordMail($event['mailable'], $event['to'], $event['subject']),
-                    NotificationRecorder::$eventType => FilterHelper::recordNotification($event['notifiable_instance'], $event['notification']),
-                    OutboundRequestRecorder::$eventType => !empty($event['completed_at']) && FilterHelper::recordOutboundRequest($event['url'], $event['code'], $event['duration']),
-                    QueryRecorder::$eventType => FilterHelper::recordQuery($event['query'], $event['time'], $event['path']),
-                    QueuedJobRecorder::$eventType => FilterHelper::recordQueuedJob($event['connection'], $event['queue'], $event['job'], $event['status'], $event['duration'] ?? 0),
-                    RequestRecorder::$eventType => FilterHelper::recordRequest($event['request_instance'], $event['response_instance'], $event['response']['status_code'], $event['request']['duration']),
-                    ScheduledTaskRecorder::$eventType => FilterHelper::recordCommandOrScheduledTask($event['task'], $event['status'], $event['duration'] ?? 0),
-                    'server_stats' => true,
-                    default => false
-                };
+            if ($type === 'server_stats') {
+                $filtered = $events;
+            } else {
+                $filtered = [];
+                foreach ($events as $event) {
+                    $shouldAdd = match ($type){
+                        CacheRecorder::$eventType => FilterHelper::recordCacheHit($event['key']),
+                        CommandRecorder::$eventType => FilterHelper::recordCommandOrScheduledTask($event['command'], $event['code'] === 0 ? 'completed' : 'failed', $event['duration'] ?? 0),
+                        ExceptionRecorder::$eventType => FilterHelper::recordException($this->exception),
+                        FeatureFlagRecorder::$eventType => FilterHelper::recordFeatureFlag($event['feature'], $event['feature_flag_scope']),
+                        LogRecorder::$eventType => FilterHelper::recordLog($event['level'], $event['message'], $event['log_context']),
+                        MailRecorder::$eventType => FilterHelper::recordMail($event['mailable'], $event['to'], $event['subject']),
+                        NotificationRecorder::$eventType => FilterHelper::recordNotification($event['notifiable_instance'], $event['notification']),
+                        OutboundRequestRecorder::$eventType => !empty($event['completed_at']) && FilterHelper::recordOutboundRequest($event['url'], $event['code'], $event['duration']),
+                        QueryRecorder::$eventType => FilterHelper::recordQuery($event['query'], $event['time'], $event['path']),
+                        QueuedJobRecorder::$eventType => FilterHelper::recordQueuedJob($event['connection'], $event['queue'], $event['job'], $event['status'], $event['duration'] ?? 0),
+                        RequestRecorder::$eventType => FilterHelper::recordRequest($event['request_instance'], $event['response_instance'], $event['response']['status_code'], $event['request']['duration']),
+                        ScheduledTaskRecorder::$eventType => FilterHelper::recordCommandOrScheduledTask($event['task'], $event['status'], $event['duration'] ?? 0),
+                        default => false
+                    };
 
-                if ($shouldAdd) {
-                    unset($event['feature_flag_scope']);
-                    unset($event['notifiable_instance']);
-                    unset($event['request_instance']);
-                    unset($event['response_instance']);
+                    if ($shouldAdd) {
+                        unset($event['feature_flag_scope']);
+                        unset($event['notifiable_instance']);
+                        unset($event['request_instance']);
+                        unset($event['response_instance']);
 
-                    $filtered[] = $event;
+                        $filtered[] = $event;
+                    }
                 }
             }
 
