@@ -410,6 +410,7 @@ class Laritor
                     QueuedJobRecorder::$eventType => FilterHelper::recordQueuedJob($event['connection'], $event['queue'], $event['job'], $event['status'], $event['duration'] ?? 0),
                     RequestRecorder::$eventType => FilterHelper::recordRequest($event['request_instance'], $event['response_instance'], $event['response']['status_code'], $event['request']['duration']),
                     ScheduledTaskRecorder::$eventType => FilterHelper::recordCommandOrScheduledTask($event['task'], $event['status'], $event['duration'] ?? 0),
+                    'server_stats' => true,
                     default => false
                 };
 
