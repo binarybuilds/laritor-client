@@ -9,18 +9,6 @@ use Illuminate\Support\Str;
 
 class FilterHelper
 {
-    public static $ignoredCommands = [
-        'horizon', 'pulse:', 'db:seed', 'optimize', 'schedule:work', 'schedule:run',
-        'schedule:finish', 'package:discover', 'event:cache', 'view:cache',
-        'config:cache', 'queue:work', 'queue:listen', 'octane:install',
-        'auth:clear-resets', 'config:cache', 'horizon:snapshot',
-        'horizon:status', 'horizon:supervisor', 'inertia:start-ssr',
-        'invoke-serialized-closure', 'model:prune', 'nightwatch:agent',
-        'nightwatch:status', 'queue:monitor', 'reverb:start',
-        'schedule:list', 'laritor:sync', 'laritor:send-metrics',
-        'vendor:publish'
-    ];
-
     public static function recordEvent(callable $callable, $default = true)
     {
         return rescue(function () use ($callable){
@@ -75,8 +63,7 @@ class FilterHelper
 
     public static function recordCommandOrScheduledTask(string $command, string $status, $duration): bool
     {
-        return ! Str::contains($command, self::$ignoredCommands) &&
-            static::recordEvent(function () use ($command, $status, $duration) {
+        return static::recordEvent(function () use ($command, $status, $duration) {
             return app(LaritorOverride::class)->recordCommandOrScheduledTask($command, $status, $duration);
         });
     }

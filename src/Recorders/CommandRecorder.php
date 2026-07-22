@@ -33,6 +33,10 @@ class CommandRecorder extends Recorder
      */
     public function trackEvent($event)
     {
+        if ($this->ignore($event->command)) {
+            return;
+        }
+
         if ($event instanceof CommandStarting ) {
             $this->start($event);
         } elseif ($event instanceof CommandFinished ) {
@@ -114,7 +118,9 @@ class CommandRecorder extends Recorder
      */
     public function ignore($command)
     {
-        return Str::startsWith($command, ['horizon','pulse:']) || in_array($command, [
+        return Str::startsWith($command, [
+            'horizon',
+            'pulse:',
             'db:seed',
             'optimize',
             'schedule:work',
