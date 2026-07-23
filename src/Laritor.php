@@ -472,7 +472,7 @@ class Laritor
                 'php' => phpversion(),
                 'client_version' => self::VERSION,
                 'server' => [
-                    'host' => !empty(config('laritor.server_name')) ? config('laritor.server_name') : gethostname(),
+                    'host' => $this->getServerHost(),
                     'os' => PHP_OS,
                 ],
                 'cache' => [
@@ -509,6 +509,19 @@ class Laritor
                 'message' => $e->getMessage(),
             ];
         }
+    }
+
+    public function getServerHost()
+    {
+        if(!empty(config('laritor.server_name')) ) {
+            return config('laritor.server_name');
+        }
+
+        if (function_exists('laravel_cloud') && laravel_cloud()) {
+            return 'laravel-cloud';
+        }
+
+        return gethostname();
     }
 
     /**
