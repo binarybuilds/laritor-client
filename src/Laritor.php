@@ -19,13 +19,11 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Str;
 use BinaryBuilds\LaritorClient\Recorders\SchedulerRecorder;
 
 class Laritor
 {
-    public const VERSION = '4.0.0';
+    public const VERSION = '4.0.1';
 
     /**
      * @var array
@@ -413,6 +411,7 @@ class Laritor
                         QueuedJobRecorder::$eventType => FilterHelper::recordQueuedJob($event['connection'], $event['queue'], $event['job'], $event['status'], $event['duration'] ?? 0),
                         RequestRecorder::$eventType => FilterHelper::recordRequest($event['request_instance'], $event['response_instance'], $event['response']['status_code'], $event['request']['duration']),
                         ScheduledTaskRecorder::$eventType => FilterHelper::recordCommandOrScheduledTask($event['task'], $event['status'], $event['duration'] ?? 0),
+                        SchedulerRecorder::$eventType => FilterHelper::recordTaskScheduler(),
                         default => false
                     };
 
