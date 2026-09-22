@@ -108,10 +108,11 @@ class QueuedJobRecorder extends Recorder
             if ($event->connectionName === 'sync') {
                 $job['queued_at'] = now()->toDateTimeString();
                 $job['delay'] = 0;
-                $job['context'] = $this->laritor->getContext();
             } else {
                 $this->laritor->setContext('JOB');
             }
+
+            $job['context'] = $this->laritor->getContext();
 
             $this->laritor->pushEvent(static::$eventType, $job);
         } else {
