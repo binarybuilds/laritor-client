@@ -59,6 +59,10 @@ class QueryRecorder extends Recorder
      */
     public function replaceBindings($event)
     {
+        if (method_exists($event, 'toRawSql')) {
+            return $event->toRawSql();
+        }
+
         $sql = $event->sql;
 
         foreach ($this->formatBindings($event) as $key => $binding) {
