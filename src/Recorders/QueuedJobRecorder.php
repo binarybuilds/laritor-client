@@ -137,6 +137,7 @@ class QueuedJobRecorder extends Recorder
                 $job['completed_at'] = now()->toDateTimeString();
                 $job['status'] = $status;
                 $job['custom_context'] = FilterHelper::recordQueuedJobContext($job['connection'], $job['queue'], $job['job'], $status, $duration) ? DataHelper::getRedactedContext() : [];
+                $job['attempts'] = $event->job->attempts();
             }
 
             $jobs[] = $job;
