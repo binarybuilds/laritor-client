@@ -9,7 +9,6 @@ use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Events\ScheduledTaskSkipped;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Console\Scheduling\CallbackEvent;
-use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Str;
 
 class ScheduledTaskRecorder extends Recorder
