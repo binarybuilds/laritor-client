@@ -49,6 +49,8 @@ class CommandRecorder extends Recorder
      */
     public function start(CommandStarting $event)
     {
+        $scheduledTaskId = getenv('LARITOR_SCHEDULED_TASK_ID');
+
         $arguments = array_filter(
             array_map(function ($option){
                 if (is_array($option)) {
@@ -79,7 +81,8 @@ class CommandRecorder extends Recorder
         $this->laritor->pushEvent(static::$eventType,  [
             'command' => trim($commandString),
             'started_at' => now(),
-            'completed_at' => null
+            'completed_at' => null,
+            'laritor_scheduled_task_id' => $scheduledTaskId,
         ]);
     }
 

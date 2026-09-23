@@ -33,7 +33,8 @@ class QueryRecorder extends Recorder
                 'time' => $time,
                 'path' => $path,
                 'completed_at' => now()->format('Y-m-d H:i:s'),
-                'context' => $this->laritor->getContext()
+                'context' => $this->laritor->getContext(),
+                'connection' => $event->connectionName,
             ];
 
             $this->laritor->pushEvent(static::$eventType, $query);
