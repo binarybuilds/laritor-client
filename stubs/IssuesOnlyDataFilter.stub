@@ -36,17 +36,22 @@ class LaritorDataFilter extends DefaultOverride
             $laritor->getCommandDuration() >= 300000;
     }
 
-    /**
-     * @param string $cacheKey
-     * @return bool
-     */
-    public function recordCacheHit($cacheKey): bool
+    public function hasIssue(): bool
     {
         return
             $this->hasFailedRequest() ||
             $this->hasFailedJob() ||
             $this->hasFailedCommand() ||
             Laritor::hasException();
+    }
+
+    /**
+     * @param string $cacheKey
+     * @return bool
+     */
+    public function recordCacheHit($cacheKey): bool
+    {
+        return $this->hasIssue();
     }
 
     /**
@@ -67,10 +72,7 @@ class LaritorDataFilter extends DefaultOverride
     public function recordOutboundRequest($url, $status_code, $duration): bool
     {
         return
-            $this->hasFailedRequest() ||
-            $this->hasFailedJob() ||
-            $this->hasFailedCommand() ||
-            Laritor::hasException() ||
+            $this->hasIssue() ||
             $status_code >= 300 ||
             $duration >= 1000;
     }
@@ -84,10 +86,7 @@ class LaritorDataFilter extends DefaultOverride
     public function recordQuery($query, $duration, $path): bool
     {
         return
-            $this->hasFailedRequest() ||
-            $this->hasFailedJob() ||
-            $this->hasFailedCommand() ||
-            Laritor::hasException() ||
+            $this->hasIssue() ||
             $duration >= 200;
     }
 
@@ -102,9 +101,7 @@ class LaritorDataFilter extends DefaultOverride
     public function recordQueuedJob(string $connection, string $queue, string $job, string $status, $duration): bool
     {
         return
-            $this->hasFailedRequest() ||
-            $this->hasFailedCommand() ||
-            Laritor::hasException() ||
+            $this->hasIssue() ||
             strtolower($status) === 'failed' ||
             $duration >= 60000;
     }
@@ -152,11 +149,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordMail($mailable, $to, $subject): bool
     {
-        return
-            $this->hasFailedRequest() ||
-            $this->hasFailedJob() ||
-            $this->hasFailedCommand() ||
-            Laritor::hasException();
+        return $this->hasIssue();
     }
 
     /**
@@ -166,11 +159,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordNotification($notifiable, $notification): bool
     {
-        return
-            $this->hasFailedRequest() ||
-            $this->hasFailedJob() ||
-            $this->hasFailedCommand() ||
-            Laritor::hasException();
+        return $this->hasIssue();
     }
 
     /**
@@ -180,11 +169,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordFeatureFlag($flag, $scope): bool
     {
-        return
-            $this->hasFailedRequest() ||
-            $this->hasFailedJob() ||
-            $this->hasFailedCommand() ||
-            Laritor::hasException();
+        return $this->hasIssue();
     }
 
     /**
@@ -195,12 +180,7 @@ class LaritorDataFilter extends DefaultOverride
      */
     public function recordLog($level, $message, array $context = []): bool
     {
-        return
-            $this->hasFailedRequest() ||
-            $this->hasFailedJob() ||
-            $this->hasFailedCommand() ||
-            Laritor::hasException() ||
-            !in_array(strtoupper($level), ['INFO','DEBUG']);
+        return $this->hasIssue() || !in_array(strtoupper($level), ['INFO','DEBUG']);
     }
 
     /**
@@ -417,5 +397,10 @@ class LaritorDataFilter extends DefaultOverride
     public function whitelistedVendors(): array
     {
         return parent::whitelistedVendors();
+    }
+
+    public function recordCustomEvent(string $name, array $meta = []): bool
+    {
+        return $this->hasIssue();
     }
 }

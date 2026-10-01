@@ -146,5 +146,7 @@ interface LaritorOverride
 
     public function recordOutboundRequestResponseBody($url, $status_code, $duration): bool;
 
+    public function recordCustomEvent(string $name, array $meta = []): bool;
+
     public function whitelistedVendors(): array;
 }
