@@ -229,6 +229,13 @@ class FilterHelper
         }, false);
     }
 
+    public static function recordCustomEvent(string $name, array $meta = []): bool
+    {
+        return static::recordEvent(function () use ($name, $meta) {
+            return app(LaritorOverride::class)->recordCustomEvent($name, $meta);
+        });
+    }
+
     public static function whitelistedVendors(): array
     {
         return [];

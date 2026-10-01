@@ -283,4 +283,9 @@ class DefaultOverride implements LaritorOverride
     {
         return [];
     }
+
+    public function recordCustomEvent(string $name, array $meta = []): bool
+    {
+        return true;
+    }
 }

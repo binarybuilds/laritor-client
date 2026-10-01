@@ -351,4 +351,9 @@ class LaritorDataFilter extends DefaultOverride
     {
          return parent::whitelistedVendors();
     }
+
+    public function recordCustomEvent(string $name, array $meta = []): bool
+    {
+        return Laritor::hasException();
+    }
 }

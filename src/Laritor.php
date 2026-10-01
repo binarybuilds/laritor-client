@@ -23,7 +23,7 @@ use BinaryBuilds\LaritorClient\Recorders\SchedulerRecorder;
 
 class Laritor
 {
-    public const VERSION = '4.0.3';
+    public const VERSION = '4.1.0';
 
     /**
      * @var array
@@ -412,6 +412,7 @@ class Laritor
                         RequestRecorder::$eventType => FilterHelper::recordRequest($event['request_instance'], $event['response_instance'], $event['response']['status_code'], $event['request']['duration']),
                         ScheduledTaskRecorder::$eventType => FilterHelper::recordCommandOrScheduledTask($event['task'], $event['status'], $event['duration'] ?? 0),
                         SchedulerRecorder::$eventType => FilterHelper::recordTaskScheduler(),
+                        self::CUSTOM_EVENT => FilterHelper::recordCustomEvent($event['name'], $event),
                         default => false
                     };
 
