@@ -34,7 +34,8 @@ class SendServerMetricsCommand extends Command
                 'total' => $memory,
                 'used' => $this->getMemoryUsed($memory)
             ],
-            'disk' => $this->getDiskUsage()
+            'disk' => $this->getDiskUsage(),
+            'timestamp' => microtime(true)
         ];
 
         $laritor->addEvents('server_stats', $data);
