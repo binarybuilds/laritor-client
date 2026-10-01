@@ -23,7 +23,7 @@ use BinaryBuilds\LaritorClient\Recorders\SchedulerRecorder;
 
 class Laritor
 {
-    public const VERSION = '4.1.0';
+    public const VERSION = '4.1.1';
 
     /**
      * @var array
@@ -323,15 +323,23 @@ class Laritor
      */
     public function toArray()
     {
+        $app = app();
+
         return [
             'app' => url('/'),
             'env' => !empty(config('laritor.env')) ? config('laritor.env') : config('app.env'),
             'event_at' => now()->toDateTimeString(),
-            'version' => app()->version(),
+            'version' => $app->version(),
             'php' => phpversion(),
             'client_version' => self::VERSION,
             'server' => [
-                'host' => !empty(config('laritor.server_name')) ? config('laritor.server_name') : gethostname(),
+                'host' => $this->getServerHost(),
+                'os' => PHP_OS,
+            ],
+            'cache' => [
+                'config' => $app->configurationIsCached(),
+                'routes' => $app->routesAreCached(),
+                'events' => $app->eventsAreCached()
             ],
             'events' => $this->events,
             'booted' => $this->booted,
