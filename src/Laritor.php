@@ -50,6 +50,8 @@ class Laritor
 
     public const CUSTOM_EVENT = 'custom';
 
+    public const CLIENT_EXCEPTION = 'client_exceptions';
+
     private $exception = null;
 
     private int $requestStatus = 0;
@@ -421,6 +423,7 @@ class Laritor
                         ScheduledTaskRecorder::$eventType => FilterHelper::recordCommandOrScheduledTask($event['task'], $event['status'], $event['duration'] ?? 0),
                         SchedulerRecorder::$eventType => FilterHelper::recordTaskScheduler(),
                         self::CUSTOM_EVENT => FilterHelper::recordCustomEvent($event['name'], $event),
+                        self::CLIENT_EXCEPTION => true,
                         default => false
                     };
 
@@ -552,7 +555,11 @@ class Laritor
 
         $hasOccurrence = false;
 
-        if ($this->hasCustomLogs || config('laritor.ingest_events_without_occurrence')) {
+        if (
+            $this->hasCustomLogs ||
+            !empty($this->events[self::CLIENT_EXCEPTION]) ||
+            config('laritor.ingest_events_without_occurrence')
+        ) {
             $hasOccurrence = true;
         } else {
             foreach ($this->events as $type => $event) {

@@ -48,24 +48,10 @@ class Recorder
 
             // Exception occurred during ingestion. Send the exception to laritor
             // and silently ignore the exception to let the request continue.
-            rescue(function () use ($exception) {
-                $data = json_encode([
-                    'env' => !empty(config('laritor.env')) ? config('laritor.env') : config('app.env'),
-                    'version' => app()->version(),
-                    'php' => phpversion(),
-                    'client' => Laritor::VERSION,
-                    'data' => [
-                        'exception' => $exception->getMessage(),
-                        'trace' => $exception->getTraceAsString()
-                    ]
-                ], JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_UNICODE);
-                Http::withBody($data, 'application/json')
-                    ->withHeaders([
-                        'X-Api-Key' => config('laritor.keys.backend')
-                    ])
-                    ->withUserAgent('laritor-client')
-                    ->post(rtrim(config('laritor.ingest_endpoint'),'/').'/ingest-exception');
-            }, null, false);
+            $this->laritor->pushEvent(Laritor::CLIENT_EXCEPTION, [
+                'exception' => $exception->getMessage(),
+                'trace' => $exception->getTraceAsString()
+            ]);
         }
     }
 

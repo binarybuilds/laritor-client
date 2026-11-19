@@ -8,6 +8,9 @@
 [![License](https://img.shields.io/github/license/binarybuilds/laritor-client)](https://github.com/binarybuilds/laritor-client/blob/main/LICENSE.md)
 [![Agentless Setup](https://img.shields.io/badge/Setup-Agentless-brightgreen)](https://laritor.com)
 
+> [!IMPORTANT]  
+> If you are updating Laritor package from one version to the other, Be sure to review the [upgrade guide](/UPGRADING.md) for any breaking changes.
+
 [Laritor](https://laritor.com) is a Laravel-native observability and performance monitoring tool that captures requests, queries, jobs, and external calls into a single correlated timeline.
 
 With built-in dashboards, alerts, and AI-powered insights, it helps you understand and optimize your application using real production data.

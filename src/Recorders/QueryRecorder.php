@@ -60,13 +60,26 @@ class QueryRecorder extends Recorder
      */
     public function replaceBindings($event)
     {
+        $bindings = $this->formatBindings($event);
+
+        foreach ($bindings as $key => $binding) {
+            // Omit only values that cannot safely be rendered as SQL text.
+            if (is_string($binding) && (str_contains($binding, "\0") || preg_match('//u', $binding) === false)) {
+                $bindings[$key] = '[binary binding omitted]';
+            }
+        }
+
         if (method_exists($event, 'toRawSql')) {
-            return $event->toRawSql();
+            // Do not modify the bindings observed by other query listeners.
+            $formattedEvent = clone $event;
+            $formattedEvent->bindings = $bindings;
+
+            return $formattedEvent->toRawSql();
         }
 
         $sql = $event->sql;
 
-        foreach ($this->formatBindings($event) as $key => $binding) {
+        foreach ($bindings as $key => $binding) {
             $regex = is_numeric($key)
                 ? "/\?(?=(?:[^'\\\']*'[^'\\\']*')*[^'\\\']*$)/"
                 : "/:{$key}(?=(?:[^'\\\']*'[^'\\\']*')*[^'\\\']*$)/";
