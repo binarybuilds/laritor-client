@@ -116,11 +116,12 @@ jobs:
         run: ./vendor/bin/phpunit
 
   test-laravel-13:
-    name: PHP ${{ matrix.php }} / Laravel 13.x
+    name: PHP ${{ matrix.php }} / Laravel 13.x / Guzzle ${{ matrix.guzzle }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
         php: [8.3, 8.4, 8.5]
+        guzzle: ['^7.2', '^8.0']
     steps:
       - uses: actions/checkout@v6
 
@@ -132,6 +133,7 @@ jobs:
 
       - name: Require Laravel & Testbench
         run: |
+          composer require guzzlehttp/guzzle:"${{ matrix.guzzle }}" --no-update
           composer require --dev laravel/framework:13.x --no-update
           composer require --dev orchestra/testbench:^11.0 --no-update
           composer update --prefer-dist --no-interaction --no-scripts

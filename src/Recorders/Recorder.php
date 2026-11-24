@@ -3,9 +3,7 @@
 namespace BinaryBuilds\LaritorClient\Recorders;
 
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Http;
 use BinaryBuilds\LaritorClient\Laritor;
-use Illuminate\Support\Str;
 
 class Recorder
 {
@@ -38,6 +36,10 @@ class Recorder
      */
     public function handle($event)
     {
+        if ($this->laritor->getRecordingPaused()) {
+            return;
+        }
+
         try{
             $this->trackEvent($event);
         } catch (\Throwable $exception) {
