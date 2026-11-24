@@ -24,6 +24,8 @@ jobs:
         run: |
           composer require laravel/framework:9.x --no-update
           composer require --dev orchestra/testbench:^7.0 --no-update
+          # Allow legacy Laravel only in this disposable compatibility job; keep advisory reporting enabled.
+          composer config --json policy.advisories.ignore '{"laravel/framework":{"constraint":">=9.0 <12.0","on-audit":false,"reason":"Legacy Laravel compatibility tests only; these dependencies are never deployed."}}'
           composer update --prefer-dist --no-interaction --no-scripts
 
       - name: Run Analysis
@@ -49,6 +51,8 @@ jobs:
         run: |
           composer require --dev laravel/framework:10.x --no-update
           composer require --dev orchestra/testbench:^8.0 --no-update
+          # Allow legacy Laravel only in this disposable compatibility job; keep advisory reporting enabled.
+          composer config --json policy.advisories.ignore '{"laravel/framework":{"constraint":">=9.0 <12.0","on-audit":false,"reason":"Legacy Laravel compatibility tests only; these dependencies are never deployed."}}'
           composer update --prefer-dist --no-interaction --no-scripts
 
       - name: Run Analysis
@@ -76,6 +80,8 @@ jobs:
         run: |
           composer require --dev laravel/framework:11.x --no-update
           composer require --dev orchestra/testbench:^9.0 --no-update
+          # Allow legacy Laravel only in this disposable compatibility job; keep advisory reporting enabled.
+          composer config --json policy.advisories.ignore '{"laravel/framework":{"constraint":">=9.0 <12.0","on-audit":false,"reason":"Legacy Laravel compatibility tests only; these dependencies are never deployed."}}'
           composer update --prefer-dist --no-interaction --no-scripts
 
       - name: Run Analysis
