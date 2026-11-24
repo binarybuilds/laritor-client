@@ -25,6 +25,10 @@ jobs:
           composer require --dev orchestra/testbench:^7.0 --no-update
           # Allow legacy Laravel only in this disposable compatibility job; keep advisory reporting enabled.
           composer config --json policy.advisories.ignore '{"laravel/framework":{"constraint":">=9.0 <12.0","on-audit":false,"reason":"Legacy Laravel compatibility tests only; these dependencies are never deployed."}}'
+          if php -r 'exit(PHP_VERSION_ID < 80100 ? 0 : 1);'; then
+            # Patched HttpFoundation releases require PHP 8.1; retain PHP 8.0 compatibility coverage.
+            composer config --json --merge policy.advisories.ignore '{"symfony/http-foundation":{"constraint":"<6.2","on-audit":false,"reason":"PHP 8.0 compatibility tests only; patched Symfony releases require PHP 8.1."}}'
+          fi
           composer update --prefer-dist --no-interaction --no-scripts
 
       - name: Publish Config
