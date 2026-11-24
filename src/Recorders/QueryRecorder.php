@@ -90,7 +90,7 @@ class QueryRecorder extends Recorder
                 $binding = $this->quoteStringBinding($event, $binding);
             }
 
-            $sql = preg_replace($regex, $binding, $sql, 1);
+            $sql = preg_replace_callback($regex, static fn () => (string) $binding, $sql, 1);
         }
 
         return $sql;

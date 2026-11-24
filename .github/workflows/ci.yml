@@ -23,6 +23,12 @@ jobs:
         run: |
           composer require laravel/framework:9.x --no-update
           composer require --dev orchestra/testbench:^7.0 --no-update
+          # Allow legacy Laravel only in this disposable compatibility job; keep advisory reporting enabled.
+          composer config --json policy.advisories.ignore '{"laravel/framework":{"constraint":">=9.0 <12.0","on-audit":false,"reason":"Legacy Laravel compatibility tests only; these dependencies are never deployed."}}'
+          if php -r 'exit(PHP_VERSION_ID < 80100 ? 0 : 1);'; then
+            # Patched HttpFoundation releases require PHP 8.1; retain PHP 8.0 compatibility coverage.
+            composer config --json --merge policy.advisories.ignore '{"symfony/http-foundation":{"constraint":"<6.2","on-audit":false,"reason":"PHP 8.0 compatibility tests only; patched Symfony releases require PHP 8.1."}}'
+          fi
           composer update --prefer-dist --no-interaction --no-scripts
 
       - name: Publish Config
@@ -50,6 +56,8 @@ jobs:
         run: |
           composer require --dev laravel/framework:10.x --no-update
           composer require --dev orchestra/testbench:^8.0 --no-update
+          # Allow legacy Laravel only in this disposable compatibility job; keep advisory reporting enabled.
+          composer config --json policy.advisories.ignore '{"laravel/framework":{"constraint":">=9.0 <12.0","on-audit":false,"reason":"Legacy Laravel compatibility tests only; these dependencies are never deployed."}}'
           composer update --prefer-dist --no-interaction --no-scripts
 
       - name: Publish Config
@@ -80,6 +88,8 @@ jobs:
         run: |
           composer require --dev laravel/framework:11.x --no-update
           composer require --dev orchestra/testbench:^9.0 --no-update
+          # Allow legacy Laravel only in this disposable compatibility job; keep advisory reporting enabled.
+          composer config --json policy.advisories.ignore '{"laravel/framework":{"constraint":">=9.0 <12.0","on-audit":false,"reason":"Legacy Laravel compatibility tests only; these dependencies are never deployed."}}'
           composer update --prefer-dist --no-interaction --no-scripts
 
       - name: Publish Config
@@ -116,11 +126,12 @@ jobs:
         run: ./vendor/bin/phpunit
 
   test-laravel-13:
-    name: PHP ${{ matrix.php }} / Laravel 13.x
+    name: PHP ${{ matrix.php }} / Laravel 13.x / Guzzle ${{ matrix.guzzle }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
         php: [8.3, 8.4, 8.5]
+        guzzle: ['^7.2', '^8.0']
     steps:
       - uses: actions/checkout@v6
 
@@ -132,6 +143,7 @@ jobs:
 
       - name: Require Laravel & Testbench
         run: |
+          composer require guzzlehttp/guzzle:"${{ matrix.guzzle }}" --no-update
           composer require --dev laravel/framework:13.x --no-update
           composer require --dev orchestra/testbench:^11.0 --no-update
           composer update --prefer-dist --no-interaction --no-scripts

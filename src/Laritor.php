@@ -17,13 +17,14 @@ use BinaryBuilds\LaritorClient\Recorders\RequestRecorder;
 use BinaryBuilds\LaritorClient\Recorders\ScheduledTaskRecorder;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Http;
 use BinaryBuilds\LaritorClient\Recorders\SchedulerRecorder;
 
 class Laritor
 {
     public const VERSION = '4.1.1';
+
+    private bool $recordingPaused = false;
 
     /**
      * @var array
@@ -65,6 +66,43 @@ class Laritor
     private $jobDuration = 0;
 
     private $commandDuration = 0;
+
+    public static function isRecordingPaused(): bool
+    {
+        return app(Laritor::class)->getRecordingPaused();
+    }
+
+    public function getRecordingPaused(): bool
+    {
+        return $this->recordingPaused;
+    }
+
+    public function setRecordingPaused(bool $paused): void
+    {
+        $this->recordingPaused = $paused;
+    }
+
+    /**
+     * Execute a callback without recording Laritor events. Application events
+     * continue to dispatch normally.
+     *
+     * @template T
+     * @param callable(): T $callback
+     * @return T
+     * @throws \Throwable
+     */
+    public static function withoutRecording(callable $callback): mixed
+    {
+        $laritor = app(Laritor::class);
+        $previous = $laritor->getRecordingPaused();
+        $laritor->setRecordingPaused(true);
+
+        try {
+            return $callback();
+        } finally {
+            $laritor->setRecordingPaused($previous);
+        }
+    }
 
     public function getJobDuration()
     {
@@ -259,6 +297,10 @@ class Laritor
      */
     public function pushEvent($name, $event)
     {
+        if ($this->getRecordingPaused()) {
+            return $this;
+        }
+
         if ($this->eventsCount <= config('laritor.max_events')) {
             $event['order'] = $this->order;
             $event['timestamp'] = microtime(true);
@@ -283,6 +325,10 @@ class Laritor
 
     public function addCustomLog(string $type, string $level, string $message, array $context = [], ?Carbon $written_at = null)
     {
+        if ($this->getRecordingPaused()) {
+            return;
+        }
+
         $this->hasCustomLogs = true;
         $this->pushEvent(LogRecorder::$eventType, [
             'level' => $level,
@@ -364,6 +410,7 @@ class Laritor
      */
     public function reset()
     {
+        $this->setRecordingPaused(false);
         $this->events = [];
         $this->order = 1;
         $this->eventsCount = 0;
@@ -389,7 +436,7 @@ class Laritor
     public function sendEvents()
     {
         rescue(function () {
-            Event::fakeFor(function (){
+            self::withoutRecording(function (){
                 $this->filterEvents();
                 if ($this->shouldSendEvents()) {
                     $this->callApi();

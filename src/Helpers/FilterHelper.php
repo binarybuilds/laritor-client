@@ -2,9 +2,9 @@
 
 namespace BinaryBuilds\LaritorClient\Helpers;
 
+use BinaryBuilds\LaritorClient\Laritor;
 use BinaryBuilds\LaritorClient\Override\LaritorOverride;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 
 class FilterHelper
@@ -12,7 +12,7 @@ class FilterHelper
     public static function recordEvent(callable $callable, $default = true)
     {
         return rescue(function () use ($callable){
-            return Event::fakeFor($callable);
+            return Laritor::withoutRecording($callable);
         }, $default);
     }
 
